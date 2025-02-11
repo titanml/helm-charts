@@ -22,6 +22,11 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          charts_dir: hades/pantheon-helm/charts/takeoff
+          skip_existing: true
+          pages_branch: helm-releases
+          mark_as_latest: false
+        uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
