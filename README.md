@@ -18,3 +18,6 @@ To install the takeoff chart:
 To uninstall the chart:
 
     helm uninstall takeoff
+
+
+You can also access the example `values.yaml` files and more from [our release repository.](https://github.com/titanml/helm-charts)
