@@ -110,10 +110,9 @@ spec:
           {{- if $application.enableLivenessProbe }}
           livenessProbe:
             exec:
-                command:
-                - sh
-                - -c
-                - "curl -f -u $APP_USERNAME:$APP_PASSWORD http://localhost:8000/api/v1/healthz"
+              command:
+              - python
+              - /code/liveness-check.py
             initialDelaySeconds: {{ ternary 120 $application.livenessInitialDelaySeconds (eq $application.livenessInitialDelaySeconds nil) }}
             periodSeconds: {{ ternary 5 $application.livenessPeriodSeconds (eq $application.livenessPeriodSeconds nil) }}
             timeoutSeconds: {{ ternary 10 $application.livenessTimeoutSeconds (eq $application.livenessTimeoutSeconds nil) }}

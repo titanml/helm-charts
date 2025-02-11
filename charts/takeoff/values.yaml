@@ -9,6 +9,8 @@ controller:
   memoryLimit: 5Gi
   reservedConsumers: generate,embed
   ephemeralMemoryLimit: 8Gi
+  enableLivenessProbe: true
+  enableStartupProbe: true
 
   env:
     TAKEOFF_EXTRA_ENV_VAR_EXAMPLE: hello

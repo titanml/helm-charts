@@ -11,6 +11,8 @@ applications:
     memoryLimit: 10Gi
     ephemeralMemoryLimit: 8Gi
     gpuType: nvidia-l4
+    enableLivenessProbe: true
+    enableStartupProbe: true
 
     env:
 
@@ -33,6 +35,7 @@ applications:
     ephemeralMemoryLimit: 10Gi
     enableLivenessProbe: true
     livenessInitialDelaySeconds: 180
+    enableStartupProbe: true
 
     env:
 
@@ -55,7 +58,8 @@ applications:
     cpuLimit: 1
     memoryLimit: 16Gi
     ephemeralMemoryLimit: 8Gi
-
+    enableLivenessProbe: true
+    enableStartupProbe: true
     env:
 
     readerConfig:
