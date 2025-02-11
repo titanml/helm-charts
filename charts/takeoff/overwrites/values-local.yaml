@@ -1,0 +1,9 @@
+disableResourceRequests: true
+
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: "microk8s-hostpath"

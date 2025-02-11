@@ -1,0 +1,75 @@
+# You don't need to pass this file or set anything here
+# They're all just options that have defaults and can be overriden by advanced users - this file lists those which can
+
+autoscalingEnabled: true
+
+controller:
+  #Probes
+
+  enableLivenessProbe: true
+  livenessInitialDelaySeconds: 10
+  livenessPeriodSeconds: 5
+  livenessTimeoutSeconds: 10
+  livenessFailureThreshold: 10
+
+  enableStartupProbe: true
+  startupPeriodSeconds: 1
+  startupTimeoutSeconds: 1
+  startupFailureThreshold: 60
+  startupSuccessThreshold: 1
+
+
+applications:
+  embed:
+
+    # Autoscaling
+
+    idleReplicas: 0
+    pollingInterval: 30
+    cooldownPeriod: 300
+    initialCooldownPeriod: 300
+    shouldRestoreToOriginalReplicaCount: false
+
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 300
+
+    scaleUp:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 300
+
+    triggers:
+    # Trigger that scales if the time a request spends in the queue is greater than 10 seconds
+    - type: prometheus
+      metadata:
+        name: queue_size_trigger
+        serverAddress: http://{{ .Release.Name }}-kube-promethe-prometheus:9090/
+        query: queue_time{job="takeoff-controller", quantile="1", consumer_group="embed"}
+        threshold: 1
+    # Trigger that scales to zero if there are no requests in the last minute
+    - type: prometheus
+      metadata:
+        name: scaling_to_zero_trigger
+        serverAddress: http://{{ .Release.Name }}-kube-promethe-prometheus:9090/
+        query: rate(http_pre_handler_requests_total{job="takeoff-controller", path=~".*embed.*"}[1m])
+        activationThreshold: 0
+        threshold: 1000000
+
+    enableLivenessProbe: true
+    livenessInitialDelaySeconds: 10
+    livenessPeriodSeconds: 5
+    livenessTimeoutSeconds: 10
+    livenessFailureThreshold: 10
+
+    enableStartupProbe: true
+    startupPeriodSeconds: 1
+    startupTimeoutSeconds: 1
+    startupFailureThreshold: 60
+    startupSuccessThreshold: 1
+

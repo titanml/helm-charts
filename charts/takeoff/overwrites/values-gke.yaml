@@ -1,0 +1,11 @@
+useGKENodeSelector: true
+
+enable_weird_container_thing: false
+
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: standard-rwx

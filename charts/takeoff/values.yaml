@@ -1,0 +1,110 @@
+takeoffVersion: 0.22.0-rc8
+useAWSLoadBalancer: false #aws
+useGKENodeSelector: false #gcp
+enable_weird_container_thing: true
+
+controller:
+  replicas: 1
+  cpuLimit: 1
+  memoryLimit: 5Gi
+  reservedConsumers: generate,embed
+  ephemeralMemoryLimit: 8Gi
+
+  env:
+    TAKEOFF_EXTRA_ENV_VAR_EXAMPLE: hello
+
+enableMetrics: false
+
+
+
+kube-prometheus-stack:
+  prometheus:
+    serviceMonitor:
+      scrapeInterval: 15s
+
+    prometheusSpec:
+
+      additionalScrapeConfigsSecret:
+        enabled: true
+        name: prometheus-additional-scrape-config-takeoff
+        key: prometheus-additional-scrape-config.yaml
+
+      retention: 1y
+
+      storageSpec:
+        volumeClaimTemplate:
+          metadata:
+            name: p
+          spec:
+            storageClassName: ""
+            accessModes: [ "ReadWriteOnce" ]
+            resources:
+              requests:
+                storage: 100Gi
+
+  alertmanager:
+    # Example configuration for Alertmanager
+    enabled: true
+
+  defaultRules:
+    create: false
+
+  grafana:
+    enabled: true
+
+    grafana.ini:
+      unified_alerting:
+        enabled: true
+
+      security:
+        allow_embedding: true
+
+    sidecar: #todo don't need a sidecar here
+      dashboards:
+        enabled: true
+        label: grafana_dashboard # kube-prometheus-stack mandates it be labelled this
+
+    additionalDataSources:
+    #This is a kube-prometheus-stack specific thing. Prometheus is automatically configured as the default, and some weird templating is used to write in to grafana's helm chart's 'dataSources', which is why its called 'additionalDataSources' here as it sticks prometheus in and then passes it on to grafana.
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://takeoff-helm-loki-gateway.takeoff.svc.cluster.local # todo this shouldn't be hard-coded to takeoff-helm
+      isDefault: false # If Prometheus is default, Loki can be non-default
+      jsonData:
+        httpHeaderName1: 'X-Scope-OrgID'
+      secureJsonData:
+        httpHeaderValue1: 'fish'
+
+      derivedFields:
+      - datasourceUid: Prometheus # Link logs to Prometheus data
+        matcherRegex: "job=\\\"(?P<job>.*?)\\\"" # Regex to extract job label
+        name: "Prometheus Job"
+        url: "/d-solo/your-prometheus-dashboard-uid?var-job=$${__field.job}" # Link to a specific dashboard in Grafana
+
+
+loki:
+  enabled: true
+  deploymentMode: SingleBinary
+  loki:
+    commonConfig:
+      replication_factor: 1
+    storage:
+      type: 'filesystem'
+    schemaConfig:
+      configs:
+      - from: "2024-01-01"
+        store: tsdb
+        index:
+          prefix: loki_index_
+          period: 24h
+        object_store: filesystem # we're storing on filesystem so there's no real persistence here.
+        schema: v13
+  singleBinary:
+    replicas: 1
+  read:
+    replicas: 0
+  backend:
+    replicas: 0
+  write:
+    replicas: 0
