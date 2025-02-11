@@ -2,6 +2,28 @@ apiVersion: v1
 entries:
   takeoff:
   - apiVersion: v2
+    created: "2025-02-11T18:58:00.268684802Z"
+    dependencies:
+    - name: keda
+      repository: https://kedacore.github.io/charts
+      version: 2.15.1
+    - condition: enableMetrics
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 62.6.0
+    - condition: enableMetrics
+      name: loki
+      repository: https://grafana.github.io/helm-charts
+      version: 6.12.0
+    description: A chart for deploying the Titan Takeoff Stack
+    digest: 6c950ac386a632e85e7d2630e6c9c481a05e0d5b0f9a445df83b01f8ec78858d
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: takeoff
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/takeoff-0.1.1/takeoff-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     created: "2025-02-11T17:21:02.167810874Z"
     dependencies:
     - name: keda
@@ -23,4 +45,4 @@ entries:
     urls:
     - https://github.com/titanml/helm-charts/releases/download/takeoff-0.1.0/takeoff-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-11T17:21:02.167821605Z"
+generated: "2025-02-11T18:58:00.26870034Z"
