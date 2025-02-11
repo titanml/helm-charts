@@ -25,7 +25,6 @@ jobs:
         with:
           skip_existing: true
           pages_branch: helm-releases
-          mark_as_latest: false
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
