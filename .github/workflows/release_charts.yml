@@ -23,7 +23,6 @@ jobs:
 
       - name: Run chart-releaser
         with:
-          charts_dir: hades/pantheon-helm/charts/takeoff
           skip_existing: true
           pages_branch: helm-releases
           mark_as_latest: false
