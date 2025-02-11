@@ -1,0 +1,109 @@
+# Secrets that are shared across different resources, might want to make configurable later but set for now.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zeus-secrets
+type: Opaque
+data:
+  DATABASE_USER: {{ "postgres" | b64enc }}
+  DATABASE_PASSWORD: {{ "postgres" | b64enc }}
+---
+# Zeus Application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zeus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zeus
+  template:
+    metadata:
+      labels:
+        app: zeus
+    spec:
+      containers:
+      - name: zeus-backend
+        image: tytn/zeus-backend:latest
+        env:
+          - name: ZEUS_DROP_TABLES_ON_INIT
+            value: "False"
+        ports:
+          - containerPort: 8000
+      - name: zeus-frontend
+        image: tytn/zeus-frontend:latest
+        ports:
+          - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zeus
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: backend
+    - port: 3000
+      targetPort: 3000
+      name: frontend
+  selector:
+    app: zeus
+---
+# Postgres Database
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zeus-postgres
+spec:
+  serviceName: zeus-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zeus-postgres
+  template:
+    metadata:
+      labels:
+        app: zeus-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: zeus-secrets
+              key: DATABASE_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: zeus-secrets
+              key: DATABASE_PASSWORD
+        - name: PGDATA
+          value: /data/pgdata
+        volumeMounts:
+        - name: zeus-postgres-storage
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: zeus-postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zeus-postgres
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: zeus-postgres
