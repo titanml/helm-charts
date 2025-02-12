@@ -53,6 +53,8 @@ spec:
             - name: {{ $key }}
               value: "{{ $value }}"
             {{- end }}
+            - name: TAKEOFF_ADD_READER_ID_SUFFIX
+              value: "true"
           volumeMounts:
             - name: config-volume
               mountPath: /code/config.yaml

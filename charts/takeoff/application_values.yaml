@@ -34,8 +34,8 @@ applications:
     memory_limit: 40Gi
     ephemeralMemoryLimit: 10Gi
     enableLivenessProbe: true
-    livenessInitialDelaySeconds: 180
     enableStartupProbe: true
+    livenessInitialDelaySeconds: 180
 
     env:
 
