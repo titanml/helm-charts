@@ -141,3 +141,13 @@ spec:
         - name: dshm
           emptyDir:
             medium: Memory
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: takeoff-secrets
+type: Opaque
+data:
+  {{- range $key, $value := .Values.secrets }}
+  {{ $key }}: {{ $value | b64enc | quote }}
+  {{- end }}
