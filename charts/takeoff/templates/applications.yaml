@@ -165,7 +165,7 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: {{ $application.cacheSize | default "" }}
+            storage: {{ $application.cacheSize | default 100Gi }}
         storageClassName: {{ $application.cacheStorageClass | default "" }}
   {{- end }}
 

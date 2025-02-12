@@ -3,7 +3,7 @@ applications:
     gpusPerReplica: 1
     replicas: 1
     cacheStorageClass: hostpath
-    cacheSize: 10Gi
+    cacheSize: 100Gi
     minReplicas: 1
     maxReplicas: 3
     scaleToZero: true
@@ -26,7 +26,7 @@ applications:
     # omitting gpusPerReplica = gpusPerReplica: 0 = use cpu only
     replicas: 1
     cacheStorageClass: hostpath
-    cacheSize: 10Gi
+    cacheSize: 100Gi
     minReplicas: 1
     maxReplicas: 3
     scaleToZero: true
@@ -51,7 +51,7 @@ applications:
     # omitting gpusPerReplica = gpusPerReplica: 0 = use cpu only
     replicas: 1
     cacheStorageClass: hostpath
-    cacheSize: 10Gi
+    cacheSize: 100Gi
     minReplicas: 1
     maxReplicas: 3
     scaleToZero: true
