@@ -1,4 +1,4 @@
-takeoffVersion: 0.22.0-rc8
+takeoffVersion: 0.22.0-rc15
 useAWSLoadBalancer: false #aws
 useGKENodeSelector: false #gcp
 enable_weird_container_thing: true
