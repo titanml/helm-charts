@@ -3,12 +3,8 @@
 ## Installing Takeoff  
 
   
-1. Takeoff needs a minimum set of values to be specified in order to launch. These are covered in our reference [values.yaml](./values.yaml). We'll be using it as an example for this setup, but you can configure your values in a way that suits you. Also of use may be some overrides typically used for running takeoff on [gke](./overwrites/values-gke.yaml) and [eks](./overwrites/values-eks.yaml)  
-	  
-	If you're intending to use private huggingface models or access api models you'll need to add the relevant secret at `secrets.TAKEOFF_ACCESS_TOKEN` (this isn't covered in our required values file - you can use `--set` or add it to your values file).  
-	  
-	You can fetch an example of values used to deploy applications (`application_values.yaml`) [from the same location.](./application_values.yaml) 
-  
+1. Takeoff needs a minimum set of values to be specified in order to launch. These are covered in our reference [values.yaml](https://raw.githubusercontent.com/titanml/helm-charts/main/charts/takeoff/values.yaml). We'll be using it as an example for this setup, but you can configure your values in a way that suits you. Also of use may be some overrides typically used for running takeoff on [gke](https://raw.githubusercontent.com/titanml/helm-charts/main/charts/takeoff/overwrites/values-gke.yaml) and [eks](https://raw.githubusercontent.com/titanml/helm-charts/main/charts/takeoff/overwrites/values-eks.yaml)  
+
 2. Prepare the namespace you want to use. As an example here we'll use takeoff-test-1.  
 a. If you don't already have a namespace to use, you'll want to do something like `kubectl create namespace takeoff-test-1`  
   
