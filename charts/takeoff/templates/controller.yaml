@@ -27,7 +27,7 @@ metadata:
   name: takeoff-controller
 spec:
   serviceName: takeoff-controller
-  replicas: {{ .Values.controller.replicas }}
+  replicas: {{ $values.controller.replicas }}
   selector:
     matchLabels:
       app: takeoff-controller
@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: takeoff-controller
-          image: tytn/takeoff-pro:{{ .Values.takeoffVersion }}-cpu
+          image: tytn/takeoff-pro:{{ $values.takeoffVersion }}-cpu
           imagePullPolicy: Always
           ports:
             - name: takeoff
@@ -59,11 +59,11 @@ spec:
             - name: TAKEOFF_INTERNAL_PORT
               value: "3005"
             - name: TAKEOFF_RESERVED_CONSUMERS
-              value: {{ .Values.controller.reservedConsumers }}
+              value: {{ $values.controller.reservedConsumers }}
             - name: TAKEOFF_ADD_READER_ID_SUFFIX
               value: "true"
 
-            {{- range $key, $value := .Values.controller.env }}
+            {{- range $key, $value := $values.controller.env }}
             - name: {{ $key }}
               value: "{{ $value }}"
             {{- end }}
@@ -73,7 +73,7 @@ spec:
             - name: liveness-check
               mountPath: /code/liveness-check.py
               subPath: liveness-check.py
-          {{- with .Values.controller }}
+          {{- with $values.controller }}
           resources:
             limits:
               {{- if .cpuLimit }} #Non-local only
@@ -105,7 +105,7 @@ spec:
             {{- end}}
           {{- end }}
 
-          {{- with .Values.controller }}
+          {{- with $values.controller }}
 
           {{- if .enableLivenessProbe}}
 

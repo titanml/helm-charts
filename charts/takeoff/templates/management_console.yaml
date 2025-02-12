@@ -29,6 +29,22 @@ spec:
         env:
           - name: ZEUS_DROP_TABLES_ON_INIT
             value: "False"
+          - name: ZEUS_DB_HOST
+            value: zeus-postgres
+          - name: ZEUS_DB_PORT
+            value: "5432"
+          - name: ZEUS_DB_NAME
+            value: zeus
+          - name: ZEUS_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: zeus-secrets
+                key: DATABASE_USER
+          - name: ZEUS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: zeus-secrets
+                key: DATABASE_PASSWORD
         ports:
           - containerPort: 8000
       - name: zeus-frontend
@@ -84,6 +100,8 @@ spec:
             secretKeyRef:
               name: zeus-secrets
               key: DATABASE_PASSWORD
+        - name: POSTGRES_DB
+          value: zeus
         - name: PGDATA
           value: /data/pgdata
         volumeMounts:
