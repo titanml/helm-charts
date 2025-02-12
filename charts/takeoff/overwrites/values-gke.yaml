@@ -2,6 +2,9 @@ useGKENodeSelector: true
 
 enable_weird_container_thing: false
 
+controller:
+  ephemeralMemoryLimit: 8Gi
+
 kube-prometheus-stack:
   prometheus:
     prometheusSpec:

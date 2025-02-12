@@ -8,7 +8,6 @@ controller:
   cpuLimit: 1
   memoryLimit: 5Gi
   reservedConsumers: generate,embed
-  ephemeralMemoryLimit: 8Gi
   enableLivenessProbe: true
   enableStartupProbe: true
 
