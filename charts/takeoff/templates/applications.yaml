@@ -44,11 +44,10 @@ spec:
           image: tytn/takeoff-pro:{{ $values.takeoffVersion }}{{- if $application.gpusPerReplica }}-gpu{{- else }}-cpu{{- end }}
           imagePullPolicy: Always
           env:
+            {{- if $application.accessToken }}
             - name: TAKEOFF_ACCESS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: takeoff-secrets
-                  key: TAKEOFF_ACCESS_TOKEN
+              value: {{ $application.accessToken }}
+            {{- end }}
             {{- range $key, $value := $application.env }}
             - name: {{ $key }}
               value: "{{ $value }}"

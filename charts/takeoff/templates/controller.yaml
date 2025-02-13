@@ -50,12 +50,6 @@ spec:
             - name: internal
               containerPort: 3005
           env:
-            - name: TAKEOFF_ACCESS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: takeoff-secrets
-                  key: TAKEOFF_ACCESS_TOKEN
-
             - name: TAKEOFF_INTERNAL_PORT
               value: "3005"
             - name: TAKEOFF_RESERVED_CONSUMERS
@@ -141,13 +135,3 @@ spec:
         - name: dshm
           emptyDir:
             medium: Memory
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: takeoff-secrets
-type: Opaque
-data:
-  {{- range $key, $value := .Values.secrets }}
-  {{ $key }}: {{ $value | b64enc | quote }}
-  {{- end }}
