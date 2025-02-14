@@ -31,8 +31,8 @@ b. Add these applications to the cluster with `helm upgrade takeoff titanml/take
 If you want to change some values, you'll want to use one of:
  - If you want to switch to a new set of values files: `helm upgrade
    takeoff titanml/takeoff -f values-local.yaml -f secret_values.yaml -n takeoff-test-1`  
-- If you just want to override a setting (e.g. say you've decided you want to turn metrics on), you could use `helm install takeoff titanml/takeoff --reuse-values -n takeoff-test-1 --set key=value`   
-- If you want to override lots of settings via making a new values file and adding that in, you can do `helm install takeoff titanml/takeoff -f new_values.yaml --reuse-values -n takeoff-test-1`   
+- If you just want to override a setting (e.g. say you've decided you want to turn metrics on), you could use `helm upgrade takeoff titanml/takeoff --reuse-values -n takeoff-test-1 --set key=value`   
+- If you want to override lots of settings via making a new values file and adding that in, you can do `helm upgrade takeoff titanml/takeoff -f new_values.yaml --reuse-values -n takeoff-test-1`   
  - If you want to upgrade the chart to a new version:
 	 -  run `helm search repo titanml` to see what the latest version is
-	 -  use `helm install takeoff titanml/takeoff --version <version-name> --reuse-values -n takeoff-test-1`
+	 -  use `helm upgrade takeoff titanml/takeoff --version <version-name> --reuse-values -n takeoff-test-1`
