@@ -2,7 +2,7 @@ applications:
   generate:
     gpusPerReplica: 1
     replicas: 1
-    cacheStorageClass: hostpath
+    cacheStorageClass: microk8s-hostpath
     cacheSize: 100Gi
     minReplicas: 1
     maxReplicas: 3
@@ -25,7 +25,7 @@ applications:
   document-processing:
     # omitting gpusPerReplica = gpusPerReplica: 0 = use cpu only
     replicas: 1
-    cacheStorageClass: hostpath
+    cacheStorageClass: microk8s-hostpath
     cacheSize: 100Gi
     minReplicas: 1
     maxReplicas: 3
@@ -50,7 +50,7 @@ applications:
   embed:
     # omitting gpusPerReplica = gpusPerReplica: 0 = use cpu only
     replicas: 1
-    cacheStorageClass: hostpath
+    cacheStorageClass: microk8s-hostpath
     cacheSize: 100Gi
     minReplicas: 1
     maxReplicas: 3
