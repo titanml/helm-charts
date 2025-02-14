@@ -1,0 +1,149 @@
+# Secrets that are shared across different resources, might want to make configurable later but set for now.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zeus-secrets
+type: Opaque
+data:
+  DATABASE_USER: {{ "postgres" | b64enc }}
+  DATABASE_PASSWORD: {{ "password" | b64enc }}
+---
+# Service account and cluster role binding for the zeus application
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: zeus-fully-privileged
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: zeus-fully-privileged-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: zeus-fully-privileged
+  namespace: {{ .Release.Namespace }}
+---
+# Zeus Application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zeus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zeus
+  template:
+    metadata:
+      labels:
+        app: zeus
+    spec:
+      serviceAccountName: zeus-fully-privileged
+      containers:
+      - name: zeus-backend
+        image: tytn/zeus-backend:latest
+        env:
+          - name: ZEUS_DROP_TABLES_ON_INIT
+            value: "False"
+          - name: ZEUS_DB_HOST
+            value: zeus-postgres
+          - name: ZEUS_DB_PORT
+            value: "5432"
+          - name: ZEUS_DB_NAME
+            value: zeus
+          - name: ZEUS_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: zeus-secrets
+                key: DATABASE_USER
+          - name: ZEUS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: zeus-secrets
+                key: DATABASE_PASSWORD
+        ports:
+          - containerPort: 8000
+      - name: zeus-frontend
+        image: tytn/zeus-frontend:latest
+        ports:
+          - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zeus
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: backend
+    - port: 3000
+      targetPort: 3000
+      name: frontend
+  selector:
+    app: zeus
+---
+# Postgres Database
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zeus-postgres
+spec:
+  serviceName: zeus-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zeus-postgres
+  template:
+    metadata:
+      labels:
+        app: zeus-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: zeus-secrets
+              key: DATABASE_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: zeus-secrets
+              key: DATABASE_PASSWORD
+        - name: POSTGRES_DB
+          value: zeus
+        - name: PGDATA
+          value: /data/pgdata
+        volumeMounts:
+        - name: zeus-postgres-storage
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: zeus-postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zeus-postgres
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+  selector:
+    app: zeus-postgres
