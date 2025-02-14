@@ -20,7 +20,15 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
+          
+      - name: Copy README from main branch
+        run: |
+          git checkout helm-releases
+          git show main:charts/takeoff/README.md > README.md
+          git add README.md
+          git commit -m "Copy README.md" || echo "No changes to commit"
+          git push origin helm-releases
+          
       - name: Run chart-releaser
         with:
           skip_existing: true
@@ -28,3 +36,4 @@ jobs:
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
