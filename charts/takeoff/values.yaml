@@ -1,4 +1,5 @@
 takeoffVersion: 0.22.0-rc15
+zeusVersion: 0.0.1
 useAWSLoadBalancer: false #aws
 useGKENodeSelector: false #gcp
 enable_weird_container_thing: true

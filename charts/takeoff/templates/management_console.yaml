@@ -45,7 +45,7 @@ spec:
       serviceAccountName: zeus-fully-privileged
       containers:
       - name: zeus-backend
-        image: tytn/zeus-backend:latest
+        image: "tytn/zeus-backend:{{.Values.zeusVersion | default "latest"}}"
         env:
           - name: ZEUS_DROP_TABLES_ON_INIT
             value: "False"
@@ -68,7 +68,7 @@ spec:
         ports:
           - containerPort: 8000
       - name: zeus-frontend
-        image: tytn/zeus-frontend:latest
+        image: "tytn/zeus-frontend:{{.Values.zeusVersion | default "latest"}}"
         ports:
           - containerPort: 3000
 ---
