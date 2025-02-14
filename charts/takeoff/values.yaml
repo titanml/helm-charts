@@ -15,8 +15,6 @@ controller:
 
 enableMetrics: false
 
-
-
 kube-prometheus-stack:
   prometheus:
     serviceMonitor:
