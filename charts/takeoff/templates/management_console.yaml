@@ -65,6 +65,10 @@ spec:
               secretKeyRef:
                 name: zeus-secrets
                 key: DATABASE_PASSWORD
+          - name: ZEUS_HELM_NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: ZEUS_HELM_RELEASE
+            value: {{ .Values.zeusHelmRelease | default "zeus" }}
           {{- if and .Values.zeus .Values.zeus.env }}
           {{- range $key, $value := .Values.zeus.env }}
           - name: {{ $key }}
