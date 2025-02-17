@@ -12,7 +12,7 @@ data:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: zeus-fully-privileged
+  name: {{ .Values.deploymentPrefix }}zeus-fully-privileged
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

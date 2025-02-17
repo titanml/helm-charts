@@ -1,6 +1,6 @@
 useGKENodeSelector: true
 
-enable_weird_container_thing: false
+mountDockerContainers: false
 
 controller:
   ephemeralMemoryLimit: 8Gi

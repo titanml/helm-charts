@@ -1,11 +1,13 @@
 takeoffVersion: 0.22.0-rc15
-zeusVersion: 0.0.1
+zeusBackendVersion: latest
+zeusFrontendVersion: latest
+
+deploymentPrefix: ""
+
 useAWSLoadBalancer: false #aws
 useGKENodeSelector: false #gcp
-enable_weird_container_thing: true
+mountDockerContainers: true
 enableKeda: true
-enablePrometheus: true
-enableLoki: true
 
 controller:
   replicas: 1
