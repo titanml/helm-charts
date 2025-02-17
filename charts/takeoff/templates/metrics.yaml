@@ -122,7 +122,7 @@ spec:
         - name: promtail-config
           mountPath: /etc/promtail/promtail.yaml
           subPath: promtail.yaml
-        {{- if .Values.enable_weird_container_thing }}
+        {{- if .Values.mountDockerContainers }}
         - mountPath: /var/lib/docker/containers
           name: varlibdockercontainers
           readOnly: true
@@ -131,7 +131,7 @@ spec:
       - name: logs
         hostPath:
           path: /var/log
-      {{- if .Values.enable_weird_container_thing }}
+      {{- if .Values.mountDockerContainers }}
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
