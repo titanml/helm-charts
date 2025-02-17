@@ -1,6 +1,9 @@
 takeoffVersion: 0.22.0-rc15
-zeusBackendVersion: 0.0.1
-zeusFrontendVersion: 0.0.1
+zeusBackendVersion: latest
+zeusFrontendVersion: latest
+
+deploymentPrefix: ""
+
 useAWSLoadBalancer: false #aws
 useGKENodeSelector: false #gcp
 mountDockerContainers: true
