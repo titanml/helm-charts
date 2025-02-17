@@ -65,6 +65,12 @@ spec:
               secretKeyRef:
                 name: zeus-secrets
                 key: DATABASE_PASSWORD
+          {{- if and .Values.zeus .Values.zeus.env }}
+            {{- range $key, $value := .Values.zeus.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
+          {{- end }}
         ports:
           - containerPort: 8000
       - name: zeus-frontend
