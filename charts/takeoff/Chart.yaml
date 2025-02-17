@@ -16,18 +16,21 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.9
+version: 0.1.10
 
 
 dependencies:
 - name: keda
   version: 2.15.1
+  condition: enableKeda
   repository: "https://kedacore.github.io/charts"
 - name: kube-prometheus-stack
+  condition: enablePrometheus
   version: "62.6.0"
   condition: enableMetrics
   repository: "https://prometheus-community.github.io/helm-charts"
 - name: loki
+  condition: enableLoki
   version: 6.12.0
   condition: enableMetrics
   repository: "https://grafana.github.io/helm-charts"
