@@ -1,3 +1,4 @@
+{{- if .Values.zeus.enabled }}
 # Secrets that are shared across different resources, might want to make configurable later but set for now.
 apiVersion: v1
 kind: Secret
@@ -81,6 +82,9 @@ spec:
         image: "tytn/zeus-frontend:{{.Values.zeusFrontendVersion | default "latest" }}"
         ports:
           - containerPort: 3000
+        env:
+          - name: NEXT_PUBLIC_API_URL
+            value: {{ .values.zeusNextPublicApiUrl }}
 ---
 apiVersion: v1
 kind: Service
@@ -157,3 +161,4 @@ spec:
     name: postgres
   selector:
     app: zeus-postgres
+{{- end }}

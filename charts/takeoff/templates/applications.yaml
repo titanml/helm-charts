@@ -5,7 +5,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: takeoff-config-{{ $app_name }}
+  name: {{ $app_name }}
 data:
   takeoff-config.yaml: |
     takeoff:
@@ -22,17 +22,17 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: takeoff-{{ $app_name }}
+  name: {{ $app_name }}
 spec:
-  serviceName: takeoff-{{ $app_name }}
+  serviceName: {{ $app_name }}
   replicas: {{ $application.replicas }}
   selector:
     matchLabels:
-      app: takeoff-{{ $app_name }}
+      app: {{ $app_name }}
   template:
     metadata:
       labels:
-        app: takeoff-{{ $app_name }}
+        app: {{ $app_name }}
     spec:
     {{- if and $values.useGKENodeSelector $application.gpusPerReplica}}
       nodeSelector:
@@ -40,7 +40,7 @@ spec:
         cloud.google.com/gke-accelerator-count: {{ $application.gpusPerReplica | quote }}
     {{- end }}
       containers:
-        - name: takeoff-{{ $app_name }}
+        - name: {{ $app_name }}
           image: tytn/takeoff-pro:{{ $values.takeoffVersion }}{{- if $application.gpusPerReplica }}-gpu{{- else }}-cpu{{- end }}
           imagePullPolicy: Always
           env:
@@ -58,7 +58,7 @@ spec:
             - name: config-volume
               mountPath: /code/config.yaml
               subPath: takeoff-config.yaml
-            - name: takeoff-cache-{{ $app_name }}
+            - name: {{ $app_name }}
               mountPath: /code/models
             - name: dshm
               mountPath: /dev/shm
@@ -141,7 +141,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: takeoff-config-{{ $app_name }}
+            name: {{ $app_name }}
         - name: liveness-check
           configMap:
             name: takeoff-liveness-check
@@ -149,7 +149,7 @@ spec:
           emptyDir:
             medium: Memory
         {{- if $values.useLocalPVC  }}
-        - name: takeoff-cache-{{ $app_name }}
+        - name: {{ $app_name }}
           persistentVolumeClaim:
             claimName: takeoff-cache-pvc
         {{- end }}
@@ -159,7 +159,7 @@ spec:
   {{- if (not $values.useLocalPVC) }}
   volumeClaimTemplates:
     - metadata:
-        name: takeoff-cache-{{ $app_name }}
+        name: {{ $app_name }}
       spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:

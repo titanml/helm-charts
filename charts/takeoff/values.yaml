@@ -9,7 +9,11 @@ useGKENodeSelector: false #gcp
 mountDockerContainers: true
 enableKeda: true
 
+zeus:
+  enabled: true
+
 controller:
+  enabled: true
   replicas: 1
   cpuLimit: 1
   memoryLimit: 5Gi
