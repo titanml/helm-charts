@@ -83,7 +83,7 @@ spec:
         ports:
           - containerPort: 3000
         env:
-          {{- if .Values.values.zeusNextPublicApiUrl }}
+          {{- if .Values.zeusNextPublicApiUrl }}
           - name: NEXT_PUBLIC_API_URL
             value: {{ .Values.zeusNextPublicApiUrl }}
           {{- end }}
