@@ -1,4 +1,0 @@
-useGKENodeSelector: true
-
-controller:
-  ephemeralMemoryLimit: 8Gi
