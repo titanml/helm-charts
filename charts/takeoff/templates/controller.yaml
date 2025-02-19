@@ -1,139 +1,174 @@
-{{- $values := .Values }}
-{{- if $values.controller.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "takeoff.fullname" $ }}-controller
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "takeoff.labels" $ | nindent 4 }}
+data:
+  config.yaml: |
+    takeoff:
+      server_config:
+        internal_port: 3005
+        {{- range $key, $value := .Values.controller.config }}
+        {{ snakecase $key}}: {{$value}}
+        {{- end }}
+      readers_config:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "takeoff.fullname" . }}-controller
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "takeoff.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.controller.autoscaling.enabled }}
+  replicas: {{ .Values.controller.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      {{- include "takeoff.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.controller.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/component: controller
+        {{- include "takeoff.labels" . | nindent 8 }}
+        {{- with .Values.controller.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "takeoff.serviceAccountName" . }}
+      {{- with .Values.controller.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-controller
+          {{- with .Values.controller.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          env: 
+            - name: TAKEOFF_ADD_READER_ID_SUFFIX
+              value: "true"
+            {{- range $key, $value := .Values.controller.env }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+          {{- with .Values.controller.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.controller.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.controller.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.controller.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /code/config.yaml
+              subPath: config.yaml
+          {{- with .Values.controller.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "takeoff.fullname" $ }}-controller
+      {{- with .Values.controller.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: takeoff-controller-svc
+  name: {{ include "takeoff.fullname" . }}-controller
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "takeoff.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.controller.service.type }}
+  {{- with .Values.controller.service.ports }}
   ports:
-    - port: 3000
-      protocol: TCP
-      name: takeoff
-    - port: 3001
-      protocol: TCP
-      name: management
-    - port: 3003
-      protocol: TCP
-      name: api
-    - port: 3005
-      protocol: TCP
-      name: internal
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
-    app: takeoff-controller
+    app.kubernetes.io/component: controller
+    {{- include "takeoff.selectorLabels" . | nindent 4 }}
 ---
-apiVersion: apps/v1
-kind: StatefulSet
+{{- if .Values.controller.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: takeoff-controller
+  name: {{ include "takeoff.fullname" . }}-controller
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "takeoff.labels" . | nindent 4 }}
+  {{- with .Values.controller.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  serviceName: takeoff-controller
-  replicas: {{ $values.controller.replicas }}
-  selector:
-    matchLabels:
-      app: takeoff-controller
-  template:
-    metadata:
-      labels:
-        app: takeoff-controller
-    spec:
-      containers:
-        - name: takeoff-controller
-          image: tytn/takeoff-pro:{{ $values.takeoffVersion }}-cpu
-          imagePullPolicy: Always
-          ports:
-            - name: takeoff
-              containerPort: 3000
-            - name: management
-              containerPort: 3001
-            - name: api
-              containerPort: 3003
-            - name: internal
-              containerPort: 3005
-          env:
-            - name: TAKEOFF_INTERNAL_PORT
-              value: "3005"
-            - name: TAKEOFF_RESERVED_CONSUMERS
-              value: {{ $values.controller.reservedConsumers }}
-            - name: TAKEOFF_ADD_READER_ID_SUFFIX
-              value: "true"
-
-            {{- range $key, $value := $values.controller.env }}
-            - name: {{ $key }}
-              value: "{{ $value }}"
+  {{- with .Values.controller.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
+  {{- if .Values.controller.ingress.tls }}
+  tls:
+    {{- range .Values.controller.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.controller.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- with .pathType }}
+            pathType: {{ . }}
             {{- end }}
-          volumeMounts:
-            - name: dshm
-              mountPath: /dev/shm
-            - name: liveness-check
-              mountPath: /code/liveness-check.py
-              subPath: liveness-check.py
-          {{- with $values.controller }}
-          resources:
-            limits:
-              {{- if .cpuLimit }} #Non-local only
-              cpu: {{ .cpuLimit }}
-              {{- end }}
-
-              {{- if .memoryLimit }} #Non-local only
-              memory: {{ .memoryLimit }}
-              {{- end }}
-
-              {{- if .ephemeralMemoryLimit }} #GCP only, kind of
-              ephemeral-storage: {{ .ephemeralMemoryLimit }}
-              {{- end }}
-
-
-            {{- if not $values.disableResourceRequests }}
-            requests:
-              {{- if .cpuLimit }} #Non-local only
-              cpu: {{ .cpuLimit }}
-              {{- end }}
-
-              {{- if .memoryLimit }} #Non-local only
-              memory: {{ .memoryLimit }}
-              {{- end }}
-
-              {{- if .ephemeralMemoryLimit }} #GCP only, kind of
-              ephemeral-storage: {{ .ephemeralMemoryLimit }}
-              {{- end }}
-            {{- end}}
+            backend:
+              service:
+                name: {{ include "takeoff.fullname" . }}-controller
+                port:
+                  number: {{ .Values.controller.service.port }}
           {{- end }}
-
-          {{- with $values.controller }}
-
-          {{- if .enableLivenessProbe}}
-
-          livenessProbe:
-
-            httpGet:
-              path: /status
-              port: 3000
-            initialDelaySeconds: {{ ternary 90 .livenessPeriodSeconds (eq .livenessPeriodSeconds nil) }}
-            periodSeconds: {{ ternary 5 .livenessPeriodSeconds (eq .livenessPeriodSeconds nil) }}
-            timeoutSeconds: {{ ternary 10 .livenessTimeoutSeconds (eq .livenessTimeoutSeconds nil) }}
-            failureThreshold:  {{ ternary 10 .livenessFailureThreshold (eq .livenessFailureThreshold nil) }}
-          {{- end}}
-
-          {{- if .enableStartupProbe}}
-
-          startupProbe:
-            httpGet:
-              path: /status
-              port: 3000
-            periodSeconds: {{ ternary 1 .startupPeriodSeconds (eq .startupPeriodSeconds nil) }}
-            successThreshold: {{ ternary 1 .startupSuccessThreshold (eq .startupSuccessThreshold nil) }}
-            timeoutSeconds: {{ ternary 1 .startupTimeoutSeconds (eq .startupTimeoutSeconds nil) }}
-            failureThreshold:  {{ ternary 60 .startupFailureThreshold (eq .startupFailureThreshold nil) }}
-          {{- end}}
-          {{- end}}
-      imagePullSecrets:
-        - name: takeoff-regcred
-      volumes:
-        - name: liveness-check
-          configMap:
-            name: takeoff-liveness-check
-        - name: dshm
-          emptyDir:
-            medium: Memory
+    {{- end }}
 {{- end }}

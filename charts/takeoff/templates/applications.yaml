@@ -1,173 +1,180 @@
-
-{{- $values := .Values }}
-{{- range $app_name, $application := .Values.applications }}
-
+{{- range $appName, $baseValues := .Values.applications }}
+  {{- $mergedValues := merge $baseValues (deepCopy $.Values.applicationTemplate) }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $app_name }}
+  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  labels:
+    app.kubernetes.io/component: application-{{ $appName }}
+    {{- include "takeoff.labels" $ | nindent 4 }}
 data:
-  takeoff-config.yaml: |
+  config.yaml: |
     takeoff:
       server_config:
         internal_port: 3005
       readers_config:
-        {{- with $application.readerConfig }}
-        {{ .consumer_group }}:
-          {{- toYaml . | nindent 10 }}
-          internal_gateway_ip : takeoff-controller-svc
-        {{- end }}
+        {{ $appName }}:
+          {{- range $key, $value := $mergedValues.readerConfig }}
+          {{ snakecase $key}}: {{$value}}
+          {{- end }}
+          internal_gateway_ip: {{ include "takeoff.fullname" $ }}-controller
 ---
-# Various statefulsets
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: {{ $app_name }}
+  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  labels:
+    app.kubernetes.io/component: application-{{ $appName }}
+    {{- include "takeoff.labels" $ | nindent 4 }}
 spec:
-  serviceName: {{ $app_name }}
-  replicas: {{ $application.replicas }}
+  replicas: {{ $mergedValues.replicaCount }}
   selector:
     matchLabels:
-      app: {{ $app_name }}
+      app.kubernetes.io/component: application-{{ $appName }}
+      {{- include "takeoff.selectorLabels" $ | nindent 6 }}
   template:
     metadata:
+      {{- with $mergedValues.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: {{ $app_name }}
+        app.kubernetes.io/component: application-{{ $appName }}
+        {{- include "takeoff.labels" $ | nindent 8 }}
+        {{- with $mergedValues.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
-    {{- if and $values.useGKENodeSelector $application.gpusPerReplica}}
-      nodeSelector:
-        cloud.google.com/gke-accelerator: {{ ternary "nvidia-l4" $application.gpuType (eq $application.gpuType nil) }}
-        cloud.google.com/gke-accelerator-count: {{ $application.gpusPerReplica | quote }}
-    {{- end }}
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "takeoff.serviceAccountName" $ }}
+      {{- with $mergedValues.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
-        - name: {{ $app_name }}
-          image: tytn/takeoff-pro:{{ $values.takeoffVersion }}{{- if $application.gpusPerReplica }}-gpu{{- else }}-cpu{{- end }}
-          imagePullPolicy: Always
-          env:
-            {{- if $application.accessToken }}
-            - name: TAKEOFF_ACCESS_TOKEN
-              value: {{ $application.accessToken }}
-            {{- end }}
-            {{- range $key, $value := $application.env }}
-            - name: {{ $key }}
-              value: "{{ $value }}"
-            {{- end }}
-            - name: TAKEOFF_ADD_READER_ID_SUFFIX
-              value: "true"
+        - name: {{ $.Chart.Name }}-{{ $appName }}
+          {{- with $mergedValues.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ $mergedValues.image.repository }}:{{ $mergedValues.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $mergedValues.image.pullPolicy }}
+          {{- with  $mergedValues.env }}
+          env: 
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $mergedValues.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $mergedValues.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $mergedValues.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $mergedValues.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
-            - name: config-volume
+            - name: config
               mountPath: /code/config.yaml
-              subPath: takeoff-config.yaml
-            - name: {{ $app_name }}
-              mountPath: /code/models
+              subPath: config.yaml
             - name: dshm
               mountPath: /dev/shm
-            - name: liveness-check
-              mountPath: /code/liveness-check.py
-              subPath: liveness-check.py
-
-          {{- with $application }}
-          resources:
-            limits:
-              {{- if .cpuLimit }} #Non-local only
-              cpu: {{ .cpuLimit }}
-              {{- end }}
-
-              {{- if .memoryLimit }} #Non-local only
-              memory: {{ .memoryLimit }}
-              {{- end }}
-
-              {{- if .ephemeralMemoryLimit }} #GCP only, kind of
-              ephemeral-storage: {{ .ephemeralMemoryLimit }}
-              {{- end }}
-
-              {{- if $application.gpusPerReplica }}
-              nvidia.com/gpu: {{ $application.gpusPerReplica }}
-              {{- end }}
-
-            {{- if not $values.disableResourceRequests }}
-            requests:
-              {{- if .cpuLimit }} #Non-local only
-              cpu: {{ .cpuLimit }}
-              {{- end }}
-
-              {{- if .memoryLimit }} #Non-local only
-              memory: {{ .memoryLimit }}
-              {{- end }}
-
-              {{- if .ephemeralMemoryLimit }} #GCP only, kind of
-              ephemeral-storage: {{ .ephemeralMemoryLimit }}
-              {{- end }}
-
-              {{- if $application.gpusPerReplica }}
-              nvidia.com/gpu: {{ $application.gpusPerReplica }}
-              {{- end }}
-
+          {{- with $mergedValues.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-        {{- end }}
-
-
-
-          {{- if $application.enableLivenessProbe }}
-          livenessProbe:
-            exec:
-              command:
-              - python
-              - /code/liveness-check.py
-            initialDelaySeconds: {{ ternary 120 $application.livenessInitialDelaySeconds (eq $application.livenessInitialDelaySeconds nil) }}
-            periodSeconds: {{ ternary 5 $application.livenessPeriodSeconds (eq $application.livenessPeriodSeconds nil) }}
-            timeoutSeconds: {{ ternary 10 $application.livenessTimeoutSeconds (eq $application.livenessTimeoutSeconds nil) }}
-            failureThreshold: {{ ternary 10 $application.livenessFailureThreshold (eq $application.livenessFailureThreshold nil) }}
-
-
-          {{- end }}
-
-          # successThresh = 1 periodS = 1 timeoutS = 1 failureThresh = 60
-
-          {{- if $application.enableStartupProbe }}
-          startupProbe:
-            httpGet:
-              path: /status
-              port: 3000
-
-            successThreshold: {{ ternary 1 $application.startupSuccessThreshold (eq $application.startupSuccessThreshold nil) }}
-            periodSeconds: {{ ternary 1 $application.startupPeriodSeconds (eq $application.startupPeriodSeconds nil) }}
-            timeoutSeconds: {{ ternary 1 $application.startupTimeoutSeconds (eq $application.startupTimeoutSeconds nil) }}
-            failureThreshold: {{ ternary 60 $application.startupFailureThreshold (eq $application.startupFailureThreshold nil) }}
-          {{- end}}
-
-      imagePullSecrets:
-        - name: takeoff-regcred
       volumes:
-        - name: config-volume
+        - name: config
           configMap:
-            name: {{ $app_name }}
-        - name: liveness-check
-          configMap:
-            name: takeoff-liveness-check
+            name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
         - name: dshm
           emptyDir:
             medium: Memory
-        {{- if $values.useLocalPVC  }}
-        - name: {{ $app_name }}
-          persistentVolumeClaim:
-            claimName: takeoff-cache-pvc
-        {{- end }}
-        - name: startup-check
-          configMap:
-            name: takeoff-startup-check
-  {{- if (not $values.useLocalPVC) }}
-  volumeClaimTemplates:
-    - metadata:
-        name: {{ $app_name }}
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: {{ $application.cacheSize | default "100Gi" }}
-        storageClassName: {{ $application.cacheStorageClass | default "" }}
-  {{- end }}
-
+      {{- with $mergedValues.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $mergedValues.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $mergedValues.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $mergedValues.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 ---
-
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  labels:
+    app.kubernetes.io/component: application-{{ $appName }}
+    {{- include "takeoff.labels" $ | nindent 4 }}
+spec:
+  type: {{ $mergedValues.service.type }}
+  {{- with $mergedValues.service.ports }}
+  ports:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/component: application-{{ $appName }}
+    {{- include "takeoff.selectorLabels" $ | nindent 4 }}
+---
+{{- if $mergedValues.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  labels:
+    app.kubernetes.io/component: application-{{ $appName }}
+    {{- include "takeoff.labels" $ | nindent 4 }}
+  {{- with $mergedValues.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $mergedValues.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
+  {{- if $mergedValues.ingress.tls }}
+  tls:
+    {{- range $mergedValues.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range $mergedValues.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- with .pathType }}
+            pathType: {{ . }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+                port:
+                  number: {{ $mergedValues.service.port }}
+          {{- end }}
+    {{- end }}
 {{- end }}
+{{- end }}  # End range over applications
+
