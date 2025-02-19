@@ -1,5 +1,4 @@
 {{- if .Values.enableMetrics }}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,7 +10,7 @@ data:
 {{ .Files.Get "dashboards/takeoff-stack-dash.json" | indent 4 }}
   takeoff-generate-dash.json: |-
 {{ .Files.Get "dashboards/takeoff-generate-dash.json" | indent 4 }}
-
+{{- end }}
 ---
 #ConfigMap
 apiVersion: v1
@@ -23,10 +22,6 @@ data:
     server:
       http_listen_port: 9080
       grpc_listen_port: 0
-
-    clients:
-    - url: {{ .Values.promtailLokiURL | default "http://takeoff-helm-loki-gateway.takeoff.svc.cluster.local:80/loki/api/v1/push"}}
-      tenant_id: fish
 
     positions:
       filename: /tmp/positions.yaml
@@ -88,9 +83,7 @@ rules:
     - list
 
 ---
-
 #DaemonSet
-
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -156,39 +149,9 @@ roleRef:
     apiGroup: rbac.authorization.k8s.io
 ---
 #ServiceAccount
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: promtail-serviceaccount
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: prometheus-additional-scrape-config
-stringData:
-  prometheus-additional-scrape-config.yaml: |
-    - job_name: takeoff-controller
-      kubernetes_sd_configs:
-        - role: pod
-      relabel_configs:
-        - source_labels: [__meta_kubernetes_pod_name]
-          action: keep
-          regex: 'takeoff-controller-.*'
-        - source_labels: [__meta_kubernetes_pod_container_port_number]
-          regex: '3001'
-          action: keep
-      scrape_interval: 1s
-
-    - job_name: nvidia_exporter
-      kubernetes_sd_configs:
-        - role: endpoints
-      relabel_configs:
-        - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_namespace]
-          action: keep
-          regex: nvidia-dcgm-exporter;.*  # Match 'nvidia-dcgm-exporter' service in any namespace
-      metrics_path: /metrics
-      scrape_interval: 1s
-
 
 {{- end }}
