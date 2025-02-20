@@ -159,6 +159,8 @@ controller:
 
   affinity: {}
 
+  exportPrometheusMetrics: true
+
 # The application template sets the base values for all the deployed takeoff applications.
 # An application is one or more replicas of a given model.
 applicationTemplate:
@@ -311,6 +313,61 @@ applicationTemplate:
   tolerations: []
 
   affinity: {}
+
+  # This section is for setting up triggers in a metrics server and Horizontal Pod Autoscaler to dynamically scale the application.
+  # We use KEDA for this, more information can be found here: https://keda.sh/docs/concepts/scaling-deployments/
+  scaling:
+    enabled: false
+    annotations:
+    # scaledobject.keda.sh/transfer-hpa-ownership: "true"     # Optional. Use to transfer an existing HPA ownership to this ScaledObject
+    # validations.keda.sh/hpa-ownership: "true"               # Optional. Use to disable HPA ownership validation on this ScaledObject
+    # autoscaling.keda.sh/paused: "true"                      # Optional. Use to pause autoscaling of objects explicitly
+    spec:
+      pollingInterval:        30                                # Optional. Default: 30 seconds
+      initialCooldownPeriod:  0                                 # Optional. Default: 0 seconds
+      cooldownPeriod:         300                               # Optional. Default: 300 seconds
+      idleReplicaCount:       0                                 # Optional. Default: ignored, must be less than minReplicaCount
+      minReplicaCount:        1                                 # Optional. Default: 0
+      maxReplicaCount:        100                               # Optional. Default: 100
+    # fallback:                                                 # Optional. Section to specify fallback options
+    #   failureThreshold: 3                                     # Mandatory if fallback section is included
+    #   replicas: 6                                             # Mandatory if fallback section is included
+      advanced:                                                 # Optional. Section to specify advanced options
+        restoreToOriginalReplicaCount: false                    # Optional. Default: false
+        horizontalPodAutoscalerConfig:                          # Optional. Section to specify HPA related options
+          behavior:                                             # Optional. Use to modify HPA's scaling behavior
+            scaleDown:
+              stabilizationWindowSeconds: 300
+              policies:
+              - type: Pods
+                value: 1
+                periodSeconds: 300
+            scaleUp:
+              stabilizationWindowSeconds: 300
+              policies:
+              - type: Pods
+                value: 1
+                periodSeconds: 300
+      # These triggers are used to scale the application based on metrics from a provider. We choose to use Prometheus to hold our metrics you can find the specification for a 
+      # Prometheus trigger here: https://keda.sh/docs/scalers/prometheus/. The first trigger is used to move between the minReplicaCount and maxReplicaCount, the second trigger is
+      # used to scale to idleReplicaCount.
+      triggers:
+      # Trigger that scales if the time a request spends in the queue is greater than 10 seconds
+      - type: prometheus
+        metadata:
+          name: queue_size_trigger
+          serverAddress: http://takeoff-kube-promethe-prometheus:9090/ # Replace with the address of the cluster Prometheus server
+          query: queue_time{job~=".*-controller", quantile="1", consumer_group="primary"}  # Replace consumer_group with the consumerGroup set above for this application
+          threshold: 1
+      # Trigger that scales to zero if there are no requests in the last minute
+      - type: prometheus
+        metadata:
+          name: scaling_to_zero_trigger
+          serverAddress: http://takeoff-kube-promethe-prometheus:9090/ # Replace with the address of the cluster Prometheus server
+          query: rate(http_pre_handler_requests_total{job~=".*-controller", path=~".*primary.*"}[1m])  # Replace consumer_group with the consumerGroup set above for this application
+          activationThreshold: 0
+          threshold: 1000000
+
 
 # Use this section to deploy your takeoff applications
 applications:

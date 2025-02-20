@@ -175,6 +175,28 @@ spec:
                   number: {{ $mergedValues.service.port }}
           {{- end }}
     {{- end }}
+---
+{{- end }}
+{{- if $mergedValues.scaling.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  {{- with $mergedValues.scaling.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+{{- $scaledObjectTemplate := printf "
+scaleTargetRef:
+  apiVersion: apps/v1
+  kind: Deployment
+  name: %%s-%%s
+" (include "takeoff.fullname" $) $appName }}
+{{- $templateScalingSpec := fromYaml $scaledObjectTemplate }}
+{{- $finalScalingSpec := merge $mergedValues.scaling.spec $templateScalingSpec }}
+spec:
+  {{- toYaml $finalScalingSpec | nindent 2 }}
+---
 {{- end }}
 {{- end }}  # End range over applications
-
