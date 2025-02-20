@@ -1,8 +1,6 @@
 enableMetrics: true
 enableKeda: true
 
-mountDockerContainers: true
-
 kube-prometheus-stack:
   prometheus:
     serviceMonitor:
