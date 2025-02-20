@@ -474,6 +474,26 @@ entries:
     version: 0.1.0
   takeoff-system:
   - apiVersion: v2
+    created: "2025-02-20T17:38:03.087063502Z"
+    dependencies:
+    - condition: enableKeda
+      name: keda
+      repository: https://kedacore.github.io/charts
+      version: 2.15.1
+    - condition: enableMetrics
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 62.6.0
+    description: A system level chart for deploying dependencies needed for the Titan
+      Takeoff Stack
+    digest: d691240338eef7aa83a774858ad936389d809fdda1d2970d4dd38ef22e961d1f
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: takeoff-system
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/takeoff-system-0.1.2/takeoff-system-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     created: "2025-02-20T16:42:23.786289929Z"
     dependencies:
     - condition: enableKeda
@@ -513,4 +533,4 @@ entries:
     urls:
     - https://github.com/titanml/helm-charts/releases/download/takeoff-system-0.1.0/takeoff-system-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-20T16:46:58.642937413Z"
+generated: "2025-02-20T17:38:03.087101082Z"
