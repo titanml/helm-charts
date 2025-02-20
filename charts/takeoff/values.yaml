@@ -159,7 +159,7 @@ controller:
 
   affinity: {}
 
-  exportPrometheusMetrics: true
+  exportPrometheusMetrics: false
 
 # The application template sets the base values for all the deployed takeoff applications.
 # An application is one or more replicas of a given model.
