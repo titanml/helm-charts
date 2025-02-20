@@ -11,7 +11,7 @@ fullnameOverride: ""
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
-  # Automatically mount a ServiceAccount's API credentials?
+  # Automatically mount a ServiceAccount's
   automount: true
   # Annotations to add to the service account
   annotations: {}
@@ -19,6 +19,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 backend:
   # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
   replicaCount: 1
@@ -48,6 +49,10 @@ backend:
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
+  ports:
+    - name: http
+      containerPort: 8000
+      protocol: TCP
 
   # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
   service:
@@ -55,6 +60,7 @@ backend:
     type: ClusterIP
     # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
     port: 80
+    annotations:
 
   resources:
     {}
@@ -72,11 +78,11 @@ backend:
   # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
   livenessProbe:
     httpGet:
-      path: /
+      path: /healthz
       port: http
   readinessProbe:
     httpGet:
-      path: /
+      path: /healthz
       port: http
 
   # Additional volumes on the output Deployment definition.
@@ -128,12 +134,18 @@ frontend:
     # runAsNonRoot: true
     # runAsUser: 1000
 
+  ports:
+    - name: http
+      containerPort: 3000
+      protocol: TCP
+
   # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
   service:
     # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
     type: ClusterIP
     # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
     port: 80
+    annotations:
 
   resources:
     {}
@@ -176,3 +188,18 @@ frontend:
   tolerations: []
 
   affinity: {}
+
+db:
+  volumeSpec:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 1Gi
+
+secret:
+  generate: false
+  name: zeus-secret
+  # The keys in the secret in which each object is stored
+  keys:
+    dbUser: dbUser
+    dbPassword: dbPassword
