@@ -1,9 +1,0 @@
-mountDockerContainers: false
-
-kube-prometheus-stack:
-  prometheus:
-    prometheusSpec:
-      storageSpec:
-        volumeClaimTemplate:
-          spec:
-            storageClassName: standard-rwx
