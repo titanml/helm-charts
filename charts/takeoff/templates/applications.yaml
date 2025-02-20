@@ -177,6 +177,7 @@ spec:
     {{- end }}
 ---
 {{- end }}
+{{- if $mergedValues.scaling.enabled }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -197,4 +198,5 @@ scaleTargetRef:
 spec:
   {{- toYaml $finalScalingSpec | nindent 2 }}
 ---
+{{- end }}
 {{- end }}  # End range over applications
