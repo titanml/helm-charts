@@ -60,3 +60,49 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/* Create Backend Environment Variables for Zeus */}}
+{{- define "takeoff-console.zeusBackendEnv" -}}
+
+{{/* Create a template for necessary environment variables for Zeus backend */}}
+{{- $templateEnv := dict }}
+{{- $_ := set $templateEnv "ZEUS_DROP_TABLES_ON_INIT" (dict "value" "False") }}
+{{- $_ := set $templateEnv "ZEUS_DB_HOST" (dict "value" (printf "%s-db" (include "takeoff-console.fullname" .))) }}
+{{- $_ := set $templateEnv "ZEUS_DB_PORT" (dict "value" "5432") }}
+{{- $_ := set $templateEnv "ZEUS_DB_NAME" (dict "value" "zeus") }}
+{{- if .Values.secret.generate }}
+    {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "takeoff-console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbUser))) }}
+    {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "takeoff-console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbPassword))) }}
+{{- else }}
+    {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbUser))) }}
+    {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbPassword))) }}
+{{- end }}
+{{- $_ := set $templateEnv "ZEUS_HELM_NAMESPACE" (dict "value" .Release.Namespace) }}
+{{- $_ := set $templateEnv "ZEUS_HELM_RELEASE" (dict "value" (printf "zeus-%s" (include "takeoff-console.fullname" .))) }}
+
+{{/* Convert user set env vars into dict */}}
+{{- $userEnv := dict }}
+{{- range $envMap := .Values.backend.env }}
+{{- if hasKey $envMap "value" }}
+    {{- $_ := set $userEnv $envMap.name (dict "value" $envMap.value) }}
+{{ else if hasKey $envMap "valueFrom" }}
+    {{- $_ := set $userEnv $envMap.name (dict "valueFrom" $envMap.valueFrom) }}
+{{- end }}
+{{- end }}
+
+{{/* Define the list to hold the env */}}
+{{- $zeusBackendEnv := list }}
+{{/* Merge the template env with user env */}}
+{{- $zeusBackendEnvDict := merge $templateEnv $userEnv }}
+
+{{/* Loop through the merged env and append to the list */}}
+{{- range $key, $value := $zeusBackendEnvDict }}
+    {{- if $value.value }}
+        {{- $zeusBackendEnv = append $zeusBackendEnv (dict "name" $key "value" $value.value) }}
+    {{- else if $value.valueFrom }}
+        {{- $zeusBackendEnv = append $zeusBackendEnv (dict "name" $key "valueFrom" $value.valueFrom) }}
+    {{- end }}
+{{- end }}
+
+{{- $zeusBackendEnv | toYaml }}
+{{- end }}

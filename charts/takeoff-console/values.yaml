@@ -104,6 +104,8 @@ backend:
 
   affinity: {}
 
+  env: []
+
 frontend:
   # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
   replicaCount: 1
@@ -188,6 +190,8 @@ frontend:
   tolerations: []
 
   affinity: {}
+
+  env: []
 
 db:
   volumeSpec:
