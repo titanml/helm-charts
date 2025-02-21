@@ -42,34 +42,7 @@ spec:
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
-          - name: ZEUS_DROP_TABLES_ON_INIT
-            value: "False"
-          - name: ZEUS_DB_HOST
-            value: {{ include "takeoff-console.fullname" . }}-db
-          - name: ZEUS_DB_PORT
-            value: "5432"
-          - name: ZEUS_DB_NAME
-            value: zeus
-          - name: ZEUS_DB_USER
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secret.generate }} {{ include "takeoff-console.fullname" . }}-{{ .Values.secret.name }} {{ else }} {{ .Values.secret.name }} {{ end}}
-                key: {{ .Values.secret.keys.dbUser }}
-          - name: ZEUS_DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secret.generate }} {{ include "takeoff-console.fullname" . }}-{{ .Values.secret.name }} {{ else }} {{ .Values.secret.name }} {{ end}}
-                key: {{ .Values.secret.keys.dbPassword }}
-          - name: ZEUS_HELM_NAMESPACE
-            value: {{ .Release.Namespace }}
-          - name: ZEUS_HELM_RELEASE # The (takeoff) helm release to associate with this zeus deployment
-            value: zeus-{{ include "takeoff-console.fullname" . }}
-          {{- if and .Values.zeus .Values.zeus.env }}
-          {{- range $key, $value := .Values.zeus.env }}
-          - name: {{ $key }}
-            value: "{{ $value }}"
-          {{- end }}
-          {{- end }}
+            {{- include "takeoff-console.zeusBackendEnv" . | nindent 12 }}
           {{- with .Values.backend.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
@@ -168,6 +141,10 @@ spec:
           {{- end }}
           {{- with .Values.frontend.volumeMounts }}
           volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with  .Values.frontend.env }}
+          env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- with .Values.frontend.volumes }}
