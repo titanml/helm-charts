@@ -197,7 +197,7 @@ db:
         storage: 1Gi
 
 secret:
-  generate: false
+  generate: true
   name: zeus-secret
   # The keys in the secret in which each object is stored
   keys:
