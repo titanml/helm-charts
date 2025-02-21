@@ -54,7 +54,7 @@ To create a service backed by several different applications, set the same `cons
 
 See the `reader_config` section of the config file [here](https://docs.titanml.co/apis/launch_parameters) for available parameters for the `readerConfig` (note the snake_case settings for the container itself, vs. camelCase here)
 
-### Application Template
+#### Application Template
 
 The base settings for all applications are provided in the `applicationTemplate` stanza. Changes to this section will apply to all deployed models. For example, to set an environment variable for all deployed applications:
 ```
