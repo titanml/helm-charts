@@ -68,7 +68,7 @@ applicationTemplate:
 This chart can be integrated with Prometheus. 
 To enable, add `--set controller.exportPrometheusMetrics=true --set applicationTemplate.exportPrometheusMetrics=true`.
 
-### Integration with Prometheus Operator
+#### Integration with Prometheus Operator
 It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [takeoff-system](https://github.com/titanml/helm-charts/tree/main/charts/takeoff-system)
 
 The chart will try to deploy ServiceMonitor objects for integration with Prometheus Operator installations. 
