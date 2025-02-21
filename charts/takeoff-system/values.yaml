@@ -1,5 +1,9 @@
 enableMetrics: true
 enableKeda: true
+enableArgoCD: true
+
+argo-cd:
+  namespaceOverride: argocd
 
 kube-prometheus-stack:
   prometheus:

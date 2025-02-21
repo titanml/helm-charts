@@ -16,16 +16,18 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.3
+version: 0.1.4
 
 dependencies:
 - name: keda
   version: 2.15.1
   condition: enableKeda
   repository: "https://kedacore.github.io/charts"
-  namespace: keda
 - name: kube-prometheus-stack
   version: "62.6.0"
   condition: enableMetrics
   repository: "https://prometheus-community.github.io/helm-charts"
-  namespace: default
+- name: argo-cd
+  version: 7.0.0
+  condition: enableArgoCD
+  repository: https://argoproj.github.io/argo-helm
