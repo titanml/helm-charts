@@ -92,8 +92,8 @@ Create the name of the service account to use
 
 {{/* Define the list to hold the env */}}
 {{- $zeusBackendEnv := list }}
-{{/* Merge the template env with user env */}}
-{{- $zeusBackendEnvDict := merge $templateEnv $userEnv }}
+{{/* Merge the template env with user env. Lets users overwrite default values. */}}
+{{- $zeusBackendEnvDict := merge $userEnv $templateEnv }}
 
 {{/* Loop through the merged env and append to the list */}}
 {{- range $key, $value := $zeusBackendEnvDict }}
