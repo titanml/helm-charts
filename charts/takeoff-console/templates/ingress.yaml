@@ -5,8 +5,10 @@ metadata:
   name: {{ include "takeoff-console.fullname" . }}
   labels:
     {{- include "takeoff-console.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
@@ -26,7 +28,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: "/"
+          - path: "/()(.*)"
             pathType: Prefix
             backend:
               service:

@@ -27,8 +27,7 @@ ingress:
   enabled: false
   className: ""
   annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2 # Used to forward requests from /api... to /.
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   host:
