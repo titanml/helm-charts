@@ -3,7 +3,7 @@
 Takeoff is an inference stack for deploying LLMs and other deep learning models.
 
 ## TL;DR
-```
+```bash
 helm repo add titanml titanml.github.io/helm-charts
 helm install takeoff-console titanml/takeoff
 ```
@@ -32,6 +32,7 @@ See the `server_config` section of the config file [here](https://docs.titanml.c
 #### Applications
 
 In order to make models available through the controller gateway, add a stanza to the `application` settings, under an application name. For example:
+
 ```yaml
 applications:
   dummy-model: # must be url-safe! i.e. no underscores, or capitals.
@@ -49,6 +50,7 @@ applications:
         memory: 128Mi
         nvidia.com/gpu: 1
 ```
+
 The `consumerGroup` setting is the `model` [key](https://platform.openai.com/docs/guides/text-generation) which you should provide to the controller's openAI compatible API service. 
 To create a service backed by several different applications, set the same `consumerGroup` on each of them. 
 
@@ -57,7 +59,8 @@ See the `reader_config` section of the config file [here](https://docs.titanml.c
 #### Application Template
 
 The base settings for all applications are provided in the `applicationTemplate` stanza. Changes to this section will apply to all deployed models. For example, to set an environment variable for all deployed applications:
-```
+
+```yaml
 applicationTemplate:
   env:
     - name: MY_IMPORTANT_ENV_VAR
@@ -73,6 +76,7 @@ It is necessary to have a working installation of the [Prometheus Operator](http
 
 The chart will try to deploy ServiceMonitor objects for integration with Prometheus Operator installations. 
 Ensure that the Prometheus Operator CustomResourceDefinitions are installed in the cluster or it will fail with the following error:
+
 ```
 no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"
 ```
@@ -90,6 +94,7 @@ For an individual application,
 ```
 --set <APPLICATION_NAME>.scaling.enabled=true
 ```
+
 Where `<APPLICATION_NAME>` should be replaced with the application name defined in the top level `applications` key.
 
 ### Integration with Keda Operator
