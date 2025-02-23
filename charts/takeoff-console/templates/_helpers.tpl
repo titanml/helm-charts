@@ -78,7 +78,7 @@ Create the name of the service account to use
     {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbPassword))) }}
 {{- end }}
 {{- $_ := set $templateEnv "ZEUS_HELM_NAMESPACE" (dict "value" .Release.Namespace) }}
-{{- $_ := set $templateEnv "ZEUS_HELM_RELEASE" (dict "value" (printf "zeus-%s" (include "takeoff-console.fullname" .))) }}
+{{- $_ := set $templateEnv "ZEUS_HELM_RELEASE" (dict "value" (include "takeoff-console.fullname" .)) }}
 
 {{/* Convert user set env vars into dict */}}
 {{- $userEnv := dict }}

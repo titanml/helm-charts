@@ -42,6 +42,13 @@ spec:
                 name: {{ include "takeoff-console.fullname" $ }}-backend
                 port:
                   number: {{ $.Values.backend.service.port }}
+          - path: "/controller(/|$)(.*)"
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "takeoff-console.fullname" $ }}-takeoff-controller
+                port:
+                  number: 80
       {{- with .Values.ingress.host }}
       host: {{ . | quote }}
       {{- end }}
