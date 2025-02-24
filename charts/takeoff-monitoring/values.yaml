@@ -6,6 +6,8 @@ kube-prometheus-stack:
     prometheusSpec:
       retention: 1y
 
+      serviceMonitorSelectorNilUsesHelmValues: false
+
       storageSpec:
         volumeClaimTemplate:
           metadata:
