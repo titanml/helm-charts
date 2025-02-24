@@ -7,6 +7,10 @@ kube-prometheus-stack:
       retention: 1y
 
       serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
+      scrapeConfigSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
 
       storageSpec:
         volumeClaimTemplate:
