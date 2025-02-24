@@ -15,10 +15,9 @@ This chart is used to deploy dependencies that are needed to run other takeoff c
 helm repo add titanml https://titanml.github.io/helm-charts
 helm repo update
 
-kubectl create namespace keda
-kubectl create namespace argocd
+kubectl create namespace monitoring
 
-helm install takeoff-system titanml/takeoff-system -n keda --set "kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName=<name-of-storage-class-in-your-cluster>"
+helm install takeoff-system titanml/takeoff-system -n monitoring --set "kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName=<name-of-storage-class-in-your-cluster>"
 ```
 
 ## Using the chart

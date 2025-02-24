@@ -12,6 +12,7 @@ kube-prometheus-stack:
             name: prom
             namespace: monitoring
           spec:
+            storageClassName: ""
             accessModes: [ "ReadWriteOnce" ]
             resources:
               requests:

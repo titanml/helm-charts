@@ -10,8 +10,9 @@ The primary goal of this project is to streamline the deployment process of the 
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
-- Helm (version 3.x)
 - kubectl (version 1.18 or later)
+- Helm (version 3.x)
+- Helm diff plugin: [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
 
 ## Usage
 
@@ -35,7 +36,7 @@ Before you begin, ensure you have the following installed:
 3. **Deploy with Helmfile**
    Run the following command to deploy all dependencies:
    ```
-   TAKEOFF_SYSTEM_STORAGE_CLASS=<name-of-storage-class-in-your-cluster> helmfile apply -f https://raw.githubusercontent.com/titanml/helm-charts/takeoff-system/helmfile.yaml
+   TAKEOFF_SYSTEM_STORAGE_CLASS=<name-of-storage-class-in-your-cluster> helmfile apply -f https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/takeoff-system/helmfile.yaml
    ```
 
 4. **Verify Deployments**
