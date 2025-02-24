@@ -179,10 +179,10 @@ metadata:
 spec:
   endpoints:
   - interval: 15s
-    targetPort: 3000
+    targetPort: 3001
     path: /metrics
   selector:
     matchLabels:
-      app: {{ include "takeoff.fullname" $ }}-controller
+      app.kubernetes.io/component: controller
 ---
 {{- end }}

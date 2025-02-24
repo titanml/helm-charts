@@ -356,17 +356,17 @@ applicationTemplate:
         - type: prometheus
           metadata:
             name: queue_size_trigger
-            serverAddress: http://takeoff-kube-promethe-prometheus:9090/ # Replace with the address of the cluster Prometheus server
-            query: queue_time{job~=".*-controller", quantile="1", consumer_group="primary"} # Replace consumer_group with the consumerGroup set above for this application
-            threshold: 1
+            serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090/ # Replace with the address of the cluster Prometheus server
+            query: queue_time{job=~".*-controller", quantile="1", consumer_group="primary"} # Replace consumer_group with the consumerGroup set above for this application
+            threshold: "1"
         # Trigger that scales to zero if there are no requests in the last minute
         - type: prometheus
           metadata:
             name: scaling_to_zero_trigger
-            serverAddress: http://takeoff-kube-promethe-prometheus:9090/ # Replace with the address of the cluster Prometheus server
-            query: rate(http_pre_handler_requests_total{job~=".*-controller", path=~".*primary.*"}[1m]) # Replace consumer_group with the consumerGroup set above for this application
-            activationThreshold: 0
-            threshold: 1000000
+            serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090/ # Replace with the address of the cluster Prometheus server
+            query: rate(http_pre_handler_requests_total{job=~".*-controller", path=~".*primary.*"}[1m]) # Replace consumer_group with the consumerGroup set above for this application
+            activationThreshold: "0"
+            threshold: "1000000"
 
 # Use this section to deploy your takeoff applications
 applications:
