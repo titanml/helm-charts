@@ -1,18 +1,12 @@
-# helm-deployment-project/helm-deployment-project/README.md
+# Takeoff System Dependencies
 
-# Helm Deployment Project
-
-This project is designed to facilitate the deployment of various dependencies required for the Titan Takeoff Stack using Helmfile. It provides a structured approach to manage Helm releases across different namespaces, ensuring that each component is deployed in an organized manner.
-
-## Purpose
-
-The primary goal of this project is to streamline the deployment process of the Titan Takeoff Stack dependencies, including KEDA, kube-prometheus-stack, and Argo CD. By using Helmfile, we can define and manage multiple Helm releases in a single configuration file.
+This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all the cluster wide dependencies needed run the [takeoff](../charts/takeoff/) or [takeoff-console](../charts/takeoff-console/) charts.
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
 - kubectl (version 1.18 or later)
 - Helm (version 3.x)
-- Helm diff plugin: [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
+- (optional if running `helmfile apply`) Helm diff plugin: [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
 
 ## Usage
 
@@ -33,13 +27,22 @@ Before you begin, ensure you have the following installed:
    kubectl create namespace argocd
    ```
 
-3. **Deploy with Helmfile**
+3. **Get Helmfile and Edit**
+   a. Download the Helmfile configuration file:
+   ```bash
+   wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/takeoff-system/helmfile.yaml
+   ```
+   b. Edit the `helmfile.yaml` file to customize the prometheus storage class to one available in your cluster:
+
+
+4. **Deploy with Helmfile**
    Run the following command to deploy all dependencies:
    ```
-   TAKEOFF_SYSTEM_STORAGE_CLASS=<name-of-storage-class-in-your-cluster> helmfile apply -f https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/takeoff-system/helmfile.yaml
+   helmfile repos && helmfile sync
+   # Or can run `helmfile apply` which will fetch from the repos, produce a diff and then sync.
    ```
 
-4. **Verify Deployments**
+5. **Verify Deployments**
    After deployment, verify that all components are running:
    ```bash
    kubectl get all -n keda

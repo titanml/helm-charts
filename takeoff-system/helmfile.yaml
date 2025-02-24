@@ -14,11 +14,14 @@ releases:
 
 - name: takeoff-monitoring
   chart: titanml/takeoff-monitoring
-  version: 0.1.3
+  version: 0.1.0
   namespace: monitoring
   set:
+  - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.metadata.namespace
+    value: monitoring
   - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName
-    value: { ? { requiredEnv "TAKEOFF_SYSTEM_STORAGE_CLASS" | quote } }
+    # Edit this value to be a storage class that is available in your cluster
+    value: microk8s-hostpath
 
 - name: argo-cd
   chart: argo-cd/argo-cd
