@@ -1,0 +1,29 @@
+repositories:
+  - name: keda
+    url: "https://kedacore.github.io/charts"
+  - name: titanml
+    url: "https://titanml.github.io/helm-charts"
+  - name: argo-cd
+    url: "https://argoproj.github.io/argo-helm"
+
+releases:
+  - name: keda
+    chart: keda/keda
+    version: 2.15.1
+    namespace: keda
+
+  - name: takeoff-monitoring
+    chart: titanml/takeoff-monitoring
+    version: 0.1.0
+    namespace: monitoring
+    set:
+      - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName
+        value: {{ requiredEnv "TAKEOFF_SYSTEM_STORAGE_CLASS" }}
+
+  - name: argo-cd
+    chart: argo-cd/argo-cd
+    version: 7.0.0
+    namespace: argocd
+    set:
+      - name: namespaceOverride
+        value: argocd
