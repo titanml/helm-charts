@@ -494,6 +494,20 @@ entries:
     version: 0.1.0
   takeoff-monitoring:
   - apiVersion: v2
+    created: "2025-02-24T12:27:50.952797654Z"
+    dependencies:
+    - name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 62.6.0
+    description: A system level chart for deploying takeoff monitoring.
+    digest: abc9e9cef3b6e6de7d9975e6d1ea8764c00eaef1801ef921585a61fd2f450224
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: takeoff-monitoring
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/takeoff-monitoring-0.1.2/takeoff-monitoring-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     created: "2025-02-24T12:16:17.297478536Z"
     dependencies:
     - name: kube-prometheus-stack
@@ -626,4 +640,4 @@ entries:
     urls:
     - https://github.com/titanml/helm-charts/releases/download/takeoff-system-0.1.0/takeoff-system-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-24T12:16:17.297546563Z"
+generated: "2025-02-24T12:27:50.952882842Z"
