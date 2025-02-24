@@ -18,7 +18,7 @@ releases:
     namespace: monitoring
     set:
       - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName
-        value: {{ requiredEnv "TAKEOFF_SYSTEM_STORAGE_CLASS" }}
+        value: '{{ requiredEnv "TAKEOFF_SYSTEM_STORAGE_CLASS" }}'
 
   - name: argo-cd
     chart: argo-cd/argo-cd

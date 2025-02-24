@@ -16,10 +16,12 @@ Before you begin, ensure you have the following installed:
 ## Usage
 
 1. **Install Helmfile**
-   Install Helmfile by following the instructions in the [official documentation] or if using linux:
+   Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation) or if using linux:
    ```bash
-   curl -sSL https://raw.githubusercontent.com/upciti/wakemeops/main/assets/install_repository | sudo bash
-   sudo apt install helmfile
+   sudo wget https://github.com/helmfile/helmfile/releases/download/v1.0.0-rc.11/helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \ 
+      sudo tar -xxf helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \
+      sudo rm helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \
+      sudo mv helmfile /usr/local/bin
    ```
 
 2. **Create Required Namespaces**
@@ -33,7 +35,7 @@ Before you begin, ensure you have the following installed:
 3. **Deploy with Helmfile**
    Run the following command to deploy all dependencies:
    ```
-   helmfile apply
+   TAKEOFF_SYSTEM_STORAGE_CLASS=<name-of-storage-class-in-your-cluster> helmfile apply -f https://raw.githubusercontent.com/titanml/helm-charts/takeoff-system/helmfile.yaml
    ```
 
 4. **Verify Deployments**
