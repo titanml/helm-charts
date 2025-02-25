@@ -6,7 +6,7 @@ This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/)
 Before you begin, ensure you have the following installed:
 - kubectl (version 1.18 or later)
 - Helm (version 3.x)
-- (optional if running `helmfile apply`) Helm diff plugin: [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
+- Helm diff plugin (optional if running `helmfile apply`): [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
 
 ## Usage
 
