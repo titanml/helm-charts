@@ -3,6 +3,17 @@ entries:
   takeoff:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-02-26T16:34:15.359437128Z"
+    description: A Helm chart for deploying takeoff in kubernetes
+    digest: 41abafaaa1095d9686a440ca25ea6d59d27398f949139cda28d7b6e4b505851d
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: takeoff
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/takeoff-0.2.7/takeoff-0.2.7.tgz
+    version: 0.2.7
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-02-26T13:42:21.428356299Z"
     description: A Helm chart for deploying takeoff in kubernetes
     digest: 82b94b48413e881c128c5b4375d783c67a02050ecbac56f36d640c9156ca935f
@@ -698,4 +709,4 @@ entries:
     urls:
     - https://github.com/titanml/helm-charts/releases/download/takeoff-system-0.1.0/takeoff-system-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-26T13:42:21.428598741Z"
+generated: "2025-02-26T16:34:15.359784153Z"
