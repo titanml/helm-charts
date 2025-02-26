@@ -178,7 +178,6 @@ applicationTemplate:
     modelName: "TitanML/dummy_model"
     device: "cpu"
     consumerGroup: "primary"
-    internalGatewayIp: takeoff-controller
     # accessToken: Option<String>, # The access token, to use when downloading from huggingface
     # logLevel: Option<String>, # The reader log level. Default is INFO
     # cudaVisibleDevices: Option<String>, # Comma separated list of cuda devices that should be visible to the reader. Defaults to the first one.

@@ -15,9 +15,12 @@ data:
         internal_port: 3005
       readers_config:
         {{ $appName }}:
-          {{- range $key, $value := $mergedValues.readerConfig }}
-          {{ snakecase $key}}: {{$value}}
-          {{- end }}
+          {{- $readerConfigTemplate := printf `
+          internalGatewayIp: %s-controller
+          ` (include "takeoff.fullname" $) }}
+          {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
+          {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}
+          {{- toYaml $finalReadersConfig | nindent 10 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
