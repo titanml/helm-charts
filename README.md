@@ -18,8 +18,8 @@ We have two supported paths for users to control their AI deployments.
 
 ### Takeoff Management Console
 
-This is a UI which is used to spin up and configured AI applications. This is useful for people less familiar with managing Kubernetes applications. Our deployment guide for this can be found [here](charts/takeoff/README.md).
+This is a UI which is used to spin up and configured AI applications. This is useful for people less familiar with managing Kubernetes applications. Our deployment guide for this can be found [here](charts/takeoff-console/README.md).
 
 ### Takeoff Helm Chart
 
-Interact directly with the helm chart to setup your own applications. This is recommended for more advanced users whom want more customisation. Our deployment guide for this can be found [here](charts/takeoff-console/README.md).
+Interact directly with the helm chart to setup your own applications. This is recommended for more advanced users whom want more customisation. Our deployment guide for this can be found [here](charts/takeoff/README.md).
