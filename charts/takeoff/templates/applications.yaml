@@ -18,7 +18,6 @@ data:
           {{- range $key, $value := $mergedValues.readerConfig }}
           {{ snakecase $key}}: {{$value}}
           {{- end }}
-          internal_gateway_ip: {{ include "takeoff.fullname" $ }}-controller
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -64,7 +63,7 @@ spec:
           image: "{{ $mergedValues.image.repository }}:{{ $mergedValues.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ $mergedValues.image.pullPolicy }}
           {{- with  $mergedValues.env }}
-          env: 
+          env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with $mergedValues.ports }}
