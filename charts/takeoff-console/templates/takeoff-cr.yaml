@@ -1,0 +1,11 @@
+{{- if .Values.takeoff.enabled }}
+apiVersion: charts.titanml.co/v1alpha1
+kind: Takeoff
+metadata:
+  name: {{ include "takeoff-console.fullname" . }}-t
+  labels:
+    {{- include "takeoff-console.labels" . | nindent 4 }}
+spec:
+  # Empty applications object which is populated later
+  applications: {}
+{{- end }}
