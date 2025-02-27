@@ -67,6 +67,8 @@ spec:
           imagePullPolicy: {{ $mergedValues.image.pullPolicy }}
           {{- with  $mergedValues.env }}
           env:
+            - name: TAKEOFF_ADD_READER_ID_SUFFIX
+              value: "true"
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with $mergedValues.ports }}
