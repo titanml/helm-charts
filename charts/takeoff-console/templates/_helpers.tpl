@@ -70,6 +70,8 @@ Create the name of the service account to use
 {{- $_ := set $templateEnv "ZEUS_DB_HOST" (dict "value" (printf "%s-db" (include "takeoff-console.fullname" .))) }}
 {{- $_ := set $templateEnv "ZEUS_DB_PORT" (dict "value" "5432") }}
 {{- $_ := set $templateEnv "ZEUS_DB_NAME" (dict "value" "zeus") }}
+{{/* Add Takeoff CR name */}}
+{{- $_ := set $templateEnv "ZEUS_TAKEOFF_CR_NAME" (dict "value" (printf "%s-t" (include "takeoff-console.fullname" .))) }}
 {{- if .Values.secret.generate }}
     {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "takeoff-console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbUser))) }}
     {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "takeoff-console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbPassword))) }}
