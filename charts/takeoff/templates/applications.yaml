@@ -20,7 +20,9 @@ data:
           ` (include "takeoff.fullname" $) }}
           {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
           {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}
-          {{- toYaml $finalReadersConfig | nindent 10 }}
+          {{- range $key, $value := $finalReadersConfig }}
+          {{ snakecase $key}}: {{$value}}
+          {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
