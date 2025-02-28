@@ -223,3 +223,6 @@ secret:
   keys:
     dbUser: dbUser
     dbPassword: dbPassword
+
+takeoff:
+  enabled: true
