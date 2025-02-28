@@ -59,13 +59,8 @@ spec:
           {{- end }}
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
-          env: 
-            - name: TAKEOFF_ADD_READER_ID_SUFFIX
-              value: "true"
-            {{- range $key, $value := .Values.controller.env }}
-            - name: {{ $key }}
-              value: {{ $value }}
-            {{- end }}
+          env:
+            {{- include "takeoff.controllerEnv" . | nindent 12 }}
           {{- with .Values.controller.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
