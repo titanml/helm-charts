@@ -3,7 +3,7 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.0.1
+VERSION ?= 0.0.3
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -101,7 +101,7 @@ run: helm-operator sync-charts ## Run against the configured Kubernetes cluster 
 
 .PHONY: docker-build-push
 docker-build-push: sync-charts ## Build and push docker image with the manager
-	depot build -t ${IMG} . --push
+	docker build -t ${IMG} . --push
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
 # architectures. (i.e. make docker-build-pushx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:
@@ -112,7 +112,7 @@ docker-build-push: sync-charts ## Build and push docker image with the manager
 PLATFORMS ?= linux/arm64,linux/amd64,linux/s390x,linux/ppc64le
 .PHONY: docker-build-pushx
 docker-build-pushx: sync-charts ## Build and push docker image for the manager for cross-platform support
-	- depot build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
+	- docker build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
 
 ##@ Deployment
 
