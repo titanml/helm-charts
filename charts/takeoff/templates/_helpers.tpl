@@ -60,3 +60,37 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/* Set env vars for takeoff controller */}}
+{{- define "takeoff.controllerEnv" -}}
+
+{{/* Set the required env vars needed for each application deployment */}}
+{{- $requiredEnv := dict }}
+{{- $_ := set $requiredEnv "TAKEOFF_ADD_READER_ID_SUFFIX" (dict "value" "True") }}
+
+{{/* Convert user set env vars into dict */}}
+{{- $userEnv := dict }}
+{{- range $envMap := .Values.controller.env }}
+{{- if hasKey $envMap "value" }}
+    {{- $_ := set $userEnv $envMap.name (dict "value" $envMap.value) }}
+{{ else if hasKey $envMap "valueFrom" }}
+    {{- $_ := set $userEnv $envMap.name (dict "valueFrom" $envMap.valueFrom) }}
+{{- end }}
+{{- end }}
+
+{{/* Define the list to hold the env */}}
+{{- $applicationEnv := list }}
+{{/* Merge the template env with user env. Lets users overwrite default values. */}}
+{{- $applicationEnvDict := merge $requiredEnv $userEnv }}
+
+{{/* Loop through the merged env and append to the list */}}
+{{- range $key, $value := $applicationEnvDict }}
+    {{- if $value.value }}
+        {{- $applicationEnv = append $applicationEnv (dict "name" $key "value" $value.value) }}
+    {{- else if $value.valueFrom }}
+        {{- $applicationEnv = append $applicationEnv (dict "name" $key "valueFrom" $value.valueFrom) }}
+    {{- end }}
+{{- end }}
+
+{{- $applicationEnv | toYaml }}
+{{- end }}

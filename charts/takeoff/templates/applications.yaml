@@ -1,5 +1,33 @@
 {{- range $appName, $baseValues := .Values.applications }}
   {{- $mergedValues := merge $baseValues (deepCopy $.Values.applicationTemplate) }}
+
+  {{/* Set the required env vars needed for each application deployment */}}
+  {{- $requiredEnv := dict }}
+  {{- $_ := set $requiredEnv "TAKEOFF_ADD_READER_ID_SUFFIX" (dict "value" "True") }}
+
+  {{/* Convert user set env vars into dict */}}
+  {{- $userEnv := dict }}
+  {{- range $envMap := $mergedValues.env }}
+  {{- if hasKey $envMap "value" }}
+      {{- $_ := set $userEnv $envMap.name (dict "value" $envMap.value) }}
+  {{ else if hasKey $envMap "valueFrom" }}
+      {{- $_ := set $userEnv $envMap.name (dict "valueFrom" $envMap.valueFrom) }}
+  {{- end }}
+  {{- end }}
+
+  {{/* Define the list to hold the env */}}
+  {{- $applicationEnv := list }}
+  {{/* Merge the template env with user env. Lets users overwrite default values. */}}
+  {{- $applicationEnvDict := merge $requiredEnv $userEnv }}
+
+  {{/* Loop through the merged env and append to the list */}}
+  {{- range $key, $value := $applicationEnvDict }}
+      {{- if $value.value }}
+          {{- $applicationEnv = append $applicationEnv (dict "name" $key "value" $value.value) }}
+      {{- else if $value.valueFrom }}
+          {{- $applicationEnv = append $applicationEnv (dict "name" $key "valueFrom" $value.valueFrom) }}
+      {{- end }}
+  {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -20,7 +48,9 @@ data:
           ` (include "takeoff.fullname" $) }}
           {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
           {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}
-          {{- toYaml $finalReadersConfig | nindent 10 }}
+          {{- range $key, $value := $finalReadersConfig }}
+          {{ snakecase $key}}: {{$value}}
+          {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -65,10 +95,8 @@ spec:
           {{- end }}
           image: "{{ $mergedValues.image.repository }}:{{ $mergedValues.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ $mergedValues.image.pullPolicy }}
-          {{- with  $mergedValues.env }}
           env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{ $applicationEnv | toYaml | nindent 12 }}
           {{- with $mergedValues.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
