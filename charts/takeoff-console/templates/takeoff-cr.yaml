@@ -1,4 +1,3 @@
-{{- if .Values.takeoff.enabled }}
 apiVersion: charts.titanml.co/v1alpha1
 kind: Takeoff
 metadata:
@@ -8,4 +7,3 @@ metadata:
 spec:
   # Empty applications object which is populated later
   applications: {}
-{{- end }}
