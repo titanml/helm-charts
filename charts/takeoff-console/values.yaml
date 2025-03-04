@@ -225,4 +225,6 @@ secret:
     dbPassword: dbPassword
 
 takeoff:
+  # If you wish to connect to a pre-existing Takeoff operator, set this to false, and point to the other
+  # one via the takeoffCrName and takeoffNamespace values.
   enabled: true
