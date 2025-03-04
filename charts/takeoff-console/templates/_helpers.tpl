@@ -117,7 +117,9 @@ Create the name of the service account to use
 
 {{/* Create a template for necessary environment variables for Zeus frontend */}}
 {{- $templateEnv := dict }}
-{{- $_ := set $templateEnv "ZEUS_TAKEOFF_CR_NAME" (dict "value" (include "takeoff-console.takeoffCrName" .)) }}
+{{- $backendPort := int (.Values.backend.service.port | default 80) }}
+{{- $_ := set $templateEnv "BACKEND_API_DESTINATION" (dict "value" (printf "http://%s-backend:%d" (include "takeoff-console.fullname" .) $backendPort)) }}
+{{- $_ := set $templateEnv "BACKEND_CONTROLLER_DESTINATION" (dict "value" (printf "http://%s-controller:%d" (include "takeoff-console.takeoffCrName" .) 80)) }}
 {{/* Add any other frontend-specific env vars here */}}
 
 {{/* Convert user set env vars into dict */}}
