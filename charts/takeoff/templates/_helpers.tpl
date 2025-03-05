@@ -66,7 +66,7 @@ Create the name of the service account to use
 
 {{/* Set the required env vars needed for each application deployment */}}
 {{- $requiredEnv := dict }}
-{{- $_ := set $requiredEnv "TAKEOFF_ADD_READER_ID_SUFFIX" (dict "value" "True") }}
+{{- $_ := set $requiredEnv "TAKEOFF_ADD_READER_ID_SUFFIX" (dict "value" "true") }}
 
 {{/* Convert user set env vars into dict */}}
 {{- $userEnv := dict }}
