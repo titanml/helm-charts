@@ -28,7 +28,7 @@ controller:
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.22.0-rc15-cpu"
+    tag: "0.22.0-rc16-cpu"
 
   config:
     # allowRemoteImages: false, // Whether to allow the user to specify url image requests
@@ -170,7 +170,7 @@ applicationTemplate:
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.22.0-rc15-gpu"
+    tag: "0.22.0-rc16-gpu"
   # The config of the reader that will be deployed in this application.
   # Values are ones from the docs, with snake case replaced with camelcase
   env:
