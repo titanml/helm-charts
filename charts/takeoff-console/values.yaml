@@ -223,3 +223,26 @@ secret:
   keys:
     dbUser: dbUser
     dbPassword: dbPassword
+
+rproxy:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: tytn/zeus-proxy
+    tag: v0.1.2
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    ports:
+      - port: 80
+        targetPort: http
+        protocol: TCP
+        name: http
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}

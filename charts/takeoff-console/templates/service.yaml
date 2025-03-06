@@ -41,3 +41,22 @@ spec:
   selector:
     app.kubernetes.io/component: backend
     {{- include "takeoff-console.selectorLabels" . | nindent 4 }}
+---
+{{- if .Values.rproxy.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "takeoff-console.fullname" . }}-rproxy
+  labels:
+    {{- include "takeoff-console.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rproxy
+spec:
+  type: {{ .Values.rproxy.service.type }}
+  {{- with .Values.rproxy.service.ports }}
+  ports:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/component: rproxy
+    {{- include "takeoff-console.selectorLabels" . | nindent 4 }}
+{{- end }}
