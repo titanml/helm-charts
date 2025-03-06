@@ -229,11 +229,15 @@ rproxy:
   replicaCount: 1
   image:
     repository: tytn/zeus-proxy
-    tag: v0.1.0
+    tag: v0.1.2
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
-    port: 80
+    ports:
+      - port: 80
+        targetPort: http
+        protocol: TCP
+        name: http
   resources: {}
   nodeSelector: {}
   tolerations: []
