@@ -1,0 +1,77 @@
+takeoff:
+  imagePullSecrets:
+    - name: takeoff-regcred
+
+  controller:
+    image:
+      tag: 0.22.0-rc15-gpu
+
+    env:
+      TAKEOFF_RESERVED_CONSUMERS: primary
+    
+    exportPrometheusMetrics: true
+
+  applications:
+    llama:
+      readerConfig:
+        modelName: NousResearch/Meta-Llama-3.1-8B
+        device: cuda
+        consumerGroup: primary
+        disableCudaGraph: 1
+        constrainedDecodingBackend: none
+
+      replicaCount: 0
+
+      volumes:
+        - name: takeoff-cache
+          persistentVolumeClaim:
+            claimName: takeoff-cache-pvc
+
+      volumeMounts:
+        - name: takeoff-cache
+          mountPath: /code/models
+
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+      
+      env:
+        - name: TAKEOFF_DEV_DEFAULT_CONSTRAINED_BACKEND
+          value: "none"
+        - name: TAKEOFF_DISABLE_CUDA_GRAPH
+          value: "true"
+
+      scaling:
+        enabled: true
+        spec:
+          pollingInterval: 10
+          cooldownPeriod: 0
+
+          idleReplicaCount: 0
+          minReplicaCount: 1
+          maxReplicaCount: 2
+
+          advanced:
+            horizontalPodAutoscalerConfig:
+              behavior:
+                scaleDown:
+                  stabilizationWindowSeconds: 10
+                  policies:
+                    - type: Pods
+                      value: 1
+                      periodSeconds: 10
+                scaleUp:
+                  stabilizationWindowSeconds: 10
+                  policies:
+                    - type: Pods
+                      value: 1
+                      periodSeconds: 1
+          triggers:
+          # Trigger that scales if the time a request spends in the queue is greater than 10 seconds
+          - type: prometheus
+            metadata:
+              name: queue_size_trigger
+              serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090/ # Replace with the address of the cluster Prometheus server
+              query: increase(http_pre_handler_requests_total{job=~".*-controller", path=~".*generate.*"}[1m]) # Replace consumer_group with the consumerGroup set above for this application
+              threshold: "10"
+              activationThreshold: "0"
