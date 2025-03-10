@@ -5,7 +5,7 @@ Takeoff is an inference stack for deploying LLMs and other deep learning models.
 ## TL;DR
 ```bash
 helm repo add titanml titanml.github.io/helm-charts
-helm install takeoff-console titanml/takeoff
+helm install takeoff titanml/takeoff
 ```
 
 ## Configuration & installation details
@@ -43,11 +43,11 @@ applications:
     resources:
       limits:
         cpu: 100m
-        memory: 128Mi
+        memory: 1Gi # Make sure to provide enough to contain your model
         nvidia.com/gpu: 1
       requests:
         cpu: 100m
-        memory: 128Mi
+        memory: 1Gi
         nvidia.com/gpu: 1
 ```
 
@@ -101,3 +101,20 @@ Where `<APPLICATION_NAME>` should be replaced with the application name defined 
 It is necessary to have a working installation of the [Keda](https://keda.sh/docs/2.16/concepts/) chart for the integration to work. See the [takeoff-system](https://github.com/titanml/helm-charts/tree/main/charts/takeoff-system) chart for a single chart that provides all of the dependencies for takeoff to run at full functionality.
 
 The chart will try to deploy `ScaledObject` objects for integration with Keda installations. 
+
+### Pulling Takeoff images
+
+The Takeoff image for the controller and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting controller/application.image.tag in your values override.
+
+Make sure you are authenticated to pull from the TitanML dockerhub, and have encoded this in a k8s Secret. You can then make this accessible to k8s in your values.yaml file, so it can pull the container images:
+
+```
+imagePullSecrets:
+  - name: <SECRET_NAME>
+```
+
+Alternatively you can achieve it like so:
+
+```
+helm install takeoff titanml/takeoff --set imagePullSecrets[0].name=<SECRET_NAME>
+```

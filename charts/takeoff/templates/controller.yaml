@@ -57,7 +57,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default (print $.Chart.AppVersion "-cpu") }}"
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           env:
             {{- include "takeoff.controllerEnv" . | nindent 12 }}
