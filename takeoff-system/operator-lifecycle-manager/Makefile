@@ -54,7 +54,7 @@ OPERATOR_SDK_VERSION ?= v1.39.1
 IMG ?= tytn/operator:${VERSION}
 
 # Source and destination paths for chart syncing
-SOURCE_CHART_PATH := ../takeoff
+SOURCE_CHART_PATH := ../../charts/takeoff
 DEST_CHART_PATH := helm-charts/takeoff
 
 .PHONY: all
