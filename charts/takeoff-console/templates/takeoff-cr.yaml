@@ -1,10 +1,11 @@
 apiVersion: charts.titanml.co/v1alpha1
 kind: Takeoff
-fullnameOverride: {{ include "takeoff-console.takeoffCrName" . }}
 metadata:
   name: {{ include "takeoff-console.takeoffCrName" . }}
   labels:
     {{- include "takeoff-console.labels" . | nindent 4 }}
 spec:
+  fullnameOverride: {{ include "takeoff-console.takeoffCrName" . }}
+  nameOverride: ""
   # Empty applications object which is populated later
   applications: {}
