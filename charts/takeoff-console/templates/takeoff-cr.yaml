@@ -1,5 +1,6 @@
 apiVersion: charts.titanml.co/v1alpha1
 kind: Takeoff
+fullnameOverride: {{ include "takeoff-console.takeoffCrName" . }}
 metadata:
   name: {{ include "takeoff-console.takeoffCrName" . }}
   labels:
