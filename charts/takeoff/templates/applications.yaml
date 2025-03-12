@@ -2,32 +2,44 @@
   {{- $mergedValues := mustMergeOverwrite (deepCopy $.Values.applicationTemplate) $baseValues  }}
 
   {{/* Set the required env vars needed for each application deployment */}}
-  {{- $requiredEnv := dict }}
-  {{- $_ := set $requiredEnv "TAKEOFF_ADD_READER_ID_SUFFIX" (dict "value" "true") }}
-  {{- $_ := set $requiredEnv "TAKEOFF_HEADLESS" (dict "value" "true") }}
+  {{- $requiredEnv := list }}
+  {{- $requiredEnv = append $requiredEnv (dict "name" "TAKEOFF_ADD_READER_ID_SUFFIX" "value" "true") }}
+  {{- $requiredEnv = append $requiredEnv (dict "name" "TAKEOFF_HEADLESS" "value" "true") }}
 
-  {{/* Convert user set env vars into dict */}}
-  {{- $userEnv := dict }}
-  {{- range $envMap := $mergedValues.env }}
-  {{- if hasKey $envMap "value" }}
-      {{- $_ := set $userEnv $envMap.name (dict "value" $envMap.value) }}
-  {{ else if hasKey $envMap "valueFrom" }}
-      {{- $_ := set $userEnv $envMap.name (dict "valueFrom" $envMap.valueFrom) }}
-  {{- end }}
+  {{/* Process template env */}}
+  {{- $templateEnv := list }}
+  {{- $templateEnv = concat $templateEnv $.Values.applicationTemplate.env }}
+
+  {{/* Process app-specific env */}}
+  {{- $appEnv := list }}
+  {{- if hasKey $baseValues "env" }}
+    {{- $appEnv = $baseValues.env }}
   {{- end }}
 
-  {{/* Define the list to hold the env */}}
+  {{/* Create combined env list with overrides */}}
+  {{- $allNames := dict }}
   {{- $applicationEnv := list }}
-  {{/* Merge the template env with user env. Lets users overwrite default values. */}}
-  {{- $applicationEnvDict := merge $requiredEnv $userEnv }}
-
-  {{/* Loop through the merged env and append to the list */}}
-  {{- range $key, $value := $applicationEnvDict }}
-      {{- if $value.value }}
-          {{- $applicationEnv = append $applicationEnv (dict "name" $key "value" $value.value) }}
-      {{- else if $value.valueFrom }}
-          {{- $applicationEnv = append $applicationEnv (dict "name" $key "valueFrom" $value.valueFrom) }}
-      {{- end }}
+  
+  {{/* First add app-specific env (highest priority) */}}
+  {{- range $envMap := $appEnv }}
+    {{- $applicationEnv = append $applicationEnv $envMap }}
+    {{- $_ := set $allNames $envMap.name true }}
+  {{- end }}
+  
+  {{/* Then add template env if not already added */}}
+  {{- range $envMap := $templateEnv }}
+    {{- if not (hasKey $allNames $envMap.name) }}
+      {{- $applicationEnv = append $applicationEnv $envMap }}
+      {{- $_ := set $allNames $envMap.name true }}
+    {{- end }}
+  {{- end }}
+  
+  {{/* Finally add required env if not already added */}}
+  {{- range $envMap := $requiredEnv }}
+    {{- if not (hasKey $allNames $envMap.name) }}
+      {{- $applicationEnv = append $applicationEnv $envMap }}
+      {{- $_ := set $allNames $envMap.name true }}
+    {{- end }}
   {{- end }}
 ---
 apiVersion: v1
