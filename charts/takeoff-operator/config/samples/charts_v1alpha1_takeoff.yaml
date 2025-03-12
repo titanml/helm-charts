@@ -92,12 +92,12 @@ spec:
       - name: http
         port: 80
         protocol: TCP
-        targetPort: inference
+        targetPort: openai
       - name: management
         port: 3001
         protocol: TCP
-      - name: openai
-        port: 3003
+      - name: inference
+        port: 3000
         protocol: TCP
       - name: internal
         port: 3005
@@ -153,12 +153,12 @@ spec:
       - name: http
         port: 80
         protocol: TCP
-        targetPort: inference
+        targetPort: openai
       - name: management
         port: 3001
         protocol: TCP
-      - name: openai
-        port: 3003
+      - name: inference
+        port: 3000
         protocol: TCP
       - name: internal
         port: 3005
