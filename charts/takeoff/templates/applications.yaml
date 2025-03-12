@@ -1,9 +1,10 @@
 {{- range $appName, $baseValues := .Values.applications }}
-  {{- $mergedValues := merge $baseValues (deepCopy $.Values.applicationTemplate) }}
+  {{- $mergedValues := mustMergeOverwrite (deepCopy $.Values.applicationTemplate) $baseValues  }}
 
   {{/* Set the required env vars needed for each application deployment */}}
   {{- $requiredEnv := dict }}
   {{- $_ := set $requiredEnv "TAKEOFF_ADD_READER_ID_SUFFIX" (dict "value" "true") }}
+  {{- $_ := set $requiredEnv "TAKEOFF_HEADLESS" (dict "value" "true") }}
 
   {{/* Convert user set env vars into dict */}}
   {{- $userEnv := dict }}
@@ -49,7 +50,7 @@ data:
           {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
           {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}
           {{- range $key, $value := $finalReadersConfig }}
-          {{ snakecase $key}}: {{$value}}
+          {{ snakecase $key }}: {{ $value }}
           {{- end }}
 ---
 apiVersion: apps/v1
@@ -90,7 +91,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ include "takeoff.fullname" . }}-{{ $appName }}
+        - name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
           {{- with $mergedValues.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -214,11 +215,13 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  labels:
+    app.kubernetes.io/component: application-{{ $appName }}
+    {{- include "takeoff.labels" $ | nindent 4 }}
   {{- with $mergedValues.scaling.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-
 {{- $scaledObjectTemplate := printf `
 scaleTargetRef:
   apiVersion: apps/v1
@@ -226,9 +229,24 @@ scaleTargetRef:
   name: %s-%s
 ` (include "takeoff.fullname" $) $appName }}
 {{- $templateScalingSpec := fromYaml $scaledObjectTemplate }}
-{{- $finalScalingSpec := merge $mergedValues.scaling.spec $templateScalingSpec }}
+
+{{- $consumerGroupKey := printf "target_%s" $mergedValues.readerConfig.consumerGroup }}
+{{- $readerIdKey := printf "target_%s" $appName }}
+{{- $serviceName := printf "%s-%s" (include "takeoff.fullname" $) $appName }}
+{{- $scalerAddress := printf "%s-controller.%s.svc.cluster.local:3005" (include "takeoff.fullname" $) $.Release.Namespace}}
+{{- $target := (toString $mergedValues.scaling.metricTarget.value)}}
+
+{{- $triggers := list }}
+  {{- $trigger := dict "type" "external-push" "metadata" (dict "scalerAddress" $scalerAddress $consumerGroupKey $target $readerIdKey $target) }}
+  {{- $triggers = append $triggers $trigger }}
+
+{{- $specWithoutMetricTarget := omit $mergedValues.scaling.spec "metricTarget" }}
+{{- $specWithTriggers := merge $specWithoutMetricTarget (dict "triggers" $triggers) }}
+{{- $finalScalingSpec := merge $specWithTriggers $templateScalingSpec }}
+
 spec:
   {{- toYaml $finalScalingSpec | nindent 2 }}
 ---
 {{- end }}
-{{- end }}  # End range over applications
+{{- end }}
+# End range over applications

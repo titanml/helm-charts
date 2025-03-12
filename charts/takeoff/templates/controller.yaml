@@ -10,9 +10,11 @@ data:
   config.yaml: |
     takeoff:
       server_config:
-        internal_port: 3005
         {{- range $key, $value := .Values.controller.config }}
-        {{ snakecase $key}}: {{$value}}
+        {{ snakecase $key }}: {{$value}}
+        {{- end }}
+        {{- if not (hasKey .Values.controller.config "internalPort") }}
+        internal_port: 3005
         {{- end }}
       readers_config:
 ---
@@ -121,7 +123,7 @@ spec:
     app.kubernetes.io/component: controller
     {{- include "takeoff.selectorLabels" . | nindent 4 }}
 ---
-{{- if .Values.controller.ingress.enabled -}}
+{{- if .Values.controller.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -159,9 +161,9 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "takeoff.fullname" . }}-controller
+                name: {{ include "takeoff.fullname" $ }}-controller
                 port:
-                  number: {{ .Values.controller.service.port }}
+                  name: http
           {{- end }}
     {{- end }}
 {{- end }}
@@ -171,6 +173,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "takeoff.fullname" $ }}-controller
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "takeoff.labels" $ | nindent 4 }}
 spec:
   endpoints:
   - interval: 15s

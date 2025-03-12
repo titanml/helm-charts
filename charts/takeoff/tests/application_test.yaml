@@ -1,0 +1,194 @@
+suite: test applications
+release:
+  name: "test-release"
+  namespace: "test-namespace"
+values:
+  - ./values/v1.yaml
+templates:
+  - templates/applications.yaml
+tests:
+  - it: should have a application label
+    asserts:
+      - matchRegex:
+          path: metadata.labels['app.kubernetes.io/component']
+          pattern: "^application-.*$"
+
+  - it: should have qualified names for everything
+    asserts:
+      - matchRegex:
+          path: metadata.name
+          pattern: "^test-release-takeoff-.*"
+
+  - it: should apply template defaults to application with empty config
+    documentSelector:
+      path: $[?(@.kind=="ConfigMap")].metadata.labels['app.kubernetes.io/component']
+      value: application-hello-world-1
+    asserts:
+      - equal:
+          path: data["config.yaml"]
+          value: |
+            takeoff:
+              server_config:
+                internal_port: 3005
+              readers_config:
+                hello-world-1:
+                  consumer_group: primary
+                  device: cpu
+                  internal_gateway_ip: test-release-takeoff-controller
+                  model_name: TitanML/dummy_model
+
+  - it: should correctly merge application values with template
+    documentSelector:
+      path: $[?(@.kind=="ConfigMap")].metadata.labels['app.kubernetes.io/component']
+      value: application-hello-world-2
+    asserts:
+      - equal:
+          path: data["config.yaml"]
+          value: |
+            takeoff:
+              server_config:
+                internal_port: 3005
+              readers_config:
+                hello-world-2:
+                  consumer_group: secondary
+                  device: cuda
+                  internal_gateway_ip: test-release-takeoff-controller
+                  model_name: custom/model
+
+  - it: should properly configure application deployment with template values
+    documentSelector:
+      path: $[?(@.kind=="Deployment")].metadata.labels['app.kubernetes.io/component']
+      value: application-hello-world-1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "tytn/takeoff-pro:0.22.0-rc17-gpu"
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: "test-release-takeoff-hello-world-1"
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: "test-release-takeoff"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: { name: "TAKEOFF_ADD_READER_ID_SUFFIX", value: "true" }
+
+  - it: should apply custom resource limits when specified
+    documentSelector:
+      path: $[?(@.kind=="Deployment")].metadata.labels['app.kubernetes.io/component']
+      value: application-hello-world-2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: 200m
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 256Mi
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
+          value: 1
+
+  - it: should configure service ports correctly
+    documentSelector:
+      path: $[?(@.kind=="Service")].metadata.labels['app.kubernetes.io/component']
+      value: application-hello-world-1
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - contains:
+          path: spec.ports
+          content:
+            port: 80
+            targetPort: inference
+            protocol: TCP
+            name: http
+      - contains:
+          path: spec.ports
+          content:
+            port: 3003
+            protocol: TCP
+            name: openai
+
+  - it: should create ScaledObject when scaling is enabled
+    documentSelector:
+      path: $[?(@.kind=="ScaledObject")].metadata.labels['app.kubernetes.io/component']
+      value: application-scaled-app
+    asserts:
+      - equal:
+          path: metadata.name
+          value: test-release-takeoff-scaled-app
+      - equal:
+          path: spec.scaleTargetRef.kind
+          value: Deployment
+      - equal:
+          path: spec.scaleTargetRef.name
+          value: test-release-takeoff-scaled-app
+      - equal:
+          path: spec.minReplicaCount
+          value: 1
+      - equal:
+          path: spec.maxReplicaCount
+          value: 4
+      - contains:
+          path: spec.triggers
+          content:
+            type: external-push
+            metadata:
+              scalerAddress: test-release-takeoff-controller.test-namespace.svc.cluster.local:3005
+              target_scalable: "15"
+              target_scaled-app: "15"
+
+  - it: should configure ingress correctly when enabled
+    documentSelector:
+      path: $[?(@.kind=="Ingress")].metadata.labels['app.kubernetes.io/component']
+      value: application-ingress-app
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+      - equal:
+          path: metadata.annotations["kubernetes.io/ingress.class"]
+          value: nginx
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: letsencrypt
+      - equal:
+          path: spec.rules[0].host
+          value: model.example.com
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /
+      - equal:
+          path: spec.rules[0].http.paths[0].pathType
+          value: Prefix
+
+  - it: should mount expected volumes for applications
+    documentSelector:
+      path: kind
+      value: Deployment
+      matchMany: true
+      skipEmpty: true
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+          any: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: dshm
+            emptyDir:
+              medium: Memory
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /code/config.yaml
+            subPath: config.yaml
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: dshm
+            mountPath: /dev/shm
