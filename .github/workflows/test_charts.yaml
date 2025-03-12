@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Helm unittest plugin
         run: |
-          helm plugin install https://github.com/quintush/helm-unittest
+          helm plugin install https://github.com/helm-unittest/helm-unittest
 
       - name: Run Helm lint
         working-directory: ./charts/takeoff
