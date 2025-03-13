@@ -1,6 +1,6 @@
 # TitanML Helm Charts
 
-These chart allow you to deploy open source AI on Kubernetes at any scale.
+These charts allow you to deploy open source AI on Kubernetes at any scale.
 
 ## Pre-requisites
 
