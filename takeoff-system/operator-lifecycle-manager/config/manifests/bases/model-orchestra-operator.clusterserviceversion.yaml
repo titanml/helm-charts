@@ -4,13 +4,13 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-  name: takeoff-operator.v0.0.0
+  name: model-orchestra-operator.v0.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions: {}
-  description: An operator to deploy Takeoffs
-  displayName: takeoff-operator
+  description: Operator for controlling model orchestra objects.
+  displayName: model-orchestra-operator
   icon:
   - base64data: ""
     mediatype: ""
@@ -29,11 +29,12 @@ spec:
     type: AllNamespaces
   keywords:
   - app
-  - takeoff
+  - modelorchestra
   links:
-  - name: Takeoff Operator
-    url: https://takeoff-operator.domain
+  - name: Model Orchestra Operator
+    url: https://model-orchestra-operator.domain
   maturity: alpha
   provider:
-    name: TitanML
+    name: titanml
+    url: https://titanml.co
   version: 0.0.0

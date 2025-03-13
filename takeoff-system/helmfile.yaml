@@ -12,8 +12,8 @@ releases:
   version: 2.15.1
   namespace: keda
 
-- name: takeoff-monitoring
-  chart: titanml/takeoff-monitoring
+- name: monitoring
+  chart: titanml/monitoring
   version: 0.1.0
   namespace: monitoring
   set:

@@ -1,16 +1,16 @@
-# permissions for end users to edit takeoffs.
+# permissions for end users to edit modelorchestras.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: takeoff-operator
+    app.kubernetes.io/name: model-orchestra-operator
     app.kubernetes.io/managed-by: kustomize
-  name: takeoff-editor-role
+  name: model-orchestra-editor-role
 rules:
 - apiGroups:
-  - charts.titanml.co
+  - model.charts.titanml.co
   resources:
-  - takeoffs
+  - modelorchestras
   verbs:
   - create
   - delete
@@ -20,8 +20,8 @@ rules:
   - update
   - watch
 - apiGroups:
-  - charts.titanml.co
+  - model.charts.titanml.co
   resources:
-  - takeoffs/status
+  - modelorchestras/status
   verbs:
   - get

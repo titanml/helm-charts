@@ -29,14 +29,14 @@ rules:
   - create
 
 ##
-## Rules for charts.titanml.co/v1alpha1, Kind: Takeoff
+## Rules for models.charts.titanml.co/<version>, Kind: ModelOrchestra
 ##
 - apiGroups:
-  - charts.titanml.co
+  - model.charts.titanml.co
   resources:
-  - takeoffs
-  - takeoffs/status
-  - takeoffs/finalizers
+  - modelorchestras
+  - modelorchestras/status
+  - modelorchestras/finalizers
   verbs:
   - create
   - delete

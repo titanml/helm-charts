@@ -1,7 +1,7 @@
-apiVersion: charts.titanml.co/v1alpha1
-kind: Takeoff
+apiVersion: model.charts.titanml.co/v1alpha2
+kind: ModelOrchestra
 metadata:
-  name: takeoff-sample
+  name: model-orchestra-sample
 spec:
   # Default values copied from <project_dir>/helm-charts/takeoff/values.yaml
   applicationTemplate:

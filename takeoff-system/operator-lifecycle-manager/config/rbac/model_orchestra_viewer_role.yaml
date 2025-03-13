@@ -1,0 +1,23 @@
+# permissions for end users to view modelorchestras.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: model-orchestra-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: model-orchestra-viewer-role
+rules:
+- apiGroups:
+  - model.charts.titanml.co
+  resources:
+  - modelorchestras
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - model.charts.titanml.co
+  resources:
+  - modelorchestras/status
+  verbs:
+  - get

@@ -3,7 +3,8 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.0.5
+VERSION ?= 0.1.0
+CRD_VERSION ?= v1alpha2
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -28,12 +29,14 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 # This variable is used to construct full image tags for bundle and catalog images.
 #
 # For example, running 'make bundle-build-push catalog-build-push' will build and push both
-# titanml.co/takeoff-operator-bundle:$VERSION and titanml.co/takeoff-operator-catalog:$VERSION.
-IMAGE_TAG_BASE ?= titanml.co/takeoff-operator
+# docker.io/tytn/operator-bundle:$VERSION and docker.io/tytn/operator-bundle-catalog:$VERSION.
+IMAGE_TAG_BASE ?= tytn/operator
 
 # BUNDLE_IMG defines the image:tag used for the bundle.
 # You can use it as an arg. (E.g make bundle-build-push BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
-BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
+BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:$(VERSION)
+# Image URL to use all building/pushing image targets
+IMG ?= $(IMAGE_TAG_BASE):${VERSION}
 
 # BUNDLE_GEN_FLAGS are the flags passed to the operator-sdk generate bundle command
 BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
@@ -48,10 +51,7 @@ endif
 
 # Set the Operator SDK version to use. By default, what is installed on the system is used.
 # This is useful for CI or a project to utilize a specific version of the operator-sdk toolkit.
-OPERATOR_SDK_VERSION ?= v1.39.1
-
-# Image URL to use all building/pushing image targets
-IMG ?= tytn/operator:${VERSION}
+OPERATOR_SDK_VERSION ?= v1.51.0
 
 # Source and destination paths for chart syncing
 SOURCE_CHART_PATH := ../../charts/takeoff
@@ -89,6 +89,7 @@ verify-chart: ## Verify source chart exists
 .PHONY: sync-charts
 sync-charts: verify-chart ## Sync charts from parent directory
 	@echo "Syncing charts from $(SOURCE_CHART_PATH) to $(DEST_CHART_PATH)"
+	mkdir -p $(DEST_CHART_PATH)
 	rm -rf $(DEST_CHART_PATH)
 	cp -r $(SOURCE_CHART_PATH) $(DEST_CHART_PATH)
 	@echo "Chart sync complete"
@@ -101,7 +102,7 @@ run: helm-operator sync-charts ## Run against the configured Kubernetes cluster 
 
 .PHONY: docker-build-push
 docker-build-push: sync-charts ## Build and push docker image with the manager
-	docker build -t ${IMG} . --push
+	depot build -t ${IMG} . --push
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
 # architectures. (i.e. make docker-build-pushx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:
@@ -112,7 +113,7 @@ docker-build-push: sync-charts ## Build and push docker image with the manager
 PLATFORMS ?= linux/arm64,linux/amd64,linux/s390x,linux/ppc64le
 .PHONY: docker-build-pushx
 docker-build-pushx: sync-charts ## Build and push docker image for the manager for cross-platform support
-	- docker build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
+	- depot build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
 
 ##@ Deployment
 
@@ -127,6 +128,7 @@ uninstall: kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube
 .PHONY: deploy
 deploy: kustomize sync-charts ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/default && $(KUSTOMIZE) edit set nameprefix model-orchestra-operator-$(VERSION)-
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: undeploy
@@ -169,7 +171,7 @@ endif
 endif
 
 .PHONY: operator-sdk
-OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
+OPERATOR_SDK ?= bin/operator-sdk
 operator-sdk: ## Download operator-sdk locally if necessary.
 ifeq (,$(wildcard $(OPERATOR_SDK)))
 ifeq (, $(shell which operator-sdk 2>/dev/null))
@@ -184,26 +186,35 @@ OPERATOR_SDK = $(shell which operator-sdk)
 endif
 endif
 
+# .PHONY: bundle
+# bundle: kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
+# 	$(OPERATOR_SDK) generate kustomize manifests -q
+# 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
+# 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
+# 	$(OPERATOR_SDK) bundle validate ./bundle
+
 .PHONY: bundle
 bundle: kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
+	cd config/default && $(KUSTOMIZE) edit set nameprefix model-orchestra-operator-$(VERSION)-
+	echo '[{"op": "replace", "path": "/spec/versions/0/name", "value": "$(CRD_VERSION)"}]' > config/crd/crd_patch.json
 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
-	$(OPERATOR_SDK) bundle validate ./bundle
+	$(OPERATOR_SDK) bundle validate ./bundle-$(VERSION)
 
 .PHONY: bundle-build-push
 bundle-build-push: sync-charts ## Build the bundle image.
 	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
 
 .PHONY: opm
-OPM = $(LOCALBIN)/opm
+OPM = bin/opm
 opm: ## Download opm locally if necessary.
 ifeq (,$(wildcard $(OPM)))
 ifeq (,$(shell which opm 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPM)) ;\
-	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.23.0/$(OS)-$(ARCH)-opm ;\
+	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.51.0/$(OS)-$(ARCH)-opm ;\
 	chmod +x $(OPM) ;\
 	}
 else
@@ -211,26 +222,30 @@ OPM = $(shell which opm)
 endif
 endif
 
-# A comma-separated list of bundle images (e.g. make catalog-build BUNDLE_IMGS=example.com/operator-bundle:v0.1.0,example.com/operator-bundle:v0.2.0).
-# These images MUST exist in a registry and be pull-able.
-BUNDLE_IMGS ?= $(BUNDLE_IMG)
-
-# The image tag given to the resulting catalog image (e.g. make catalog-build CATALOG_IMG=example.com/operator-catalog:v0.2.0).
-CATALOG_IMG ?= $(IMAGE_TAG_BASE)-catalog:v$(VERSION)
-
-# Set CATALOG_BASE_IMG to an existing catalog image tag to add $BUNDLE_IMGS to that image.
-ifneq ($(origin CATALOG_BASE_IMG), undefined)
-FROM_INDEX_OPT := --from-index $(CATALOG_BASE_IMG)
+.PHONY: yq
+YQ = bin/yq
+yq: ## Download yq locally if necessary.
+ifeq (,$(wildcard $(YQ)))
+ifeq (,$(shell which yq 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(YQ)) ;\
+	curl -sSLo $(YQ) https://github.com/mikefarah/yq/releases/latest/download/yq_$(OS)_$(ARCH) ;\
+	chmod +x $(YQ) ;\
+	}
+else
+YQ = $(shell which yq)
+endif
 endif
 
-# Build a catalog image by adding bundle images to an empty catalog using the operator package manager tool, 'opm'.
-# This recipe invokes 'opm' in 'semver' bundle add mode. For more information on add modes, see:
-# https://github.com/operator-framework/community-operators/blob/7f1438c/docs/packaging-operator.md#updating-your-existing-operator
-.PHONY: catalog-build
-catalog-build: opm ## Build a catalog image.
-	$(OPM) index add --container-tool docker --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
+# Build and push the catalog image, you need to have updated the catalog/operator_catalog.yaml file with the new version to add it 
+# to the catalog. The catalog image is used to deploy the catalog to the cluster.
+.PHONY: catalog-build-push
+catalog-build-push: opm ## Build and push the catalog image.
+	$(OPM) alpha render-template semver -o yaml < catalog/operator_catalog.yaml > catalog/configs/catalog.yaml
+	$(OPM) validate catalog/configs
+	depot build -f catalog.Dockerfile -t $(IMAGE_TAG_BASE)-catalog:$(VERSION) . --push
 
-# Push the catalog image.
-.PHONY: catalog-push
-catalog-push: ## Push a catalog image.
-	$(MAKE) docker-build-push IMG=$(CATALOG_IMG)
+.PHONY: deploy-catalog
+deploy-catalog: yq ## Deploy the catalog image to the cluster
+	VERSION_NUMBER=$(VERSION) $(YQ) e '.spec.source.image.ref = "docker.io/tytn/operator-catalog:" + env(VERSION_NUMBER)' catalog/clusterCatalog.yaml | kubectl apply -f -

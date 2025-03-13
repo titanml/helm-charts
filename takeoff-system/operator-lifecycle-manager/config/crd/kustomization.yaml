@@ -2,5 +2,11 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/charts.titanml.co_takeoffs.yaml
-# +kubebuilder:scaffold:crdkustomizeresource
+- bases/charts.titanml.co_modelorchestras.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+patches:
+- path: crd_patch.json
+  target:
+    kind: CustomResourceDefinition

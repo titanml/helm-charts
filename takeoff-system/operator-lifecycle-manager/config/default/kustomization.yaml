@@ -1,12 +1,12 @@
 # Adds namespace to all resources.
-namespace: takeoff-operator-system
+namespace: model-orchestra-operator-system
 
 # Value of this field is prepended to the
 # names of all resources, e.g. a deployment named
 # "wordpress" becomes "alices-wordpress".
 # Note that it should also match with the prefix (text before '-') of the namespace
 # field above.
-namePrefix: takeoff-operator-
+namePrefix: model-orchestra-operator-0.1.0-
 
 # Labels to add to all resources and selectors.
 #labels:
@@ -14,13 +14,13 @@ namePrefix: takeoff-operator-
 #  pairs:
 #    someName: someValue
 
+# [PROMETHEUS] To enable prometheus monitor, uncomment all sections with 'PROMETHEUS'.
+#- ../prometheus
+# [METRICS] Expose the controller manager metrics service.
 resources:
 - ../crd
 - ../rbac
 - ../manager
-# [PROMETHEUS] To enable prometheus monitor, uncomment all sections with 'PROMETHEUS'.
-#- ../prometheus
-# [METRICS] Expose the controller manager metrics service.
 - metrics_service.yaml
 # [NETWORK POLICY] Protect the /metrics endpoint and Webhook Server with NetworkPolicy.
 # Only Pod(s) running a namespace labeled with 'metrics: enabled' will be able to gather the metrics.
@@ -29,9 +29,11 @@ resources:
 #- ../network-policy
 
 # Uncomment the patches line if you enable Metrics, and/or are using webhooks and cert-manager
-patches:
 # [METRICS] The following patch will enable the metrics endpoint using HTTPS and the port :8443.
 # More info: https://book.kubebuilder.io/reference/metrics
+patches:
 - path: manager_metrics_patch.yaml
   target:
     kind: Deployment
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization

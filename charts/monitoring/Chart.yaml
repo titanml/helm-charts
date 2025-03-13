@@ -1,5 +1,5 @@
 apiVersion: v2
-name: takeoff-monitoring
+name: monitoring
 description: A system level chart for deploying takeoff monitoring.
 icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
 

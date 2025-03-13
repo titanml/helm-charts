@@ -62,13 +62,6 @@ Create the name of the service account to use
 {{- end }}
 
 {{/* 
-Define the Takeoff CR name 
-*/}}
-{{- define "takeoff-console.takeoffCrName" -}}
-{{- printf "%s-tcr" (include "takeoff-console.fullname" .) -}}
-{{- end }}
-
-{{/* 
 Create Backend Environment Variables for Zeus 
 */}}
 {{- define "takeoff-console.zeusBackendEnv" -}}
