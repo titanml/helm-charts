@@ -1,5 +1,5 @@
 # Use the 'create api' subcommand to add watches to this file.
-- group: model.charts.titanml.co
+- group: models.titanml.co
   version: v1alpha2
   kind: ModelOrchestra
   chart: helm-charts/takeoff

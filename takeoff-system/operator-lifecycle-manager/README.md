@@ -1,3 +1,14 @@
+# Takeoff Operator Lifecycle Manager
+
+The Takeoff Operator Lifecycle Manager (OLM) is a Kubernetes operator that manages the lifecycle of the Takeoff operator. It is responsible for installing the Takeoff operator and managing its lifecycle.
+
+## Working thoughts
+
+The OLM is a Kubernetes operator that manages the lifecycle of the Takeoff operator. This is essentially following the [OLM docs here](https://olm.operatorframework.io/docs/tasks/). The current working idea is to:
+* Bundle up the operator so we can have versioned releases, these will be selected when you are deploying the Takeoff CR by apiVersion.
+* Create a catalog in each cluster which can store the bundles. 
+* Create subscriptions to the catalog to install the specific versions of the operator wanted.
+
 # Takeoff Operator
 
 This repository contains a Kubernetes Operator built using the Operator SDK's
@@ -21,86 +32,67 @@ This means you can use Kubernetes-native APIs to manage your Helm releases.
 - Access to a container registry
 - Helm (3.0+)
 
-## Project Structure
-
-```plaintext
-takeoff-operator/
-├── helm-charts/          # Operator's Helm charts
-│   └── takeoff/         # Managed application chart
-├── bundle/              # OLM bundle files
-├── config/              # Operator configuration
-└── Makefile            # Build and deployment commands
-```
-
 ## Usage
 
-### Development Workflow
+### Install the Operator Lifecycle Manager (OLM)
+
+The Operator Lifecycle Manager (OLM) dependencies are needed to run multiple versions of our Model Orchestra operator in the same cluster. To do so run the following script with your `kubectl` cluster context set:
+
+```bash
+curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
+```
+
+### Create a new operator bundle
 
 The Makefile provides several commands to help with development:
 
-1. Build and push the operator image:
+1. Increment the `VERSION` and `CRD_VERSION` in the Makefile. These must be unique, for version we use the semver format `vX.Y.Z` and for the CRD version we use the format `vX` (`v1alpha1`).
 
+2. Create a new operator bundle: this will create and push a new operator image, and operator bundle image using the current helm file.
 ```bash
-make docker-build-push
+make bundle-build-push
 ```
 
-This builds the operator image and pushes it to the configured registry. The
-image tag is determined by the VERSION variable.
+### Update the Cluster Catalog
 
-### Deployment
+The cluster catalog contains all the available versions of our model orchestra operator. To add your new version to the catalog you will need to edit the `./catalog/operator_catalog.yaml` file and add a new entry for your version.
 
-1. Install CRDs:
+**MAKE SURE NOT TO REMOVE OR CHANGE PREVIOUS VERSIONS AS CLIENTS MAY BE RELYING ON THEM**
 
-```bash
-make install
+```yaml
+# This is the set of operator bundles that we support in our catalog. To add another version of the operator, add another bundle to the list.
+Schema: olm.semver
+GenerateMajorChannels: true
+GenerateMinorChannels: false
+Stable:
+  Bundles:
+  - Image: docker.io/tytn/operator-bundle:0.1.0
+  # Add your new version here like:
+  # - Image: docker.io/tytn/operator-bundle:0.2.0
+  # Note here we need the canonical image name.
 ```
 
-2. Deploy the operator:
+Once this is done you can push a new catalog image containing your new operator:
 
 ```bash
-make deploy
+make catalog-build-push
 ```
 
-3. To uninstall:
+Or you can deploy the new catalog directly to the cluster, which will also do the building and pushing for you:
 
 ```bash
-make undeploy
-```
-
-## Configuration
-
-Key variables in the Makefile:
-
-- `VERSION`: Defines the project version
-- `IMG`: The operator image URL
-
-## Chart Syncing
-
-The operator maintains two versions of the Helm chart:
-
-1. Source chart: Located at `../takeoff`
-2. Operator chart: Located at `helm-charts/takeoff`
-
-The operator chart is automatically synced from the source chart during
-relevant operations (build, deploy, etc.). You can manually sync using:
-
-```bash
-make sync-charts
+make deploy-catalog
 ```
 
 ## Custom Resource Examples
 
-Install the crds (`make install`), and deploy the controller (`make deploy`).
-Then, you can create a Takeoff custom resource to deploy a takeoff cluster.
-
-For example, to deploy a takeoff cluster with a single application, available
-in the controller API as `hello-world`:
+For example, to deploy a Model Orchestra with a single application:
 
 ```yaml
-apiVersion: charts.titanml.co/v1alpha1
-kind: Takeoff
+apiVersion: models.titanml.co/v1alpha1
+kind: ModelOrchestra
 metadata:
-  name: my-takeoff-cluster
+  name: my-model-orchestra
 spec:
   applications:
     hello-world:

@@ -8,7 +8,7 @@ metadata:
   name: model-orchestra-editor-role
 rules:
 - apiGroups:
-  - model.charts.titanml.co
+  - models.titanml.co
   resources:
   - modelorchestras
   verbs:
@@ -20,7 +20,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - model.charts.titanml.co
+  - models.titanml.co
   resources:
   - modelorchestras/status
   verbs:

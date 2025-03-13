@@ -8,7 +8,7 @@ metadata:
   name: model-orchestra-viewer-role
 rules:
 - apiGroups:
-  - model.charts.titanml.co
+  - models.titanml.co
   resources:
   - modelorchestras
   verbs:
@@ -16,7 +16,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - model.charts.titanml.co
+  - models.titanml.co
   resources:
   - modelorchestras/status
   verbs:

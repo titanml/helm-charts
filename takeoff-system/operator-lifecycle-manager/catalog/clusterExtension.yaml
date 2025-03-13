@@ -10,5 +10,5 @@ spec:
     sourceType: Catalog
     catalog:
       packageName: model-orchestra-operator
-      channels: ["latest"]
-      version: "0.1.0"
+      channels: ["stable-v0"]
+      version: "v0.1.0"

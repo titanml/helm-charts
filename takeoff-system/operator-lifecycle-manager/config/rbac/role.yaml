@@ -29,10 +29,10 @@ rules:
   - create
 
 ##
-## Rules for models.charts.titanml.co/<version>, Kind: ModelOrchestra
+## Rules for models.titanml.co/<version>, Kind: ModelOrchestra
 ##
 - apiGroups:
-  - model.charts.titanml.co
+  - models.titanml.co
   resources:
   - modelorchestras
   - modelorchestras/status

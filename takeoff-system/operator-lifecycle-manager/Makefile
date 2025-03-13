@@ -51,14 +51,11 @@ endif
 
 # Set the Operator SDK version to use. By default, what is installed on the system is used.
 # This is useful for CI or a project to utilize a specific version of the operator-sdk toolkit.
-OPERATOR_SDK_VERSION ?= v1.51.0
+OPERATOR_SDK_VERSION ?= v1.39.1
 
 # Source and destination paths for chart syncing
 SOURCE_CHART_PATH := ../../charts/takeoff
 DEST_CHART_PATH := helm-charts/takeoff
-
-.PHONY: all
-all: docker-build-push
 
 ##@ General
 
@@ -77,63 +74,7 @@ all: docker-build-push
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-##@ Chart Sync
-
-.PHONY: verify-chart
-verify-chart: ## Verify source chart exists
-	@if [ ! -d "$(SOURCE_CHART_PATH)" ]; then \
-		echo "Error: Source chart directory $(SOURCE_CHART_PATH) does not exist"; \
-		exit 1; \
-	fi
-
-.PHONY: sync-charts
-sync-charts: verify-chart ## Sync charts from parent directory
-	@echo "Syncing charts from $(SOURCE_CHART_PATH) to $(DEST_CHART_PATH)"
-	mkdir -p $(DEST_CHART_PATH)
-	rm -rf $(DEST_CHART_PATH)
-	cp -r $(SOURCE_CHART_PATH) $(DEST_CHART_PATH)
-	@echo "Chart sync complete"
-
-##@ Build
-
-.PHONY: run
-run: helm-operator sync-charts ## Run against the configured Kubernetes cluster in ~/.kube/config
-	$(HELM_OPERATOR) run
-
-.PHONY: docker-build-push
-docker-build-push: sync-charts ## Build and push docker image with the manager
-	depot build -t ${IMG} . --push
-
-# PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
-# architectures. (i.e. make docker-build-pushx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:
-# - able to use docker buildx . More info: https://docs.docker.com/build/buildx/
-# - have enable BuildKit, More info: https://docs.docker.com/develop/develop-images/build_enhancements/
-# - be able to push the image for your registry (i.e. if you do not inform a valid value via IMG=<myregistry/image:<tag>> than the export will fail)
-# To properly provided solutions that supports more than one platform you should use this option.
-PLATFORMS ?= linux/arm64,linux/amd64,linux/s390x,linux/ppc64le
-.PHONY: docker-build-pushx
-docker-build-pushx: sync-charts ## Build and push docker image for the manager for cross-platform support
-	- depot build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
-
-##@ Deployment
-
-.PHONY: install
-install: kustomize sync-charts ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | kubectl apply -f -
-
-.PHONY: uninstall
-uninstall: kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | kubectl delete -f -
-
-.PHONY: deploy
-deploy: kustomize sync-charts ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	cd config/default && $(KUSTOMIZE) edit set nameprefix model-orchestra-operator-$(VERSION)-
-	$(KUSTOMIZE) build config/default | kubectl apply -f -
-
-.PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/default | kubectl delete -f -
+##@ Dependencies
 
 OS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 ARCH := $(shell uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
@@ -186,24 +127,8 @@ OPERATOR_SDK = $(shell which operator-sdk)
 endif
 endif
 
-# .PHONY: bundle
-# bundle: kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
-# 	$(OPERATOR_SDK) generate kustomize manifests -q
-# 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
-# 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
-# 	$(OPERATOR_SDK) bundle validate ./bundle
-
-.PHONY: bundle
-bundle: kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
-	$(OPERATOR_SDK) generate kustomize manifests -q
-	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
-	cd config/default && $(KUSTOMIZE) edit set nameprefix model-orchestra-operator-$(VERSION)-
-	echo '[{"op": "replace", "path": "/spec/versions/0/name", "value": "$(CRD_VERSION)"}]' > config/crd/crd_patch.json
-	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
-	$(OPERATOR_SDK) bundle validate ./bundle-$(VERSION)
-
 .PHONY: bundle-build-push
-bundle-build-push: sync-charts ## Build the bundle image.
+bundle-build-push: operator-build-push bundle ## Build the bundle image.
 	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
 
 .PHONY: opm
@@ -238,6 +163,39 @@ YQ = $(shell which yq)
 endif
 endif
 
+##@ Chart Sync
+
+.PHONY: verify-chart
+verify-chart: ## Verify source chart exists
+	@if [ ! -d "$(SOURCE_CHART_PATH)" ]; then \
+		echo "Error: Source chart directory $(SOURCE_CHART_PATH) does not exist"; \
+		exit 1; \
+	fi
+
+.PHONY: sync-charts
+sync-charts: verify-chart ## Sync charts from parent directory
+	@echo "Syncing charts from $(SOURCE_CHART_PATH) to $(DEST_CHART_PATH)"
+	mkdir -p $(DEST_CHART_PATH)
+	rm -rf $(DEST_CHART_PATH)
+	cp -r $(SOURCE_CHART_PATH) $(DEST_CHART_PATH)
+	@echo "Chart sync complete"
+
+##@ Deployment
+
+.PHONY: operator-build-push
+operator-build-push: sync-charts ## Build and push docker image with the manager
+	depot build -t ${IMG} . --push
+
+.PHONY: bundle
+bundle: kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
+	rm -rf bundle
+	$(OPERATOR_SDK) generate kustomize manifests -q
+	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
+	cd config/default && $(KUSTOMIZE) edit set nameprefix $(CRD_VERSION)-
+	echo '[{"op": "replace", "path": "/spec/versions/0/name", "value": "$(CRD_VERSION)"}]' > config/crd/crd_patch.json
+	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
+	$(OPERATOR_SDK) bundle validate ./bundle
+
 # Build and push the catalog image, you need to have updated the catalog/operator_catalog.yaml file with the new version to add it 
 # to the catalog. The catalog image is used to deploy the catalog to the cluster.
 .PHONY: catalog-build-push
@@ -247,5 +205,7 @@ catalog-build-push: opm ## Build and push the catalog image.
 	depot build -f catalog.Dockerfile -t $(IMAGE_TAG_BASE)-catalog:$(VERSION) . --push
 
 .PHONY: deploy-catalog
-deploy-catalog: yq ## Deploy the catalog image to the cluster
+deploy-catalog: yq catalog-build-push ## Deploy the catalog image to the cluster
+	@echo "Deploying catalog to the cluster"
+	kubectl create namespace model-orchestra-operator-system
 	VERSION_NUMBER=$(VERSION) $(YQ) e '.spec.source.image.ref = "docker.io/tytn/operator-catalog:" + env(VERSION_NUMBER)' catalog/clusterCatalog.yaml | kubectl apply -f -

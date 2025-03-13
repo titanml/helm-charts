@@ -3,5 +3,3 @@
 resources:
 - bases/model-orchestra-operator.clusterserviceversion.yaml
 - ../default
-- ../samples
-- ../scorecard

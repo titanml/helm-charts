@@ -36,5 +36,4 @@ spec:
   maturity: alpha
   provider:
     name: titanml
-    url: https://titanml.co
   version: 0.0.0

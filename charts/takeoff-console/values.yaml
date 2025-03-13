@@ -38,7 +38,7 @@ ingress:
 
 # This section is for setting up the Model Orchestra Custom Resource that is deployed and managed by the console.
 modelOrchestra:
-  apiVersion: model.charts.titanml.co/v1alpha2
+  apiVersion: models.titanml.co/v1alpha2
 
 backend:
   # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
