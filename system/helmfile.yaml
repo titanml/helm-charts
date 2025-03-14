@@ -1,0 +1,32 @@
+repositories:
+- name: keda
+  url: "https://kedacore.github.io/charts"
+- name: titanml
+  url: "https://titanml.github.io/helm-charts"
+- name: argo-cd
+  url: "https://argoproj.github.io/argo-helm"
+
+releases:
+- name: keda
+  chart: keda/keda
+  version: 2.15.1
+  namespace: keda
+
+- name: monitoring
+  chart: titanml/monitoring
+  version: 0.1.0
+  namespace: monitoring
+  set:
+  - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.metadata.namespace
+    value: monitoring
+  - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName
+    # Edit this value to be a storage class that is available in your cluster
+    value: microk8s-hostpath
+
+- name: argo-cd
+  chart: argo-cd/argo-cd
+  version: 7.0.0
+  namespace: argocd
+  set:
+  - name: namespaceOverride
+    value: argocd

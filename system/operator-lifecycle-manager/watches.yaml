@@ -1,0 +1,6 @@
+# Use the 'create api' subcommand to add watches to this file.
+- group: models.titanml.co
+  version: v1alpha2
+  kind: ModelOrchestra
+  chart: helm-charts/takeoff
+# +kubebuilder:scaffold:watch
