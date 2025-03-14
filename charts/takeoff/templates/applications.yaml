@@ -90,12 +90,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ $.Chart.Name }}-{{ $appName }}
+        - name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
           {{- with $mergedValues.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ $mergedValues.image.repository }}:{{ $mergedValues.image.tag | default $.Chart.AppVersion }}"
+          image: "{{ $mergedValues.image.repository }}:{{ $mergedValues.image.tag | default (print $.Chart.AppVersion "-gpu") }}"
           imagePullPolicy: {{ $mergedValues.image.pullPolicy }}
           env:
             {{ $applicationEnv | toYaml | nindent 12 }}
