@@ -21,7 +21,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-controller:
+gateway:
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
     repository: tytn/takeoff-pro
@@ -357,14 +357,14 @@ applicationTemplate:
         #   metadata:
         #     name: queue_size_trigger
         #     serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090/ # Replace with the address of the cluster Prometheus server
-        #     query: queue_time{job=~".*-controller", quantile="1", consumer_group="primary"} # Replace consumer_group with the consumerGroup set above for this application
+        #     query: queue_time{job=~".*-gateway", quantile="1", consumer_group="primary"} # Replace consumer_group with the consumerGroup set above for this application
         #     threshold: "1"
         # Trigger that scales to zero if there are no requests in the last minute
         # - type: prometheus
         #   metadata:
         #     name: scaling_to_zero_trigger
         #     serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090/ # Replace with the address of the cluster Prometheus server
-        #     query: increase(http_pre_handler_requests_total{job=~".*-controller", path=~".*generate.*"}[1m]) # Replace consumer_group with the consumerGroup set above for this application
+        #     query: increase(http_pre_handler_requests_total{job=~".*-gateway", path=~".*generate.*"}[1m]) # Replace consumer_group with the consumerGroup set above for this application
         #     activationThreshold: "0"
         #     threshold: "1000000"
 

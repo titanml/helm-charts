@@ -50,12 +50,12 @@
             "uid": "P8E80F9AEF21F6940"
           },
           "editorMode": "code",
-          "expr": "{app=~\".*takeoff-controller.*\", namespace=\"$namespace\"} !~ `status`",
+          "expr": "{app=~\".*takeoff-gateway.*\", namespace=\"$namespace\"} !~ `status`",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Controller logs",
+      "title": "Gateway logs",
       "type": "logs"
     },
     {

@@ -1,11 +1,11 @@
 apiVersion: {{ .Values.modelOrchestra.apiVersion }}
 kind: ModelOrchestra
 metadata:
-  name: {{ .Values.modelOrchestra.name | default (include "takeoff-console.fullname" .) }}
+  name: {{ .Values.modelOrchestra.name | default (include "console.fullname" .) }}
   labels:
-    {{- include "takeoff-console.labels" . | nindent 4 }}
+    {{- include "console.labels" . | nindent 4 }}
 spec:
-  fullnameOverride: {{ include "takeoff-console.takeoffCrName" . }}
+  fullnameOverride: {{ include "console.ModelOrchestraCrName" . }}
   nameOverride: ""
   # Empty applications object which is populated later
   applications: {}

@@ -44,7 +44,7 @@ data:
       readers_config:
         {{ $appName }}:
           {{- $readerConfigTemplate := printf `
-          internalGatewayIp: %s-controller
+          internalGatewayIp: %s-gateway
           ` (include "takeoff.fullname" $) }}
           {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
           {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}

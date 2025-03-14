@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "takeoff-console.fullname" . }}
+  name: {{ include "console.fullname" . }}
   labels:
-    {{- include "takeoff-console.labels" . | nindent 4 }}
+    {{- include "console.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -32,21 +32,21 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "takeoff-console.fullname" $ }}-frontend
+                name: {{ include "console.fullname" $ }}-frontend
                 port:
                   number: {{ $.Values.frontend.service.port }}
           - path: "/api(/|$)(.*)"
             pathType: Prefix
             backend:
               service:
-                name: {{ include "takeoff-console.fullname" $ }}-backend
+                name: {{ include "console.fullname" $ }}-backend
                 port:
                   number: {{ $.Values.backend.service.port }}
-          - path: "/controller(/|$)(.*)"
+          - path: "/gateway(/|$)(.*)"
             pathType: Prefix
             backend:
               service:
-                name: {{ include "takeoff-console.takeoffCrName" $ }}-controller
+                name: {{ include "console.modelOrchestraCrName" $ }}-gateway
                 port:
                   number: 80
       {{- with .Values.ingress.host }}

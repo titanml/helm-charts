@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "takeoff-console.fullname" . }}-backend
+  name: {{ include "console.fullname" . }}-backend
   labels:
-    {{- include "takeoff-console.labels" . | nindent 4 }}
+    {{- include "console.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "takeoff-console.selectorLabels" . | nindent 6 }}
+      {{- include "console.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: backend
   template:
     metadata:
@@ -19,7 +19,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: backend
-        {{- include "takeoff-console.labels" . | nindent 8 }}
+        {{- include "console.labels" . | nindent 8 }}
         {{- with .Values.backend.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -28,7 +28,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "takeoff-console.serviceAccountName" . }}
+      serviceAccountName: {{ include "console.serviceAccountName" . }}
       {{- with .Values.backend.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -42,7 +42,7 @@ spec:
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
-            {{- include "takeoff-console.zeusBackendEnv" . | nindent 12 }}
+            {{- include "console.zeusBackendEnv" . | nindent 12 }}
           {{- with .Values.backend.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
@@ -83,16 +83,16 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "takeoff-console.fullname" . }}-frontend
+  name: {{ include "console.fullname" . }}-frontend
   labels:
-    {{- include "takeoff-console.labels" . | nindent 4 }}
+    {{- include "console.labels" . | nindent 4 }}
     app.kubernetes.io/component: frontend
 spec:
   replicas: {{ .Values.frontend.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/component: frontend
-      {{- include "takeoff-console.selectorLabels" . | nindent 6 }}
+      {{- include "console.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.frontend.podAnnotations }}
@@ -101,7 +101,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: frontend
-        {{- include "takeoff-console.labels" . | nindent 8 }}
+        {{- include "console.labels" . | nindent 8 }}
         {{- with .Values.frontend.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -110,7 +110,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "takeoff-console.serviceAccountName" . }}
+      serviceAccountName: {{ include "console.serviceAccountName" . }}
       {{- with .Values.frontend.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -144,7 +144,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            {{- include "takeoff-console.zeusFrontendEnv" . | nindent 12 }}
+            {{- include "console.zeusFrontendEnv" . | nindent 12 }}
       {{- with .Values.frontend.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
@@ -166,15 +166,15 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "takeoff-console.fullname" . }}-rproxy
+  name: {{ include "console.fullname" . }}-rproxy
   labels:
-    {{- include "takeoff-console.labels" . | nindent 4 }}
+    {{- include "console.labels" . | nindent 4 }}
     app.kubernetes.io/component: rproxy
 spec:
   replicas: {{ .Values.rproxy.replicaCount }}
   selector:
     matchLabels:
-      {{- include "takeoff-console.selectorLabels" . | nindent 6 }}
+      {{- include "console.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: rproxy
   template:
     metadata:
@@ -184,7 +184,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: rproxy
-        {{- include "takeoff-console.selectorLabels" . | nindent 8 }}
+        {{- include "console.selectorLabels" . | nindent 8 }}
         {{- with .Values.rproxy.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -193,7 +193,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "takeoff-console.serviceAccountName" . }}
+      serviceAccountName: {{ include "console.serviceAccountName" . }}
       {{- with .Values.rproxy.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -220,15 +220,15 @@ spec:
               port: http
           env:
             - name: FRONTEND_SERVICE
-              value: {{ include "takeoff-console.fullname" . }}-frontend
+              value: {{ include "console.fullname" . }}-frontend
             - name: FRONTEND_PORT
               value: "{{ .Values.frontend.service.port }}"
             - name: BACKEND_SERVICE
-              value: {{ include "takeoff-console.fullname" . }}-backend
+              value: {{ include "console.fullname" . }}-backend
             - name: BACKEND_PORT
               value: "{{ .Values.backend.service.port }}"
             - name: CONTROLLER_SERVICE
-              value: {{ include "takeoff-console.takeoffCrName" . }}-controller
+              value: {{ include "console.ModelOrchestraCrName" . }}-gateway
             - name: CONTROLLER_PORT
               value: "80"
           {{- with .Values.rproxy.resources }}

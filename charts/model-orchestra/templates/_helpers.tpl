@@ -61,8 +61,8 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{/* Set env vars for takeoff controller */}}
-{{- define "takeoff.controllerEnv" -}}
+{{/* Set env vars for takeoff gateway */}}
+{{- define "takeoff.gatewayEnv" -}}
 
 {{/* Set the required env vars needed for each application deployment */}}
 {{- $requiredEnv := dict }}
@@ -70,7 +70,7 @@ Create the name of the service account to use
 
 {{/* Convert user set env vars into dict */}}
 {{- $userEnv := dict }}
-{{- range $envMap := .Values.controller.env }}
+{{- range $envMap := .Values.gateway.env }}
 {{- if hasKey $envMap "value" }}
     {{- $_ := set $userEnv $envMap.name (dict "value" $envMap.value) }}
 {{ else if hasKey $envMap "valueFrom" }}

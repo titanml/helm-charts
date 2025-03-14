@@ -10,7 +10,7 @@ helm install takeoff titanml/takeoff
 
 ### Pulling Takeoff images
 
-The Takeoff image for the controller and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting controller/application.image.tag in your values override.
+The Takeoff image for the gateway and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting gateway/application.image.tag in your values override.
 
 Make sure you are authenticated to pull from the TitanML dockerhub, and have encoded this in a k8s Secret. You can then make this accessible to k8s in your values.yaml file, so it can pull the container images:
 
@@ -27,14 +27,14 @@ helm install takeoff titanml/takeoff --set imagePullSecrets[0].name=<SECRET_NAME
 
 ## Configuration & installation details
 ### Architecture overview
-The takeoff stack has two components: a "controller" - that provides an integrated openAI-compatible gateway & integrated monitoring system - and several "applications" that receive and respond to requests from the controller. 
+The takeoff stack has two components: a "gateway" - that provides an integrated openAI-compatible gateway & integrated monitoring system - and several "applications" that receive and respond to requests from the gateway. 
 Each application is a single, replicated model service.
 
-#### Controller
-To configure the controller service, provide:
+#### gateway
+To configure the gateway service, provide:
 
 ```yaml
-controller:
+gateway:
   config:
     # allowRemoteImages: false, // Whether to allow the user to specify url image requests
     # readerMessageTimeoutMs: 500, // How long between tokens before we timeout a reader.
@@ -48,7 +48,7 @@ controller:
 See the `server_config` section of the config file [here](https://docs.titanml.co/apis/launch_parameters) for available parameters (note the snake_case settings for the container itself, vs. camelCase here)
 #### Applications
 
-In order to make models available through the controller gateway, add a stanza to the `application` settings, under an application name. For example:
+In order to make models available through the gateway gateway, add a stanza to the `application` settings, under an application name. For example:
 
 ```yaml
 applications:
@@ -68,7 +68,7 @@ applications:
         nvidia.com/gpu: 1
 ```
 
-The `consumerGroup` setting is the `model` [key](https://platform.openai.com/docs/guides/text-generation) which you should provide to the controller's openAI compatible API service. 
+The `consumerGroup` setting is the `model` [key](https://platform.openai.com/docs/guides/text-generation) which you should provide to the gateway's openAI compatible API service.
 To create a service backed by several different applications, set the same `consumerGroup` on each of them. 
 
 See the `reader_config` section of the config file [here](https://docs.titanml.co/apis/launch_parameters) for available parameters for the `readerConfig` (note the snake_case settings for the container itself, vs. camelCase here)
@@ -86,7 +86,7 @@ applicationTemplate:
 
 ### Prometheus metrics
 This chart can be integrated with Prometheus. 
-To enable, add `--set controller.exportPrometheusMetrics=true --set applicationTemplate.exportPrometheusMetrics=true`.
+To enable, add `--set gateway.exportPrometheusMetrics=true --set applicationTemplate.exportPrometheusMetrics=true`.
 
 #### Integration with Prometheus Operator
 It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [takeoff-system](https://github.com/titanml/helm-charts/tree/main/charts/takeoff-system) chart for a single chart that provides all of the dependencies for takeoff to run at full functionality.

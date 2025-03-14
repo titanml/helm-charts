@@ -2,16 +2,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-controller
+  name: {{ include "takeoff.fullname" $ }}-gateway
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: gateway
     {{- include "takeoff.labels" $ | nindent 4 }}
 data:
   config.yaml: |
     takeoff:
       server_config:
         internal_port: 3005
-        {{- range $key, $value := .Values.controller.config }}
+        {{- range $key, $value := .Values.gateway.config }}
         {{ snakecase $key}}: {{$value}}
         {{- end }}
       readers_config:
@@ -19,26 +19,26 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "takeoff.fullname" . }}-controller
+  name: {{ include "takeoff.fullname" . }}-gateway
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: gateway
     {{- include "takeoff.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.controller.replicaCount }}
+  replicas: {{ .Values.gateway.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/component: controller
+      app.kubernetes.io/component: gateway
       {{- include "takeoff.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.controller.podAnnotations }}
+      {{- with .Values.gateway.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app.kubernetes.io/component: controller
+        app.kubernetes.io/component: gateway
         {{- include "takeoff.labels" . | nindent 8 }}
-        {{- with .Values.controller.podLabels }}
+        {{- with .Values.gateway.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
@@ -47,33 +47,33 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "takeoff.serviceAccountName" . }}
-      {{- with .Values.controller.podSecurityContext }}
+      {{- with .Values.gateway.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ include "takeoff.fullname" . }}-controller
-          {{- with .Values.controller.securityContext }}
+        - name: {{ include "takeoff.fullname" . }}-gateway
+          {{- with .Values.gateway.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default (print $.Chart.AppVersion "-cpu") }}"
-          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag | default (print $.Chart.AppVersion "-cpu") }}"
+          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
           env:
-            {{- include "takeoff.controllerEnv" . | nindent 12 }}
-          {{- with .Values.controller.ports }}
+            {{- include "takeoff.gatewayEnv" . | nindent 12 }}
+          {{- with .Values.gateway.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.controller.livenessProbe }}
+          {{- with .Values.gateway.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.controller.readinessProbe }}
+          {{- with .Values.gateway.readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.controller.resources }}
+          {{- with .Values.gateway.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -81,25 +81,25 @@ spec:
             - name: config
               mountPath: /code/config.yaml
               subPath: config.yaml
-          {{- with .Values.controller.volumeMounts }}
+          {{- with .Values.gateway.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
         - name: config
           configMap:
-            name: {{ include "takeoff.fullname" $ }}-controller
-      {{- with .Values.controller.volumes }}
+            name: {{ include "takeoff.fullname" $ }}-gateway
+      {{- with .Values.gateway.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.controller.nodeSelector }}
+      {{- with .Values.gateway.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.controller.affinity }}
+      {{- with .Values.gateway.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.controller.tolerations }}
+      {{- with .Values.gateway.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -107,39 +107,39 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "takeoff.fullname" . }}-controller
+  name: {{ include "takeoff.fullname" . }}-gateway
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: gateway
     {{- include "takeoff.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.controller.service.type }}
-  {{- with .Values.controller.service.ports }}
+  type: {{ .Values.gateway.service.type }}
+  {{- with .Values.gateway.service.ports }}
   ports:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   selector:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: gateway
     {{- include "takeoff.selectorLabels" . | nindent 4 }}
 ---
-{{- if .Values.controller.ingress.enabled -}}
+{{- if .Values.gateway.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "takeoff.fullname" . }}-controller
+  name: {{ include "takeoff.fullname" . }}-gateway
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: gateway
     {{- include "takeoff.labels" . | nindent 4 }}
-  {{- with .Values.controller.ingress.annotations }}
+  {{- with .Values.gateway.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- with .Values.controller.ingress.className }}
+  {{- with .Values.gateway.ingress.className }}
   ingressClassName: {{ . }}
   {{- end }}
-  {{- if .Values.controller.ingress.tls }}
+  {{- if .Values.gateway.ingress.tls }}
   tls:
-    {{- range .Values.controller.ingress.tls }}
+    {{- range .Values.gateway.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -148,7 +148,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.controller.ingress.hosts }}
+    {{- range .Values.gateway.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -159,18 +159,18 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "takeoff.fullname" . }}-controller
+                name: {{ include "takeoff.fullname" . }}-gateway
                 port:
-                  number: {{ .Values.controller.service.port }}
+                  number: {{ .Values.gateway.service.port }}
           {{- end }}
     {{- end }}
 {{- end }}
 ---
-{{- if .Values.controller.exportPrometheusMetrics }}
+{{- if .Values.gateway.exportPrometheusMetrics }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-controller
+  name: {{ include "takeoff.fullname" $ }}-gateway
 spec:
   endpoints:
   - interval: 15s
@@ -178,6 +178,6 @@ spec:
     path: /metrics
   selector:
     matchLabels:
-      app.kubernetes.io/component: controller
+      app.kubernetes.io/component: gateway
 ---
 {{- end }}

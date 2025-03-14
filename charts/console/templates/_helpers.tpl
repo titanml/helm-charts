@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "takeoff-console.name" -}}
+{{- define "console.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 This value is used to prefix sub-apps. We use the just release name for brevity, unless there is an override.
 */}}
-{{- define "takeoff-console.fullname" -}}
+{{- define "console.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -21,16 +21,16 @@ This value is used to prefix sub-apps. We use the just release name for brevity,
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "takeoff-console.chart" -}}
+{{- define "console.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "takeoff-console.labels" -}}
-helm.sh/chart: {{ include "takeoff-console.chart" . }}
-{{ include "takeoff-console.selectorLabels" . }}
+{{- define "console.labels" -}}
+helm.sh/chart: {{ include "console.chart" . }}
+{{ include "console.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -40,17 +40,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "takeoff-console.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "takeoff-console.name" . }}
+{{- define "console.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "console.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "takeoff-console.serviceAccountName" -}}
+{{- define "console.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "takeoff-console.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "console.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -59,24 +59,24 @@ Create the name of the service account to use
 {{/* 
 Create Backend Environment Variables for Zeus 
 */}}
-{{- define "takeoff-console.zeusBackendEnv" -}}
+{{- define "console.zeusBackendEnv" -}}
 
 {{/* 
 Create a template for necessary environment variables for Zeus backend 
 */}}
 {{- $templateEnv := dict }}
 {{- $_ := set $templateEnv "ZEUS_DROP_TABLES_ON_INIT" (dict "value" "False") }}
-{{- $_ := set $templateEnv "ZEUS_DB_HOST" (dict "value" (printf "%s-db" (include "takeoff-console.fullname" .))) }}
+{{- $_ := set $templateEnv "ZEUS_DB_HOST" (dict "value" (printf "%s-db" (include "console.fullname" .))) }}
 {{- $_ := set $templateEnv "ZEUS_DB_PORT" (dict "value" "5432") }}
 {{- $_ := set $templateEnv "ZEUS_DB_NAME" (dict "value" "zeus") }}
 {{- if .Values.secret.generate }}
-    {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "takeoff-console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbUser))) }}
-    {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "takeoff-console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbPassword))) }}
+    {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbUser))) }}
+    {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-%s" (include "console.fullname" .) .Values.secret.name) "key" .Values.secret.keys.dbPassword))) }}
 {{- else }}
     {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbUser))) }}
     {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbPassword))) }}
 {{- end }}
-{{- $_ := set $templateEnv "ZEUS_TAKEOFF_CR_NAME" (dict "value" (include "takeoff-console.takeoffCrName" .)) }}
+{{- $_ := set $templateEnv "ZEUS_MODEL_ORCHESTRA_CR_NAME" (dict "value" (include "console.modelOrchestraCrName" .)) }}
 {{- $_ := set $templateEnv "ZEUS_CLUSTER_NAMESPACE" (dict "value" .Release.Namespace) }}
 
 {{/* 
@@ -115,12 +115,12 @@ Loop through the merged env and append to the list
 {{/* 
 Create Frontend Environment Variables for Zeus 
 */}}
-{{- define "takeoff-console.zeusFrontendEnv" -}}
+{{- define "console.zeusFrontendEnv" -}}
 
 {{- $templateEnv := dict }}
 {{- $backendPort := int (.Values.backend.service.port | default 80) }}
-{{- $_ := set $templateEnv "BACKEND_API_DESTINATION" (dict "value" (printf "http://%s-backend:%d" (include "takeoff-console.fullname" .) $backendPort)) }}
-{{- $_ := set $templateEnv "BACKEND_CONTROLLER_DESTINATION" (dict "value" (printf "http://%s-controller:%d" (include "takeoff-console.takeoffCrName" .) 80)) }}
+{{- $_ := set $templateEnv "BACKEND_API_DESTINATION" (dict "value" (printf "http://%s-backend:%d" (include "console.fullname" .) $backendPort)) }}
+{{- $_ := set $templateEnv "BACKEND_GATEWAY_DESTINATION" (dict "value" (printf "http://%s-gateway:%d" (include "console.modelOrchestraCrName" .) 80)) }}
 
 {{/* 
 Convert env vars into dict 
