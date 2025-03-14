@@ -6,3 +6,4 @@ GenerateMinorChannels: false
 Stable:
   Bundles:
   - Image: docker.io/tytn/operator-bundle:0.1.0
+  - Image: docker.io/tytn/operator-bundle:0.1.1

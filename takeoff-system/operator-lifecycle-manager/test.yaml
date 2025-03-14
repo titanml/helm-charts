@@ -1,0 +1,6 @@
+apiVersion: models.titanml.co/v1alpha2
+kind: ModelOrchestra
+metadata:
+  name: modelorchestra-sample
+  namespace: peter
+spec: {}

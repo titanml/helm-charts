@@ -3,8 +3,8 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.1.0
-CRD_VERSION ?= v1alpha2
+VERSION ?= 0.1.1
+CRD_VERSION ?= v1alpha3
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -207,5 +207,4 @@ catalog-build-push: opm ## Build and push the catalog image.
 .PHONY: deploy-catalog
 deploy-catalog: yq catalog-build-push ## Deploy the catalog image to the cluster
 	@echo "Deploying catalog to the cluster"
-	kubectl create namespace model-orchestra-operator-system
 	VERSION_NUMBER=$(VERSION) $(YQ) e '.spec.source.image.ref = "docker.io/tytn/operator-catalog:" + env(VERSION_NUMBER)' catalog/clusterCatalog.yaml | kubectl apply -f -
