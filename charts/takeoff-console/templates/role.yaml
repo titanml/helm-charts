@@ -1,0 +1,10 @@
+{{- if .Values.role.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "takeoff-console.fullname" . }}-role
+rules:
+- apiGroups: ["charts.titanml.co"]
+  resources: ["takeoffs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+{{- end }}
