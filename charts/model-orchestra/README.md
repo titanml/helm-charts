@@ -1,16 +1,16 @@
-# Takeoff
+# Model Orchestra
 
-Takeoff is an inference stack for deploying LLMs and other deep learning models.
+The Model Orchestra is an inference stack for deploying LLMs and other deep learning models.
 
 ## TL;DR
 ```bash
 helm repo add titanml titanml.github.io/helm-charts
-helm install takeoff titanml/takeoff
+helm install model-orchestra titanml/model-orchestra
 ```
 
-### Pulling Takeoff images
+### Pulling Model Orchestra images
 
-The Takeoff image for the gateway and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting gateway/application.image.tag in your values override.
+The Model Orchestra image for the gateway and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting gateway/application.image.tag in your values override.
 
 Make sure you are authenticated to pull from the TitanML dockerhub, and have encoded this in a k8s Secret. You can then make this accessible to k8s in your values.yaml file, so it can pull the container images:
 
@@ -22,12 +22,12 @@ imagePullSecrets:
 Alternatively you can achieve it like so:
 
 ```
-helm install takeoff titanml/takeoff --set imagePullSecrets[0].name=<SECRET_NAME>
+helm install model-orchestra titanml/model-orchestra --set imagePullSecrets[0].name=<SECRET_NAME>
 ```
 
 ## Configuration & installation details
 ### Architecture overview
-The takeoff stack has two components: a "gateway" - that provides an integrated openAI-compatible gateway & integrated monitoring system - and several "applications" that receive and respond to requests from the gateway. 
+The Model Orchestra stack has two components: a "gateway" - that provides an integrated openAI-compatible gateway & integrated monitoring system - and several "applications" that receive and respond to requests from the gateway. 
 Each application is a single, replicated model service.
 
 #### gateway
@@ -89,7 +89,7 @@ This chart can be integrated with Prometheus.
 To enable, add `--set gateway.exportPrometheusMetrics=true --set applicationTemplate.exportPrometheusMetrics=true`.
 
 #### Integration with Prometheus Operator
-It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [takeoff-system](https://github.com/titanml/helm-charts/tree/main/charts/takeoff-system) chart for a single chart that provides all of the dependencies for takeoff to run at full functionality.
+It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Model Orchestra to run at full functionality.
 
 The chart will try to deploy ServiceMonitor objects for integration with Prometheus Operator installations. 
 Ensure that the Prometheus Operator CustomResourceDefinitions are installed in the cluster or it will fail with the following error:
@@ -115,6 +115,6 @@ For an individual application,
 Where `<APPLICATION_NAME>` should be replaced with the application name defined in the top level `applications` key.
 
 ### Integration with Keda Operator
-It is necessary to have a working installation of the [Keda](https://keda.sh/docs/2.16/concepts/) chart for the integration to work. See the [takeoff-system](https://github.com/titanml/helm-charts/tree/main/charts/takeoff-system) chart for a single chart that provides all of the dependencies for takeoff to run at full functionality.
+It is necessary to have a working installation of the [Keda](https://keda.sh/docs/2.16/concepts/) chart for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Model Orchestra to run at full functionality.
 
 The chart will try to deploy `ScaledObject` objects for integration with Keda installations. 

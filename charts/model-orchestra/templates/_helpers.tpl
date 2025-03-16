@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "takeoff.name" -}}
+{{- define "model-orchestra.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "takeoff.fullname" -}}
+{{- define "model-orchestra.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "takeoff.chart" -}}
+{{- define "model-orchestra.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "takeoff.labels" -}}
-helm.sh/chart: {{ include "takeoff.chart" . }}
-{{ include "takeoff.selectorLabels" . }}
+{{- define "model-orchestra.labels" -}}
+helm.sh/chart: {{ include "model-orchestra.chart" . }}
+{{ include "model-orchestra.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,24 +45,24 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "takeoff.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "takeoff.name" . }}
+{{- define "model-orchestra.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "model-orchestra.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "takeoff.serviceAccountName" -}}
+{{- define "model-orchestra.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "takeoff.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "model-orchestra.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
 
-{{/* Set env vars for takeoff gateway */}}
-{{- define "takeoff.gatewayEnv" -}}
+{{/* Set env vars for model-orchestra gateway */}}
+{{- define "model-orchestra.gatewayEnv" -}}
 
 {{/* Set the required env vars needed for each application deployment */}}
 {{- $requiredEnv := dict }}

@@ -1,6 +1,6 @@
-# Takeoff System
+# System
 
-This chart is used to deploy dependencies that are needed to run other takeoff charts. It includes [keda](https://github.com/kedacore/keda) and [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) which are installed into the `keda` and `default` namespaces respectively.
+This chart is used to deploy dependencies that are needed to run other charts in this repo. It includes [keda](https://github.com/kedacore/keda) and [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) which are installed into the `keda` and `default` namespaces respectively.
 
 ## Installation
 
@@ -17,7 +17,7 @@ helm repo update
 
 kubectl create namespace monitoring
 
-helm install takeoff-system titanml/takeoff-system -n monitoring --set "kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName=<name-of-storage-class-in-your-cluster>"
+helm install system titanml/system -n monitoring --set "kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName=<name-of-storage-class-in-your-cluster>"
 ```
 
 ## Using the chart

@@ -1,6 +1,6 @@
-# Takeoff System Dependencies
+# System Dependencies
 
-This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all the cluster wide dependencies needed run the [takeoff](../charts/takeoff/) or [takeoff-console](../charts/takeoff-console/) charts.
+This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all the cluster wide dependencies needed run the [model-orchestra](../charts/model-orchestra/) or [console](../charts/console/) charts.
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
@@ -30,7 +30,7 @@ Before you begin, ensure you have the following installed:
 3. **Get Helmfile and Edit**
    a. Download the Helmfile configuration file:
    ```bash
-   wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/takeoff-system/helmfile.yaml
+   wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/system/helmfile.yaml
    ```
    b. Edit the `helmfile.yaml` file to customize the prometheus storage class to one available in your cluster:
 

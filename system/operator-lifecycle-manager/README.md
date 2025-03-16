@@ -1,18 +1,18 @@
-# Takeoff Operator Lifecycle Manager
+# Model Orchestra Operator Lifecycle Manager
 
-The Takeoff Operator Lifecycle Manager (OLM) is a Kubernetes operator that manages the lifecycle of the Takeoff operator. It is responsible for installing the Takeoff operator and managing its lifecycle.
+The Model Orchestra Operator Lifecycle Manager (OLM) is a Kubernetes operator that manages the lifecycle of the Takeoff operator. It is responsible for installing the Model Orchestra Operator and managing its lifecycle.
 
 ## Working thoughts
 
-The OLM is a Kubernetes operator that manages the lifecycle of the Takeoff operator. This is essentially following the [OLM docs here](https://olm.operatorframework.io/docs/tasks/). The current working idea is to:
-* Bundle up the operator so we can have versioned releases, these will be selected when you are deploying the Takeoff CR by apiVersion.
+The OLM is a Kubernetes operator that manages the lifecycle of the Model Orchestra operator. This is essentially following the [OLM docs here](https://olm.operatorframework.io/docs/tasks/). The current working idea is to:
+* Bundle up the operator so we can have versioned releases, these will be selected when you are deploying the Model Orchestra CR by apiVersion.
 * Create a catalog in each cluster which can store the bundles. 
 * Create subscriptions to the catalog to install the specific versions of the operator wanted.
 
-# Takeoff Operator
+# Model Orchestra Operator
 
 This repository contains a Kubernetes Operator built using the Operator SDK's
-Helm-based operator support. The operator manages a deployed takeoff cluster.
+Helm-based operator support. The operator manages a deployed model orchestra.
 
 ## Overview
 

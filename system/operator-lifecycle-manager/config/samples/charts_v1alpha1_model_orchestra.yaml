@@ -3,7 +3,7 @@ kind: ModelOrchestra
 metadata:
   name: model-orchestra-sample
 spec:
-  # Default values copied from <project_dir>/helm-charts/takeoff/values.yaml
+  # Default values copied from <project_dir>/helm-charts/model-orchestra/values.yaml
   applicationTemplate:
     affinity: {}
     env: null

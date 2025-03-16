@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-gateway
+  name: {{ include "model-orchestra.fullname" $ }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "takeoff.labels" $ | nindent 4 }}
+    {{- include "model-orchestra.labels" $ | nindent 4 }}
 data:
   config.yaml: |
-    takeoff:
+    model-orchestra:
       server_config:
         internal_port: 3005
         {{- range $key, $value := .Values.gateway.config }}
@@ -19,16 +19,16 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "takeoff.fullname" . }}-gateway
+  name: {{ include "model-orchestra.fullname" . }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "takeoff.labels" . | nindent 4 }}
+    {{- include "model-orchestra.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.gateway.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/component: gateway
-      {{- include "takeoff.selectorLabels" . | nindent 6 }}
+      {{- include "model-orchestra.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.gateway.podAnnotations }}
@@ -37,7 +37,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: gateway
-        {{- include "takeoff.labels" . | nindent 8 }}
+        {{- include "model-orchestra.labels" . | nindent 8 }}
         {{- with .Values.gateway.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -46,13 +46,13 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "takeoff.serviceAccountName" . }}
+      serviceAccountName: {{ include "model-orchestra.serviceAccountName" . }}
       {{- with .Values.gateway.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ include "takeoff.fullname" . }}-gateway
+        - name: {{ include "model-orchestra.fullname" . }}-gateway
           {{- with .Values.gateway.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -60,7 +60,7 @@ spec:
           image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag | default (print $.Chart.AppVersion "-cpu") }}"
           imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
           env:
-            {{- include "takeoff.gatewayEnv" . | nindent 12 }}
+            {{- include "model-orchestra.gatewayEnv" . | nindent 12 }}
           {{- with .Values.gateway.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
@@ -87,7 +87,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "takeoff.fullname" $ }}-gateway
+            name: {{ include "model-orchestra.fullname" $ }}-gateway
       {{- with .Values.gateway.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -107,10 +107,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "takeoff.fullname" . }}-gateway
+  name: {{ include "model-orchestra.fullname" . }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "takeoff.labels" . | nindent 4 }}
+    {{- include "model-orchestra.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.gateway.service.type }}
   {{- with .Values.gateway.service.ports }}
@@ -119,16 +119,16 @@ spec:
   {{- end }}
   selector:
     app.kubernetes.io/component: gateway
-    {{- include "takeoff.selectorLabels" . | nindent 4 }}
+    {{- include "model-orchestra.selectorLabels" . | nindent 4 }}
 ---
 {{- if .Values.gateway.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "takeoff.fullname" . }}-gateway
+  name: {{ include "model-orchestra.fullname" . }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "takeoff.labels" . | nindent 4 }}
+    {{- include "model-orchestra.labels" . | nindent 4 }}
   {{- with .Values.gateway.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -159,7 +159,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "takeoff.fullname" . }}-gateway
+                name: {{ include "model-orchestra.fullname" . }}-gateway
                 port:
                   number: {{ .Values.gateway.service.port }}
           {{- end }}
@@ -170,7 +170,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-gateway
+  name: {{ include "model-orchestra.fullname" $ }}-gateway
 spec:
   endpoints:
   - interval: 15s

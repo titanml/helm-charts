@@ -32,20 +32,20 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "takeoff.labels" $ | nindent 4 }}
+    {{- include "model-orchestra.labels" $ | nindent 4 }}
 data:
   config.yaml: |
-    takeoff:
+    model-orchestra:
       server_config:
         internal_port: 3005
       readers_config:
         {{ $appName }}:
           {{- $readerConfigTemplate := printf `
           internalGatewayIp: %s-gateway
-          ` (include "takeoff.fullname" $) }}
+          ` (include "model-orchestra.fullname" $) }}
           {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
           {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}
           {{- range $key, $value := $finalReadersConfig }}
@@ -55,10 +55,10 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "takeoff.labels" $ | nindent 4 }}
+    {{- include "model-orchestra.labels" $ | nindent 4 }}
 spec:
   {{- if not $mergedValues.scaling.enabled }}
   replicas: {{ $mergedValues.replicaCount }}
@@ -66,7 +66,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: application-{{ $appName }}
-      {{- include "takeoff.selectorLabels" $ | nindent 6 }}
+      {{- include "model-orchestra.selectorLabels" $ | nindent 6 }}
   template:
     metadata:
       {{- with $mergedValues.podAnnotations }}
@@ -75,7 +75,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: application-{{ $appName }}
-        {{- include "takeoff.labels" $ | nindent 8 }}
+        {{- include "model-orchestra.labels" $ | nindent 8 }}
         {{- with $mergedValues.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -84,13 +84,13 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "takeoff.serviceAccountName" $ }}
+      serviceAccountName: {{ include "model-orchestra.serviceAccountName" $ }}
       {{- with $mergedValues.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+        - name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
           {{- with $mergedValues.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -127,7 +127,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+            name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
         - name: dshm
           emptyDir:
             medium: Memory
@@ -150,10 +150,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "takeoff.labels" $ | nindent 4 }}
+    {{- include "model-orchestra.labels" $ | nindent 4 }}
 spec:
   type: {{ $mergedValues.service.type }}
   {{- with $mergedValues.service.ports }}
@@ -162,16 +162,16 @@ spec:
   {{- end }}
   selector:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "takeoff.selectorLabels" $ | nindent 4 }}
+    {{- include "model-orchestra.selectorLabels" $ | nindent 4 }}
 ---
 {{- if $mergedValues.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "takeoff.labels" $ | nindent 4 }}
+    {{- include "model-orchestra.labels" $ | nindent 4 }}
   {{- with $mergedValues.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -202,7 +202,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+                name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
                 port:
                   number: {{ $mergedValues.service.port }}
           {{- end }}
@@ -213,7 +213,7 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
   {{- with $mergedValues.scaling.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -224,7 +224,7 @@ scaleTargetRef:
   apiVersion: apps/v1
   kind: Deployment
   name: %s-%s
-` (include "takeoff.fullname" $) $appName }}
+` (include "model-orchestra.fullname" $) $appName }}
 {{- $templateScalingSpec := fromYaml $scaledObjectTemplate }}
 {{- $finalScalingSpec := merge $mergedValues.scaling.spec $templateScalingSpec }}
 spec:
