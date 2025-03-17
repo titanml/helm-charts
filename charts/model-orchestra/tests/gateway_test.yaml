@@ -1,28 +1,28 @@
-suite: test controller
+suite: test gateway
 release:
   name: "test-release"
   namespace: "test-namespace"
 set:
-  controller.exportPrometheusMetrics: true
+  gateway.exportPrometheusMetrics: true
 templates:
-  - templates/controller.yaml
+  - templates/gateway.yaml
 tests:
-  - it: should have a controller label
+  - it: should have a gateway label
     asserts:
       - equal:
           path: metadata.labels['app.kubernetes.io/component']
-          value: controller
+          value: gateway
 
   - it: should have the same qualified names for everything
     asserts:
       - equal:
           path: metadata.name
-          value: "test-release-takeoff-controller"
+          value: "test-release-takeoff-gateway"
 
   - it: should allow config overrides
     set:
-      controller.config.allowRemoteImages: true
-      controller.config.allowSomethingArbitrary: "hello"
+      gateway.config.allowRemoteImages: true
+      gateway.config.allowSomethingArbitrary: "hello"
     documentSelector:
       path: kind
       value: ConfigMap
@@ -39,7 +39,7 @@ tests:
 
   - it: can set environment variables
     set:
-      controller.env:
+      gateway.env:
         - name: HELLO
           value: "WORLD"
     documentSelector:
@@ -67,7 +67,7 @@ tests:
 
   - it: should set replica count correctly
     set:
-      controller.replicaCount: 3
+      gateway.replicaCount: 3
     documentSelector:
       path: kind
       value: Deployment
@@ -78,7 +78,7 @@ tests:
 
   - it: should configure pod annotations when provided
     set:
-      controller.podAnnotations:
+      gateway.podAnnotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "3001"
     documentSelector:
@@ -94,7 +94,7 @@ tests:
 
   - it: should configure pod labels when provided
     set:
-      controller.podLabels:
+      gateway.podLabels:
         environment: "test"
         tier: "backend"
     documentSelector:
@@ -110,7 +110,7 @@ tests:
 
   - it: should configure pod security context when provided
     set:
-      controller.podSecurityContext:
+      gateway.podSecurityContext:
         fsGroup: 2000
         runAsNonRoot: true
     documentSelector:
@@ -124,7 +124,7 @@ tests:
           path: spec.template.spec.securityContext.runAsNonRoot
           value: true
 
-  - it: should expose controller ports
+  - it: should expose gateway ports
     documentSelector:
       path: kind
       value: Deployment
@@ -184,8 +184,8 @@ tests:
 
   - it: should create ingress when enabled
     set:
-      controller.ingress.enabled: true
-      controller.ingress.hosts[0].host: api.example.com
+      gateway.ingress.enabled: true
+      gateway.ingress.hosts[0].host: api.example.com
     documentSelector:
       path: kind
       value: Ingress

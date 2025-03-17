@@ -107,7 +107,7 @@ spec:
     volumeMounts: []
     volumes: []
   applications: {}
-  controller:
+  gateway:
     affinity: {}
     config: null
     env: null

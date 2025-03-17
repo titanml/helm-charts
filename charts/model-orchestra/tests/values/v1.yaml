@@ -1,4 +1,4 @@
-controller.exportPrometheusMetrics: true
+gateway.exportPrometheusMetrics: true
 applications:
   hello-world-1: {}
   hello-world-2:

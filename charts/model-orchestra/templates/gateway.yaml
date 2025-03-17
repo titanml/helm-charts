@@ -10,10 +10,10 @@ data:
   config.yaml: |
     model-orchestra:
       server_config:
-        {{- range $key, $value := .Values.controller.config }}
+        {{- range $key, $value := .Values.gateway.config }}
         {{ snakecase $key }}: {{$value}}
         {{- end }}
-        {{- if not (hasKey .Values.controller.config "internalPort") }}
+        {{- if not (hasKey .Values.gateway.config "internalPort") }}
         internal_port: 3005
         {{- end }}
       readers_config:
@@ -174,7 +174,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "model-orchestra.fullname" $ }}-gateway
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: gateway
     {{- include "model-orchestra.labels" $ | nindent 4 }}
 spec:
   endpoints:

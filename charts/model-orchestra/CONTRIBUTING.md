@@ -46,7 +46,7 @@ This document provides guidelines for contributing to the Model Orchestra Helm c
 
 4. To run specific tests:
    ```
-   helm unittest -f tests/controller_test.yaml .
+   helm unittest -f tests/gateway_test.yaml .
    ```
 
 5. Write new tests for added functionality in the `tests/` directory

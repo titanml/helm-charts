@@ -34,7 +34,7 @@ tests:
                 hello-world-1:
                   consumer_group: primary
                   device: cpu
-                  internal_gateway_ip: test-release-takeoff-controller
+                  internal_gateway_ip: test-release-takeoff-gateway
                   model_name: TitanML/dummy_model
 
   - it: should correctly merge application values with template
@@ -52,7 +52,7 @@ tests:
                 hello-world-2:
                   consumer_group: secondary
                   device: cuda
-                  internal_gateway_ip: test-release-takeoff-controller
+                  internal_gateway_ip: test-release-takeoff-gateway
                   model_name: custom/model
 
   - it: should properly configure application deployment with template values
@@ -135,7 +135,7 @@ tests:
           content:
             type: external-push
             metadata:
-              scalerAddress: test-release-takeoff-controller.test-namespace.svc.cluster.local:3005
+              scalerAddress: test-release-takeoff-gateway.test-namespace.svc.cluster.local:3005
               target_scalable: "15"
               target_scaled-app: "15"
 

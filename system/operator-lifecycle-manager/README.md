@@ -110,6 +110,6 @@ spec:
 ## Notes
 
 Some fields can't be reconciled yet. Specifically: anything in the
-`readerConfig` and the controller config will change the config in the
+`readerConfig` and the gateway config will change the config in the
 corresponding pods, but the pods are not configured to reboot on change.
 This will change in an ensuing version.

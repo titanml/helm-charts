@@ -245,7 +245,7 @@ scaleTargetRef:
 {{- $consumerGroupKey := printf "target_%s" $mergedValues.readerConfig.consumerGroup }}
 {{- $readerIdKey := printf "target_%s" $appName }}
 {{- $serviceName := printf "%s-%s" (include "model-orchestra.fullname" $) $appName }}
-{{- $scalerAddress := printf "%s-controller.%s.svc.cluster.local:3005" (include "model-orchestra.fullname" $) $.Release.Namespace}}
+{{- $scalerAddress := printf "%s-gateway.%s.svc.cluster.local:3005" (include "model-orchestra.fullname" $) $.Release.Namespace}}
 {{- $target := (toString $mergedValues.scaling.metricTarget.value)}}
 
 {{- $triggers := list }}

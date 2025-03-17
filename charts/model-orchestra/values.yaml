@@ -40,7 +40,7 @@ gateway:
     # bodySizeLimitBytes: 1024 * 1024 * 2, // The maximum body size
     # heartbeatCheckInterval: 1, // How frequently to check for dead readers. 0 means never
 
-  # Environment variables for the controller
+  # Environment variables for the gateway
   env: []
   # - name: VARIABLE_NAME
   #   value: "variable_value"
