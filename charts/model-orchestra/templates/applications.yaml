@@ -51,7 +51,7 @@ metadata:
     {{- include "model-orchestra.labels" $ | nindent 4 }}
 data:
   config.yaml: |
-    model-orchestra:
+    takeoff:
       server_config:
         internal_port: 3005
       readers_config:

@@ -8,7 +8,7 @@ metadata:
     {{- include "model-orchestra.labels" $ | nindent 4 }}
 data:
   config.yaml: |
-    model-orchestra:
+    takeoff:
       server_config:
         {{- range $key, $value := .Values.gateway.config }}
         {{ snakecase $key }}: {{$value}}

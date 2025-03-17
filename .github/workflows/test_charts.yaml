@@ -30,6 +30,16 @@ jobs:
         working-directory: ./charts/model-orchestra
         run: |
           helm lint .
+      
+      - name: Run Helm lint
+        working-directory: ./charts/monitoring
+        run: |
+          helm lint .
+
+      - name: Run Helm lint
+        working-directory: ./charts/console
+        run: |
+          helm lint .
 
       - name: Run Helm unittest
         working-directory: ./charts/model-orchestra
