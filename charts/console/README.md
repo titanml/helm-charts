@@ -1,4 +1,4 @@
-# management console
+# Management Console
 
 The management console is a simple & intuitive interface for creating, managing, and monitoring your LLM deployments. 
 
@@ -9,11 +9,9 @@ helm repo add titanml titanml.github.io/helm-charts
 helm install console titanml/console
 ```
 
-### Pulling Takeoff images
+### Pulling Console images
 
-The Takeoff image for the controller and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting controller/application.image.tag in your values override.
-
-Make sure you are authenticated to pull from the TitanML dockerhub, and have encoded this in a k8s Secret. You can then make this accessible to k8s in your values.yaml file, so it can pull the container images:
+To access the Console images you need to make sure you are authenticated to pull from the TitanML DockerHub. To do this encode your docker auth into a k8s Secret. You can then make this accessible to k8s in your values.yaml file, so it can pull the container images:
 
 ```
 imagePullSecrets:
@@ -23,7 +21,7 @@ imagePullSecrets:
 Alternatively you can achieve it like so:
 
 ```
-helm install takeoff titanml/takeoff-console --set imagePullSecrets[0].name=<SECRET_NAME>
+helm install console titanml/console --set imagePullSecrets[0].name=<SECRET_NAME>
 ```
 
 ## Configuration & installation details

@@ -226,14 +226,10 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-<<<<<<< HEAD:charts/model-orchestra/templates/applications.yaml
   name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
-=======
-  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "takeoff.labels" $ | nindent 4 }}
->>>>>>> main:charts/takeoff/templates/applications.yaml
+    {{- include "model-orchestra.labels" $ | nindent 4 }}
   {{- with $mergedValues.scaling.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -248,8 +244,8 @@ scaleTargetRef:
 
 {{- $consumerGroupKey := printf "target_%s" $mergedValues.readerConfig.consumerGroup }}
 {{- $readerIdKey := printf "target_%s" $appName }}
-{{- $serviceName := printf "%s-%s" (include "takeoff.fullname" $) $appName }}
-{{- $scalerAddress := printf "%s-controller.%s.svc.cluster.local:3005" (include "takeoff.fullname" $) $.Release.Namespace}}
+{{- $serviceName := printf "%s-%s" (include "model-orchestra.fullname" $) $appName }}
+{{- $scalerAddress := printf "%s-controller.%s.svc.cluster.local:3005" (include "model-orchestra.fullname" $) $.Release.Namespace}}
 {{- $target := (toString $mergedValues.scaling.metricTarget.value)}}
 
 {{- $triggers := list }}

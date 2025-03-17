@@ -18,19 +18,9 @@ type: application
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 0.3.0
 
-<<<<<<< HEAD:charts/model-orchestra/Chart.yaml
 # This is the version number of the Takeoff Engine being deployed inside the model orchestra. This version number should be
 # incremented each time you wish to deploy a different version of Takeoff Engine as default. 
 # The gateway will append this version with "-cpu", and the applications will append this version with "-gpu".
 # If you wish to override this behaviour, or deploy different versions of the gateway and apps,
 # you can do so by setting the gateway.image.tag and applications.image.tag respectively.
-appVersion: "0.22.0-rc17"
-=======
-# This is the version number of the takeoff being deployed. This version number should be
-# incremented each time you wish to deploy a different version of Takeoff as default.
-# The controller will append this version with "-cpu", and the applications will append this version with "-gpu".
-# If you wish to override this behaviour, or deploy different versions of the controller and apps,
-# you can do so by setting the controller.image.tag and applications.image.tag respectively.
 appVersion: "0.22.0-rc18"
-
->>>>>>> main:charts/takeoff/Chart.yaml

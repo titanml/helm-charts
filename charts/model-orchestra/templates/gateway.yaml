@@ -175,7 +175,7 @@ metadata:
   name: {{ include "model-orchestra.fullname" $ }}-gateway
   labels:
     app.kubernetes.io/component: controller
-    {{- include "takeoff.labels" $ | nindent 4 }}
+    {{- include "model-orchestra.labels" $ | nindent 4 }}
 spec:
   endpoints:
   - interval: 15s

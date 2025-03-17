@@ -1,6 +1,6 @@
-# Contributing to the Takeoff Helm Chart
+# Contributing to the Model Orchestra Helm Chart
 
-This document provides guidelines for contributing to the Takeoff Helm chart.
+This document provides guidelines for contributing to the Model Orchestra Helm chart.
 
 ## Development Environment
 
