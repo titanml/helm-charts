@@ -62,7 +62,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "tytn/takeoff-pro:0.22.0-rc17-gpu"
+          value: "tytn/takeoff-pro:0.22.0-rc18-gpu"
       - equal:
           path: spec.template.spec.containers[0].name
           value: "test-release-takeoff-hello-world-1"
