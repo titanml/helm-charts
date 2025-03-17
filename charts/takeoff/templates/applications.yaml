@@ -243,13 +243,12 @@ scaleTargetRef:
 {{- $templateScalingSpec := fromYaml $scaledObjectTemplate }}
 
 {{- $consumerGroupKey := printf "target_%s" $mergedValues.readerConfig.consumerGroup }}
-{{- $readerIdKey := printf "target_%s" $appName }}
 {{- $serviceName := printf "%s-%s" (include "takeoff.fullname" $) $appName }}
 {{- $scalerAddress := printf "%s-controller.%s.svc.cluster.local:3005" (include "takeoff.fullname" $) $.Release.Namespace}}
 {{- $target := (toString $mergedValues.scaling.metricTarget.value)}}
 
 {{- $triggers := list }}
-  {{- $trigger := dict "type" "external-push" "metadata" (dict "scalerAddress" $scalerAddress $consumerGroupKey $target $readerIdKey $target) }}
+  {{- $trigger := dict "type" "external-push" "metadata" (dict "scalerAddress" $scalerAddress $consumerGroupKey $target) }}
   {{- $triggers = append $triggers $trigger }}
 
 {{- $specWithoutMetricTarget := omit $mergedValues.scaling.spec "metricTarget" }}
