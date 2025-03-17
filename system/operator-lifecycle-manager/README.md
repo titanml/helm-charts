@@ -1,6 +1,6 @@
 # Model Orchestra Operator Lifecycle Manager
 
-The Model Orchestra Operator Lifecycle Manager (OLM) is a Kubernetes operator that manages the lifecycle of the Takeoff operator. It is responsible for installing the Model Orchestra Operator and managing its lifecycle.
+The Model Orchestra Operator Lifecycle Manager (OLM) is a Kubernetes operator that manages the lifecycle of the Model Orchestra operator. It is responsible for installing the Model Orchestra Operator and managing its lifecycle.
 
 ## Working thoughts
 
