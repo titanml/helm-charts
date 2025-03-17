@@ -13,18 +13,24 @@ Before you begin, ensure you have the following installed:
 1. **Install Helmfile**
    Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation) or if using linux:
    ```bash
-   sudo wget https://github.com/helmfile/helmfile/releases/download/v1.0.0-rc.11/helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \ 
-      sudo tar -xxf helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \
-      sudo rm helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \
-      sudo mv helmfile /usr/local/bin
+   mkdir -p /tmp/helmfile/ && \
+      sudo wget -P /tmp/helmfile/ https://github.com/helmfile/helmfile/releases/download/v1.0.0-rc.11/helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \ 
+      sudo tar -xxf /tmp/helmfile/helmfile_1.0.0-rc.11_linux_amd64.tar.gz -C /tmp/helmfile/ && \
+      sudo mv /tmp/helmfile/helmfile /usr/local/bin && \
+      sudo chmod +x /usr/local/bin/helmfile && \
+      rm -rf /tmp/helmfile/
+   ```
+   or if using macOS:
+   ```bash
+   brew install helmfile
    ```
 
 2. **Create Required Namespaces**
    Create the necessary namespaces for each dependency:
    ```bash
-   kubectl create namespace keda
-   kubectl create namespace monitoring
-   kubectl create namespace argocd
+   kubectl create namespace keda && \
+      kubectl create namespace monitoring && \
+      kubectl create namespace argocd
    ```
 
 3. **Get Helmfile and Edit**
@@ -32,7 +38,7 @@ Before you begin, ensure you have the following installed:
    ```bash
    wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/system/helmfile.yaml
    ```
-   b. Edit the `helmfile.yaml` file to customize the prometheus storage class to one available in your cluster:
+   b. **Important:** Edit the `helmfile.yaml` file to customize the prometheus storage class to one available in your cluster:
 
 
 4. **Deploy with Helmfile**

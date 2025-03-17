@@ -1,32 +1,45 @@
 {{- range $appName, $baseValues := .Values.applications }}
-  {{- $mergedValues := merge $baseValues (deepCopy $.Values.applicationTemplate) }}
+  {{- $mergedValues := mustMergeOverwrite (deepCopy $.Values.applicationTemplate) $baseValues  }}
 
   {{/* Set the required env vars needed for each application deployment */}}
-  {{- $requiredEnv := dict }}
-  {{- $_ := set $requiredEnv "TAKEOFF_ADD_READER_ID_SUFFIX" (dict "value" "true") }}
+  {{- $requiredEnv := list }}
+  {{- $requiredEnv = append $requiredEnv (dict "name" "TAKEOFF_ADD_READER_ID_SUFFIX" "value" "true") }}
+  {{- $requiredEnv = append $requiredEnv (dict "name" "TAKEOFF_HEADLESS" "value" "true") }}
 
-  {{/* Convert user set env vars into dict */}}
-  {{- $userEnv := dict }}
-  {{- range $envMap := $mergedValues.env }}
-  {{- if hasKey $envMap "value" }}
-      {{- $_ := set $userEnv $envMap.name (dict "value" $envMap.value) }}
-  {{ else if hasKey $envMap "valueFrom" }}
-      {{- $_ := set $userEnv $envMap.name (dict "valueFrom" $envMap.valueFrom) }}
-  {{- end }}
+  {{/* Process template env */}}
+  {{- $templateEnv := list }}
+  {{- $templateEnv = concat $templateEnv $.Values.applicationTemplate.env }}
+
+  {{/* Process app-specific env */}}
+  {{- $appEnv := list }}
+  {{- if hasKey $baseValues "env" }}
+    {{- $appEnv = $baseValues.env }}
   {{- end }}
 
-  {{/* Define the list to hold the env */}}
+  {{/* Create combined env list with overrides */}}
+  {{- $allNames := dict }}
   {{- $applicationEnv := list }}
-  {{/* Merge the template env with user env. Lets users overwrite default values. */}}
-  {{- $applicationEnvDict := merge $requiredEnv $userEnv }}
-
-  {{/* Loop through the merged env and append to the list */}}
-  {{- range $key, $value := $applicationEnvDict }}
-      {{- if $value.value }}
-          {{- $applicationEnv = append $applicationEnv (dict "name" $key "value" $value.value) }}
-      {{- else if $value.valueFrom }}
-          {{- $applicationEnv = append $applicationEnv (dict "name" $key "valueFrom" $value.valueFrom) }}
-      {{- end }}
+  
+  {{/* First add app-specific env (highest priority) */}}
+  {{- range $envMap := $appEnv }}
+    {{- $applicationEnv = append $applicationEnv $envMap }}
+    {{- $_ := set $allNames $envMap.name true }}
+  {{- end }}
+  
+  {{/* Then add template env if not already added */}}
+  {{- range $envMap := $templateEnv }}
+    {{- if not (hasKey $allNames $envMap.name) }}
+      {{- $applicationEnv = append $applicationEnv $envMap }}
+      {{- $_ := set $allNames $envMap.name true }}
+    {{- end }}
+  {{- end }}
+  
+  {{/* Finally add required env if not already added */}}
+  {{- range $envMap := $requiredEnv }}
+    {{- if not (hasKey $allNames $envMap.name) }}
+      {{- $applicationEnv = append $applicationEnv $envMap }}
+      {{- $_ := set $allNames $envMap.name true }}
+    {{- end }}
   {{- end }}
 ---
 apiVersion: v1
@@ -49,7 +62,7 @@ data:
           {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
           {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}
           {{- range $key, $value := $finalReadersConfig }}
-          {{ snakecase $key}}: {{$value}}
+          {{ snakecase $key }}: {{ $value }}
           {{- end }}
 ---
 apiVersion: apps/v1
@@ -213,12 +226,18 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
+<<<<<<< HEAD:charts/model-orchestra/templates/applications.yaml
   name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
+=======
+  name: {{ include "takeoff.fullname" $ }}-{{ $appName }}
+  labels:
+    app.kubernetes.io/component: application-{{ $appName }}
+    {{- include "takeoff.labels" $ | nindent 4 }}
+>>>>>>> main:charts/takeoff/templates/applications.yaml
   {{- with $mergedValues.scaling.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-
 {{- $scaledObjectTemplate := printf `
 scaleTargetRef:
   apiVersion: apps/v1
@@ -226,9 +245,24 @@ scaleTargetRef:
   name: %s-%s
 ` (include "model-orchestra.fullname" $) $appName }}
 {{- $templateScalingSpec := fromYaml $scaledObjectTemplate }}
-{{- $finalScalingSpec := merge $mergedValues.scaling.spec $templateScalingSpec }}
+
+{{- $consumerGroupKey := printf "target_%s" $mergedValues.readerConfig.consumerGroup }}
+{{- $readerIdKey := printf "target_%s" $appName }}
+{{- $serviceName := printf "%s-%s" (include "takeoff.fullname" $) $appName }}
+{{- $scalerAddress := printf "%s-controller.%s.svc.cluster.local:3005" (include "takeoff.fullname" $) $.Release.Namespace}}
+{{- $target := (toString $mergedValues.scaling.metricTarget.value)}}
+
+{{- $triggers := list }}
+  {{- $trigger := dict "type" "external-push" "metadata" (dict "scalerAddress" $scalerAddress $consumerGroupKey $target $readerIdKey $target) }}
+  {{- $triggers = append $triggers $trigger }}
+
+{{- $specWithoutMetricTarget := omit $mergedValues.scaling.spec "metricTarget" }}
+{{- $specWithTriggers := merge $specWithoutMetricTarget (dict "triggers" $triggers) }}
+{{- $finalScalingSpec := merge $specWithTriggers $templateScalingSpec }}
+
 spec:
   {{- toYaml $finalScalingSpec | nindent 2 }}
 ---
 {{- end }}
-{{- end }}  # End range over applications
+{{- end }}
+# End range over applications

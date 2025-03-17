@@ -10,9 +10,11 @@ data:
   config.yaml: |
     model-orchestra:
       server_config:
+        {{- range $key, $value := .Values.controller.config }}
+        {{ snakecase $key }}: {{$value}}
+        {{- end }}
+        {{- if not (hasKey .Values.controller.config "internalPort") }}
         internal_port: 3005
-        {{- range $key, $value := .Values.gateway.config }}
-        {{ snakecase $key}}: {{$value}}
         {{- end }}
       readers_config:
 ---
@@ -121,7 +123,7 @@ spec:
     app.kubernetes.io/component: gateway
     {{- include "model-orchestra.selectorLabels" . | nindent 4 }}
 ---
-{{- if .Values.gateway.ingress.enabled -}}
+{{- if .Values.gateway.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -159,9 +161,9 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "model-orchestra.fullname" . }}-gateway
+                name: {{ include "model-orchestra.fullname" $ }}-gateway
                 port:
-                  number: {{ .Values.gateway.service.port }}
+                  number: http
           {{- end }}
     {{- end }}
 {{- end }}
@@ -171,6 +173,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "model-orchestra.fullname" $ }}-gateway
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "takeoff.labels" $ | nindent 4 }}
 spec:
   endpoints:
   - interval: 15s
