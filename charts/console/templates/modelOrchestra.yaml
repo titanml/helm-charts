@@ -1,11 +1,11 @@
 apiVersion: {{ .Values.modelOrchestra.apiVersion }}
 kind: ModelOrchestra
 metadata:
-  name: {{ .Values.modelOrchestra.name | default (include "console.fullname" .) }}
+  name: {{ .Values.modelOrchestra.name | default (include "console.fullname" $) }}
   labels:
     {{- include "console.labels" . | nindent 4 }}
 spec:
-  fullnameOverride: {{ include "console.ModelOrchestraCrName" . }}
+  fullnameOverride: {{ .Values.modelOrchestra.name | default (include "console.fullname" $) }}
   nameOverride: ""
   # Empty applications object which is populated later
   applications: {}

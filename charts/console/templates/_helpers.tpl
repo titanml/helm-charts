@@ -76,7 +76,7 @@ Create a template for necessary environment variables for Zeus backend
     {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbUser))) }}
     {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbPassword))) }}
 {{- end }}
-{{- $_ := set $templateEnv "ZEUS_MODEL_ORCHESTRA_CR_NAME" (dict "value" (include "console.modelOrchestraCrName" .)) }}
+{{- $_ := set $templateEnv "ZEUS_MODEL_ORCHESTRA_CR_NAME" (dict "value" ( .Values.modelOrchestra.name | default (include "console.fullname" $) )) }}
 {{- $_ := set $templateEnv "ZEUS_CLUSTER_NAMESPACE" (dict "value" .Release.Namespace) }}
 
 {{/* 
@@ -120,7 +120,7 @@ Create Frontend Environment Variables for Zeus
 {{- $templateEnv := dict }}
 {{- $backendPort := int (.Values.backend.service.port | default 80) }}
 {{- $_ := set $templateEnv "BACKEND_API_DESTINATION" (dict "value" (printf "http://%s-backend:%d" (include "console.fullname" .) $backendPort)) }}
-{{- $_ := set $templateEnv "BACKEND_GATEWAY_DESTINATION" (dict "value" (printf "http://%s-gateway:%d" (include "console.modelOrchestraCrName" .) 80)) }}
+{{- $_ := set $templateEnv "BACKEND_GATEWAY_DESTINATION" (dict "value" (printf "http://%s-gateway:%d" ( .Values.modelOrchestra.name | default (include "console.fullname" $) ) 80)) }}
 
 {{/* 
 Convert env vars into dict 

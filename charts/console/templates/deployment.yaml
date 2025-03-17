@@ -162,13 +162,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 ---
-{{- if .Values.rproxy.enabled -}}
+{{- if .Values.rproxy.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "console.fullname" . }}-rproxy
+  name: {{ include "console.fullname" $ }}-rproxy
   labels:
-    {{- include "console.labels" . | nindent 4 }}
+    {{- include "console.labels" $ | nindent 4 }}
     app.kubernetes.io/component: rproxy
 spec:
   replicas: {{ .Values.rproxy.replicaCount }}
@@ -184,7 +184,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: rproxy
-        {{- include "console.selectorLabels" . | nindent 8 }}
+        {{- include "console.selectorLabels" $ | nindent 8 }}
         {{- with .Values.rproxy.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -193,7 +193,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "console.serviceAccountName" . }}
+      serviceAccountName: {{ include "console.serviceAccountName" $ }}
       {{- with .Values.rproxy.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -220,15 +220,15 @@ spec:
               port: http
           env:
             - name: FRONTEND_SERVICE
-              value: {{ include "console.fullname" . }}-frontend
+              value: {{ include "console.fullname" $ }}-frontend
             - name: FRONTEND_PORT
               value: "{{ .Values.frontend.service.port }}"
             - name: BACKEND_SERVICE
-              value: {{ include "console.fullname" . }}-backend
+              value: {{ include "console.fullname" $ }}-backend
             - name: BACKEND_PORT
               value: "{{ .Values.backend.service.port }}"
             - name: CONTROLLER_SERVICE
-              value: {{ include "console.ModelOrchestraCrName" . }}-gateway
+              value: {{ .Values.modelOrchestra.name | default (include "console.fullname" $) }}-gateway
             - name: CONTROLLER_PORT
               value: "80"
           {{- with .Values.rproxy.resources }}
