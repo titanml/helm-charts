@@ -6,15 +6,15 @@ We deploy AI models and expose intuitive APIs for customers to build with. The u
 
 * Cluster: a group of computing nodes, or worker machines, that run containerized applications, managed by a control plane that orchestrates and manages the cluster's resources and workloads.
 
-* Console: a management interface that allows users to interact to manipulate a model orchestra object. It also can be used for observability of the deployed models.
+* Console: a management interface that allows users to manipulate model orchestras. It also can be used for observability of the deployed models.
 
-* Custom Resource: a kubernetes object that extends the Kubernetes API and is available for use in the cluster.
+* Custom Resource Definition: a kubernetes object that extends the Kubernetes API and is available for use in the cluster.
 
 * Model Orchestra: the custom resource that we deploy which has the configuration for each application that the user wants to be realised by the model orchestra operator.
 
 * Controller: a set of objects that are responsible to transforming a custom resource into a set of kubernetes native objects. Any custom resource that is deployed in the cluster is managed by an operator.
 
-* Operator: the combination of a Custom Resource and a Controller.
+* Operator: the combination of a Custom Resource Definition and a Controller.
 
 * Operator Lifecycle Manager (OLM): a tool that helps install, update, and manage the lifecycle of all Operators and their associated services running across their clusters.
 
