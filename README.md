@@ -1,6 +1,6 @@
 # TitanML Helm Charts
 
-These chart allow you to deploy open source AI on Kubernetes at any scale.
+These charts allow you to deploy open source AI on Kubernetes at any scale.
 
 ## Pre-requisites
 
@@ -22,4 +22,4 @@ This is a UI which is used to spin up and configured AI applications. This is us
 
 ### Takeoff Helm Chart
 
-Interact directly with the helm chart to setup your own applications. This is recommended for more advanced users whom want more customisation. Our deployment guide for this can be found [here](charts/takeoff/README.md).
+Interact directly with the helm chart to setup your own applications. This is recommended for more advanced users who want more customisation. Our deployment guide for this can be found [here](charts/takeoff/README.md).

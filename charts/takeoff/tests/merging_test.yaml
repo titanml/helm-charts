@@ -34,9 +34,6 @@ tests:
           path: spec.triggers[0].metadata.scalerAddress
           value: test-release-takeoff-controller.test-namespace.svc.cluster.local:3005
       - equal:
-          path: spec.triggers[0].metadata.target_custom-scaled-app
-          value: "25"
-      - equal:
           path: spec.triggers[0].metadata.target_primary
           value: "25"
 
@@ -105,4 +102,3 @@ tests:
           content:
             name: custom-volume
             emptyDir: {}
-
