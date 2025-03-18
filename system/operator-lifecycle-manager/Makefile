@@ -3,8 +3,8 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.1.1
-CRD_VERSION ?= v1alpha3
+VERSION ?= 0.1.0
+CRD_VERSION ?= v1alpha1
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -127,10 +127,6 @@ OPERATOR_SDK = $(shell which operator-sdk)
 endif
 endif
 
-.PHONY: bundle-build-push
-bundle-build-push: operator-build-push bundle ## Build the bundle image.
-	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
-
 .PHONY: opm
 OPM = bin/opm
 opm: ## Download opm locally if necessary.
@@ -163,6 +159,9 @@ YQ = $(shell which yq)
 endif
 endif
 
+.PHONY: install
+install: kustomize helm-operator operator-sdk opm yq ## Install dependencies
+
 ##@ Chart Sync
 
 .PHONY: verify-chart
@@ -191,10 +190,13 @@ bundle: kustomize operator-sdk sync-charts ## Generate bundle manifests and meta
 	rm -rf bundle
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
-	cd config/default && $(KUSTOMIZE) edit set nameprefix $(CRD_VERSION)-
-	echo '[{"op": "replace", "path": "/spec/versions/0/name", "value": "$(CRD_VERSION)"}]' > config/crd/crd_patch.json
+	cd config/manifests && $(KUSTOMIZE) edit set nameprefix $(CRD_VERSION)-
 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
 	$(OPERATOR_SDK) bundle validate ./bundle
+
+.PHONY: bundle-build-push
+bundle-build-push: operator-build-push bundle ## Build the bundle image.
+	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
 
 # Build and push the catalog image, you need to have updated the catalog/operator_catalog.yaml file with the new version to add it 
 # to the catalog. The catalog image is used to deploy the catalog to the cluster.

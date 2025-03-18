@@ -5,8 +5,3 @@ resources:
 - bases/models.titanml.co_modelorchestras.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
-patches:
-- path: crd_patch.json
-  target:
-    kind: CustomResourceDefinition
