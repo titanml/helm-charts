@@ -2,8 +2,10 @@
 # /bin/opm (with serve subcommand)
 FROM quay.io/operator-framework/opm:latest as builder
 
+ARG CATALOG_DIR
+
 # Copy FBC root into image at /configs and pre-populate serve cache
-ADD catalog/configs /configs
+ADD ${CATALOG_DIR} /configs
 RUN ["/bin/opm", "serve", "/configs", "--cache-dir=/tmp/cache", "--cache-only"]
 
 FROM quay.io/operator-framework/opm:latest

@@ -1,0 +1,11 @@
+# This is the set of operator bundles that we support in our Dev Catalog. To add another version of the operator, add another bundle to the list.
+# Then use the `make catalog-build-push` to rebuild the catalog image and push it to dockerhub.
+Schema: olm.semver
+GenerateMajorChannels: true
+GenerateMinorChannels: false
+# For our internal cluster we only use Stable as we want to have a single channel for all the bundles. Add new versions to this channel
+# freely to test them out. Once they are production ready, migrate them to the production file ./operator_catalog_prod.yaml initially in 
+# the fast channel and then once confident in its performance to the stable channel. 
+Stable:
+  Bundles:
+  - Image: docker.io/tytn/operator-bundle:0.1.0

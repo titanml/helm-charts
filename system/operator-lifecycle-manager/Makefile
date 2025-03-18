@@ -6,6 +6,9 @@
 VERSION ?= 0.1.0
 CRD_VERSION ?= v1alpha1
 
+# DEV defines if the bundle is built for development purposes and is intended to be deployed internally.
+DEV ?= 0
+
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
 # To re-generate a bundle for other specific channels without changing the standard setup, you can:
@@ -198,15 +201,21 @@ bundle: kustomize operator-sdk sync-charts ## Generate bundle manifests and meta
 bundle-build-push: operator-build-push bundle ## Build the bundle image.
 	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
 
+ifeq ($(DEV), 1)
+CATALOG_DIR:=catalog/dev_configs
+CATALOG_TEMPLATE:=catalog/operator_catalog_dev.yaml
+CATALOG_VERSION:=$(VERSION)-dev
+else
+CATALOG_DIR:=catalog/prod_configs
+CATALOG_TEMPLATE:=catalog/operator_catalog_prod.yaml
+CATALOG_VERSION:=$(VERSION)-prod
+endif
+
 # Build and push the catalog image, you need to have updated the catalog/operator_catalog.yaml file with the new version to add it 
 # to the catalog. The catalog image is used to deploy the catalog to the cluster.
 .PHONY: catalog-build-push
 catalog-build-push: opm ## Build and push the catalog image.
-	$(OPM) alpha render-template semver -o yaml < catalog/operator_catalog.yaml > catalog/configs/catalog.yaml
-	$(OPM) validate catalog/configs
-	depot build -f catalog.Dockerfile -t $(IMAGE_TAG_BASE)-catalog:$(VERSION) . --push
-
-.PHONY: deploy-catalog
-deploy-catalog: yq catalog-build-push ## Deploy the catalog image to the cluster
-	@echo "Deploying catalog to the cluster"
-	VERSION_NUMBER=$(VERSION) $(YQ) e '.spec.source.image.ref = "docker.io/tytn/operator-catalog:" + env(VERSION_NUMBER)' catalog/clusterCatalog.yaml | kubectl apply -f -
+	mkdir -p $(CATALOG_DIR)
+	$(OPM) alpha render-template semver -o yaml < $(CATALOG_TEMPLATE) > $(CATALOG_DIR)/catalog.yaml
+	$(OPM) validate $(CATALOG_DIR)
+	depot build -f catalog.Dockerfile --build-arg "CATALOG_DIR=$(CATALOG_DIR)" -t $(IMAGE_TAG_BASE)-catalog:$(CATALOG_VERSION) . --push

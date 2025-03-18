@@ -1,0 +1,15 @@
+{{- range $clusterExtension := .Values.clusterExtension }}
+apiVersion: olm.operatorframework.io/v1
+kind: ClusterExtension
+metadata:
+  name: {{- $clusterExtension.name }}
+  labels:
+    {{- include "catalog.labels" . | nindent 4 }}
+  {{- with $clusterExtension.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- $clusterExtension.clusterExtension.spec | toYaml | nindent 2 }}
+---
+{{- end }}

@@ -78,14 +78,6 @@ Once this is done you can push a new catalog image containing your new operator:
 make catalog-build-push
 ```
 
-Or you can deploy the new catalog directly to the cluster, which will also do the building and pushing for you:
-
-```bash
-make deploy-catalog
-```
-
-**Note:** Make sure the namespace	`model-orchestra-operator-system` exists, if not create it with `kubectl create namespace model-orchestra-operator-system`.
-
 ## Custom Resource Examples
 
 For example, to deploy a Model Orchestra with a single application:
