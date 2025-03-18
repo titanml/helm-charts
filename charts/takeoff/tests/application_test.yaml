@@ -139,7 +139,6 @@ tests:
             metadata:
               scalerAddress: test-release-takeoff-controller.test-namespace.svc.cluster.local:3005
               target_scalable: "15"
-              target_scaled-app: "15"
 
   - it: should configure ingress correctly when enabled
     documentSelector:
