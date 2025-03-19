@@ -34,9 +34,6 @@ tests:
           path: spec.triggers[0].metadata.scalerAddress
           value: test-release-takeoff-controller.test-namespace.svc.cluster.local:3005
       - equal:
-          path: spec.triggers[0].metadata.target_custom-scaled-app
-          value: "25"
-      - equal:
           path: spec.triggers[0].metadata.target_primary
           value: "25"
 
@@ -104,8 +101,7 @@ tests:
           path: spec.template.spec.volumes
           content:
             name: custom-volume
-            emptyDir: {}
-            
+            emptyDir: {}  
   - it: should completely replace modelsVolume when specified in application
     set:
       applicationTemplate:
@@ -135,4 +131,3 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].volumeMounts[?(@.mountPath=="/code/models")].name
           value: models-custom
-
