@@ -255,10 +255,8 @@ applicationTemplate:
   # Supply a volume spec here. If supplying a persistentVolumeClaim, bear in mind
   # that it needs to be mountable by all the pods in the application: i.e.
   # ReadWriteMany, ReadOnlyMany, or ReadWriteOnce w/ all the pods on the same node.
+  # Default (if not provided) will be an emptyDir with Memory medium.
   modelsVolume:
-    name: models
-    emptyDir:
-      medium: Memory
     # Be careful supplying a hostPath volume: the size is unbounded, and pods
     # can use it to break out on the host
     # hostPath:

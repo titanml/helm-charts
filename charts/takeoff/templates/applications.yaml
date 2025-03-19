@@ -2,7 +2,7 @@
   {{/* First, deep copy the application template */}}
   {{- $mergedValues := deepCopy $.Values.applicationTemplate }}
   
-  {{/* Special handling for modelsVolume - if it exists in the app config, preserve it for later complete replacement */}}
+  {{/* Special handling for modelsVolume */}}
   {{- $appModelsVolume := dict }}
   {{- if hasKey $baseValues "modelsVolume" }}
     {{- $appModelsVolume = deepCopy $baseValues.modelsVolume }}
@@ -12,9 +12,16 @@
   {{/* Merge application values into template */}}
   {{- $mergedValues = mustMergeOverwrite $mergedValues $baseValues }}
   
-  {{/* If app-specific modelsVolume was provided, completely replace the template value */}}
+  {{/* Handle modelsVolume - use application specific if provided, fall back to template, or use default if neither specified */}}
   {{- if not (empty $appModelsVolume) }}
+    {{/* If app-specific modelsVolume was provided, use it */}}
     {{- $_ := set $mergedValues "modelsVolume" $appModelsVolume }}
+  {{- else }}
+    {{- if or (not (hasKey $mergedValues "modelsVolume")) (empty $mergedValues.modelsVolume) }}
+      {{/* If no modelsVolume was specified in either place, use the default */}}
+      {{- $defaultModelsVolume := dict "name" "models" "emptyDir" (dict "medium" "Memory") }}
+      {{- $_ := set $mergedValues "modelsVolume" $defaultModelsVolume }}
+    {{- end }}
   {{- end }}
 
   {{/* Set the required env vars needed for each application deployment */}}
