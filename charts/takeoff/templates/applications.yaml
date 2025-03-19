@@ -1,5 +1,21 @@
 {{- range $appName, $baseValues := .Values.applications }}
-  {{- $mergedValues := mustMergeOverwrite (deepCopy $.Values.applicationTemplate) $baseValues  }}
+  {{/* First, deep copy the application template */}}
+  {{- $mergedValues := deepCopy $.Values.applicationTemplate }}
+  
+  {{/* Special handling for modelsVolume - if it exists in the app config, preserve it for later complete replacement */}}
+  {{- $appModelsVolume := dict }}
+  {{- if hasKey $baseValues "modelsVolume" }}
+    {{- $appModelsVolume = deepCopy $baseValues.modelsVolume }}
+    {{- $baseValues = omit $baseValues "modelsVolume" }}
+  {{- end }}
+  
+  {{/* Merge application values into template */}}
+  {{- $mergedValues = mustMergeOverwrite $mergedValues $baseValues }}
+  
+  {{/* If app-specific modelsVolume was provided, completely replace the template value */}}
+  {{- if not (empty $appModelsVolume) }}
+    {{- $_ := set $mergedValues "modelsVolume" $appModelsVolume }}
+  {{- end }}
 
   {{/* Set the required env vars needed for each application deployment */}}
   {{- $requiredEnv := list }}
