@@ -42,9 +42,12 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# This section is for setting up the Model Orchestra Custom Resource that is deployed and managed by the console.
+# This section is for setting up the Model Orchestra Custom Resource that is deployed and managed by the console. The crdVersion is
+# the version of the Custom Resource Definition that is being used. The operatorVersion is the version of the operator that is being
+# used to manage the Custom Resource. See the ../../CHANGELOG.md for more information on the versions.
 modelOrchestra:
-  apiVersion: models.titanml.co/v1alpha2
+  crdVersion: v1alpha1
+  operatorVersion: 0.2.0
 
 backend:
   # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/

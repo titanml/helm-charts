@@ -1,11 +1,12 @@
-apiVersion: {{ .Values.modelOrchestra.apiVersion }}
+apiVersion: models.titanml.co/{{ .Values.modelOrchestra.crdVersion }}
 kind: ModelOrchestra
 metadata:
-  name: {{ .Values.modelOrchestra.name | default (include "console.fullname" $) }}
+  name: {{ include "console.fullname" $ }}
   labels:
+    app.kubernetes.io/controller-version: {{ .Values.modelOrchestra.operatorVersion }}
     {{- include "console.labels" . | nindent 4 }}
 spec:
-  fullnameOverride: {{ .Values.modelOrchestra.name | default (include "console.fullname" $) }}
+  fullnameOverride: {{ include "console.fullname" $ }}
   nameOverride: ""
   # Empty applications object which is populated later
   applications: {}

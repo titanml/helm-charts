@@ -8,7 +8,11 @@ metadata:
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
-  customresourcedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - kind: ModelOrchestra
+      name: modelorchestras.titanml.com
+      version: v1alpha1
   description: Operator for controlling model orchestra objects.
   displayName: model-orchestra-operator
   icon:

@@ -26,6 +26,14 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Selector labels
+*/}}
+{{- define "catalog.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "catalog.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
 Common labels
 */}}
 {{- define "catalog.labels" -}}
@@ -35,14 +43,6 @@ helm.sh/chart: {{ include "catalog.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "catalog.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "catalog.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*

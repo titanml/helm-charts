@@ -2,7 +2,6 @@
 # used to generate the 'manifests/' directory in a bundle.
 resources:
 - bases/model-orchestra-operator.clusterserviceversion.yaml
-- ../crd
 - ../rbac
 - ../manager
 - metrics_service.yaml
@@ -15,7 +14,7 @@ namespace: model-orchestra-operator-system
 # "wordpress" becomes "alices-wordpress".
 # Note that it should also match with the prefix (text before '-') of the namespace
 # field above.
-namePrefix: v1alpha1-
+nameSuffix: -0-2-3
 
 # Labels to add to all resources and selectors.
 #labels:
@@ -39,5 +38,9 @@ patches:
 - path: manager_metrics_patch.yaml
   target:
     kind: Deployment
+- path: clusterServiceVersionPatch.yaml
+  target:
+    kind: ClusterServiceVersion
+
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

@@ -1,4 +1,4 @@
-apiVersion: models.titanml.co/v1alpha2
+apiVersion: models.titanml.co/v1alpha1
 kind: ModelOrchestra
 metadata:
   name: model-orchestra-sample

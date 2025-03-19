@@ -2,7 +2,7 @@
 apiVersion: olm.operatorframework.io/v1
 kind: ClusterCatalog
 metadata:
-  name: {{ include "catalog.fullname" $ }}
+  name: operatorhubio
   labels:
     {{- include "catalog.labels" . | nindent 4 }}
   {{- with .Values.clusterCatalog.annotations }}

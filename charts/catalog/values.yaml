@@ -34,24 +34,58 @@ clusterCatalog:
   annotations: {}
   spec:
     source:
-    type: Image
-    image:
-      ref: docker.io/tytn/operator-catalog:0.1.0-prod
-      pollIntervalMinutes: 10
+      type: Image
+      image:
+        ref: docker.io/tytn/operator-catalog:0.2.3-prod
+        pollIntervalMinutes: 10
 
 # This section is for the cluster extensions that describe how to deploy the operator. More information can be found here: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#clusterextension
-clusterExtensions: []
-  # - name: model-orchestra-operator-0.1.0
-  #   annotations: {}
-  #   spec:
-  #     namespace: model-orchestra-operator-system # namespace to deploy the operator into
-  #     serviceAccount:
-  #       name: model-orchestra-operator # service account name to use
-  #     # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
-  #     source:
-  #       sourceType: Catalog
-  #       # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
-  #       catalog:
-  #         packageName: model-orchestra-operator # name of the operator
-  #         channels: ["stable-v0"] # channels to subscribe to
-  #         version: "v0.1.0" # specific version of the operator to install
+clusterExtension:
+  enabled: true
+  versions:
+  - name: model-orchestra-operator-stable-v0
+    annotations: {}
+    spec:
+      namespace: model-orchestra-operator-system # namespace to deploy the operator into
+      serviceAccount:
+        name: model-orchestra-operator # service account name to use
+      source:
+        sourceType: Catalog # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
+        catalog: # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
+          packageName: model-orchestra-operator # name of the operator
+          channels: ["stable-v0"] # channels to subscribe to
+          # version: "v0.2.2" # specific version of the operator to install
+
+customResourceDefinition:
+  enabled: true
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Schema for the Model Orchestras API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of Model Orchestra
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+          status:
+            description: Status defines the observed state of Model Orchestra
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
