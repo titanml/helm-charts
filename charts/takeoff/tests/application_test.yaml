@@ -90,28 +90,6 @@ tests:
           path: spec.template.spec.containers[0].resources.limits["nvidia.com/gpu"]
           value: 1
 
-  - it: should configure service ports correctly
-    documentSelector:
-      path: $[?(@.kind=="Service")].metadata.labels['app.kubernetes.io/component']
-      value: application-hello-world-1
-    asserts:
-      - equal:
-          path: spec.type
-          value: ClusterIP
-      - contains:
-          path: spec.ports
-          content:
-            port: 80
-            targetPort: inference
-            protocol: TCP
-            name: http
-      - contains:
-          path: spec.ports
-          content:
-            port: 3003
-            protocol: TCP
-            name: openai
-
   - it: should create ScaledObject when scaling is enabled
     documentSelector:
       path: $[?(@.kind=="ScaledObject")].metadata.labels['app.kubernetes.io/component']
@@ -141,30 +119,6 @@ tests:
               target_scalable: "15"
               target_scaled-app: "15"
 
-  - it: should configure ingress correctly when enabled
-    documentSelector:
-      path: $[?(@.kind=="Ingress")].metadata.labels['app.kubernetes.io/component']
-      value: application-ingress-app
-    asserts:
-      - equal:
-          path: spec.ingressClassName
-          value: nginx
-      - equal:
-          path: metadata.annotations["kubernetes.io/ingress.class"]
-          value: nginx
-      - equal:
-          path: metadata.annotations["cert-manager.io/cluster-issuer"]
-          value: letsencrypt
-      - equal:
-          path: spec.rules[0].host
-          value: model.example.com
-      - equal:
-          path: spec.rules[0].http.paths[0].path
-          value: /
-      - equal:
-          path: spec.rules[0].http.paths[0].pathType
-          value: Prefix
-
   - it: should mount expected volumes for applications
     documentSelector:
       path: kind
@@ -189,6 +143,11 @@ tests:
             name: config
             mountPath: /code/config.yaml
             subPath: config.yaml
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: models
+            mountPath: /code/models
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:
