@@ -102,3 +102,59 @@ tests:
           content:
             name: custom-volume
             emptyDir: {}
+  - it: should completely replace modelsVolume when specified in application
+    set:
+      applicationTemplate:
+        modelsVolume:
+          name: models-template
+          emptyDir:
+            medium: Memory
+      applications:
+        models-app:
+          modelsVolume:
+            name: models-custom
+            hostPath:
+              path: /custom/models/path
+              type: DirectoryOrCreate
+    documentSelector:
+      path: $[?(@.kind=="Deployment")].metadata.labels['app.kubernetes.io/component']
+      value: application-models-app
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=="models-custom")].hostPath.path
+          value: /custom/models/path
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=="models-custom")].hostPath.type
+          value: DirectoryOrCreate
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=="models-template")]
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[?(@.mountPath=="/code/models")].name
+          value: models-custom
+
+  - it: should ensure no mixed volume types when replacing modelsVolume
+    set:
+      applicationTemplate:
+        modelsVolume:
+          name: models-template
+          emptyDir:
+            medium: Memory
+      applications:
+        mixed-volume-app:
+          modelsVolume:
+            name: models-custom
+            hostPath:
+              path: /custom/models/path
+              type: DirectoryOrCreate
+    documentSelector:
+      path: $[?(@.kind=="Deployment")].metadata.labels['app.kubernetes.io/component']
+      value: application-mixed-volume-app
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=="models-custom")].hostPath.path
+          value: /custom/models/path
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=="models-custom")].emptyDir
+      - equal:
+          path: spec.template.spec.initContainers[0].volumeMounts[0].name
+          value: models-custom
