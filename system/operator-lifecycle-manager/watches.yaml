@@ -3,7 +3,8 @@
   version: v1alpha1
   kind: ModelOrchestra
   chart: helm-charts/model-orchestra
-  labelSelector:
-    matchLabels:
-      operatorVersion: 0.2.3
+  selector:
+    annotations:
+      operatorVersion: 0.2.4
+
 # +kubebuilder:scaffold:watch

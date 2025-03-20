@@ -11,8 +11,6 @@ fullnameOverride: ""
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
   # Automatically mount a ServiceAccount's API credentials?
   automount: true
   # Annotations to add to the service account
@@ -22,10 +20,6 @@ serviceAccount:
   name: ""
 # The following sections create the role and roleBinding for the service account to edit the custom resources. If you enable 
 # roleBinding you must enable role or it will not deploy.
-role:
-  enabled: false
-roleBinding:
-  enabled: false
 
 # This section is for the cluster catalog that houses operator bundle definitions. More information can be found here: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#clustercatalog
 clusterCatalog:
@@ -36,7 +30,7 @@ clusterCatalog:
     source:
       type: Image
       image:
-        ref: docker.io/tytn/operator-catalog:0.2.3-prod
+        ref: docker.io/tytn/operator-catalog:0.2.4-prod
         pollIntervalMinutes: 10
 
 # This section is for the cluster extensions that describe how to deploy the operator. More information can be found here: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#clusterextension
@@ -47,13 +41,12 @@ clusterExtension:
     annotations: {}
     spec:
       namespace: model-orchestra-operator-system # namespace to deploy the operator into
-      serviceAccount:
-        name: model-orchestra-operator # service account name to use
       source:
         sourceType: Catalog # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
-        catalog: # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
+        catalog:
+          # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
           packageName: model-orchestra-operator # name of the operator
-          channels: ["stable-v0"] # channels to subscribe to
+          channels: [ "stable-v0" ] # channels to subscribe to
           # version: "v0.2.2" # specific version of the operator to install
 
 customResourceDefinition:
@@ -65,14 +58,10 @@ customResourceDefinition:
         description: Schema for the Model Orchestras API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           metadata:
             type: object

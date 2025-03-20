@@ -2,6 +2,6 @@ apiVersion: models.titanml.co/v1alpha1
 kind: ModelOrchestra
 metadata:
   name: my-model
-  labels:
+  annotations:
     operatorVersion: 0.2.1
 spec: {}

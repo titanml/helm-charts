@@ -78,6 +78,11 @@ Once this is done you can push a new catalog image containing your new operator:
 make catalog-build-push
 ```
 
+```bash
+kubectl create namespace model-orchestra-operator-system
+helm install 
+```
+
 ## Custom Resource Examples
 
 For example, to deploy a Model Orchestra with a single application:

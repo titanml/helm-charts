@@ -3,7 +3,7 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.2.3
+VERSION ?= 0.2.4
 K8S_SAFE_VERSION := $(shell echo $(VERSION) | tr . -)
 CRD_VERSION ?= v1alpha1
 
@@ -163,6 +163,13 @@ YQ = $(shell which yq)
 endif
 endif
 
+.PHONY: sed
+ifeq (,$(shell which gsed 2>/dev/null))
+SED = sed
+else
+SED = gsed
+endif
+
 .PHONY: install
 install: kustomize helm-operator operator-sdk opm yq ## Install dependencies
 
@@ -190,10 +197,11 @@ operator-build-push: sync-charts ## Build and push docker image with the manager
 	depot build -t ${IMG} . --push
 
 .PHONY: bundle
-bundle: yq kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
+bundle: sed yq kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
 	rm -rf bundle
 	$(OPERATOR_SDK) generate kustomize manifests -q
-	sed -i 's/version:.*/version: $(CRD_VERSION)/g' watches.yaml
+	$(SED) -i 's/version:.*/version: $(CRD_VERSION)/g' watches.yaml
+	$(SED) -i 's/operatorVersion:.*/operatorVersion: $(VERSION)/g' watches.yaml
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(YQ) -n '[{"op": "replace", "path": "/spec/customresourcedefinitions/owned/0/version", "value": "$(CRD_VERSION)"}]' > config/manifests/clusterServiceVersionPatch.yaml
 	cd config/manifests && $(KUSTOMIZE) edit set namesuffix -- -$(K8S_SAFE_VERSION)
