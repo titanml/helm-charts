@@ -93,15 +93,15 @@ gateway:
     # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
     ports:
       - port: 80
-        targetPort: inference
+        targetPort: openai
         protocol: TCP
         name: http
       - port: 3001
         protocol: TCP
         name: management
-      - port: 3003
+      - port: 3000
         protocol: TCP
-        name: openai
+        name: inference
       - port: 3005
         protocol: TCP
         name: internal
@@ -228,58 +228,6 @@ applicationTemplate:
     # runAsNonRoot: true
     # runAsUser: 1000
 
-  ports:
-    - containerPort: 3000
-      protocol: TCP
-      name: inference
-    - containerPort: 3001
-      protocol: TCP
-      name: management
-    - name: openai
-      containerPort: 3003
-      protocol: TCP
-    - containerPort: 3005
-      protocol: TCP
-      name: internal
-
-  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-  service:
-    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-    type: ClusterIP
-    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-    ports:
-      - port: 80
-        targetPort: inference
-        protocol: TCP
-        name: http
-      - port: 3001
-        protocol: TCP
-        name: management
-      - port: 3003
-        protocol: TCP
-        name: openai
-      - port: 3005
-        protocol: TCP
-        name: internal
-
-  # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-  ingress:
-    enabled: false
-    className: ""
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-
   resources:
     {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -302,6 +250,18 @@ applicationTemplate:
     # httpGet:
     #   path: /healthz
     #   port: inference
+
+  # The volume to which the models for this container should be saved and loaded.
+  # Supply a volume spec here. If supplying a persistentVolumeClaim, bear in mind
+  # that it needs to be mountable by all the pods in the application: i.e.
+  # ReadWriteMany, ReadOnlyMany, or ReadWriteOnce w/ all the pods on the same node.
+  # Default (if not provided) will be an emptyDir with Memory medium.
+  modelsVolume:
+    # Be careful supplying a hostPath volume: the size is unbounded, and pods
+    # can use it to break out on the host
+    # hostPath:
+    #   path: /var/lib/models
+    #   type: DirectoryOrCreate
 
   # Additional volumes on the output Deployment definition.
   volumes: []

@@ -1,5 +1,28 @@
 {{- range $appName, $baseValues := .Values.applications }}
-  {{- $mergedValues := mustMergeOverwrite (deepCopy $.Values.applicationTemplate) $baseValues  }}
+  {{/* First, deep copy the application template */}}
+  {{- $mergedValues := deepCopy $.Values.applicationTemplate }}
+  
+  {{/* Special handling for modelsVolume */}}
+  {{- $appModelsVolume := dict }}
+  {{- if hasKey $baseValues "modelsVolume" }}
+    {{- $appModelsVolume = deepCopy $baseValues.modelsVolume }}
+    {{- $baseValues = omit $baseValues "modelsVolume" }}
+  {{- end }}
+  
+  {{/* Merge application values into template */}}
+  {{- $mergedValues = mustMergeOverwrite $mergedValues $baseValues }}
+  
+  {{/* Handle modelsVolume - use application specific if provided, fall back to template, or use default if neither specified */}}
+  {{- if not (empty $appModelsVolume) }}
+    {{/* If app-specific modelsVolume was provided, use it */}}
+    {{- $_ := set $mergedValues "modelsVolume" $appModelsVolume }}
+  {{- else }}
+    {{- if or (not (hasKey $mergedValues "modelsVolume")) (empty $mergedValues.modelsVolume) }}
+      {{/* If no modelsVolume was specified in either place, use the default */}}
+      {{- $defaultModelsVolume := dict "name" "models" "emptyDir" (dict "medium" "Memory") }}
+      {{- $_ := set $mergedValues "modelsVolume" $defaultModelsVolume }}
+    {{- end }}
+  {{- end }}
 
   {{/* Set the required env vars needed for each application deployment */}}
   {{- $requiredEnv := list }}
@@ -102,6 +125,13 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: models-cache-manager
+          image: busybox
+          command: ["sh", "-c", "chmod -R 777 /models"]
+          volumeMounts:
+          - mountPath: /models
+            name: {{ $mergedValues.modelsVolume.name }}
       containers:
         - name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
           {{- with $mergedValues.securityContext }}
@@ -134,6 +164,8 @@ spec:
               subPath: config.yaml
             - name: dshm
               mountPath: /dev/shm
+            - name: {{ $mergedValues.modelsVolume.name }}
+              mountPath: /code/models
           {{- with $mergedValues.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -144,6 +176,7 @@ spec:
         - name: dshm
           emptyDir:
             medium: Memory
+        - {{- $mergedValues.modelsVolume | toYaml | nindent 10 }}
       {{- with $mergedValues.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -160,68 +193,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
-  labels:
-    app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "model-orchestra.labels" $ | nindent 4 }}
-spec:
-  type: {{ $mergedValues.service.type }}
-  {{- with $mergedValues.service.ports }}
-  ports:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-  selector:
-    app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "model-orchestra.selectorLabels" $ | nindent 4 }}
----
-{{- if $mergedValues.ingress.enabled -}}
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
-  labels:
-    app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "model-orchestra.labels" $ | nindent 4 }}
-  {{- with $mergedValues.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  {{- with $mergedValues.ingress.className }}
-  ingressClassName: {{ . }}
-  {{- end }}
-  {{- if $mergedValues.ingress.tls }}
-  tls:
-    {{- range $mergedValues.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
-  rules:
-    {{- range $mergedValues.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- with .pathType }}
-            pathType: {{ . }}
-            {{- end }}
-            backend:
-              service:
-                name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
-                port:
-                  number: {{ $mergedValues.service.port }}
-          {{- end }}
-    {{- end }}
----
-{{- end }}
 {{- if $mergedValues.scaling.enabled }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -243,13 +214,12 @@ scaleTargetRef:
 {{- $templateScalingSpec := fromYaml $scaledObjectTemplate }}
 
 {{- $consumerGroupKey := printf "target_%s" $mergedValues.readerConfig.consumerGroup }}
-{{- $readerIdKey := printf "target_%s" $appName }}
 {{- $serviceName := printf "%s-%s" (include "model-orchestra.fullname" $) $appName }}
-{{- $scalerAddress := printf "%s-gateway.%s.svc.cluster.local:3005" (include "model-orchestra.fullname" $) $.Release.Namespace}}
+{{- $scalerAddress := printf "%s-controller.%s.svc.cluster.local:3005" (include "model-orchestra.fullname" $) $.Release.Namespace}}
 {{- $target := (toString $mergedValues.scaling.metricTarget.value)}}
 
 {{- $triggers := list }}
-  {{- $trigger := dict "type" "external-push" "metadata" (dict "scalerAddress" $scalerAddress $consumerGroupKey $target $readerIdKey $target) }}
+  {{- $trigger := dict "type" "external-push" "metadata" (dict "scalerAddress" $scalerAddress $consumerGroupKey $target) }}
   {{- $triggers = append $triggers $trigger }}
 
 {{- $specWithoutMetricTarget := omit $mergedValues.scaling.spec "metricTarget" }}
