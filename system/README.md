@@ -8,7 +8,7 @@ Before you begin, ensure you have the following installed:
 - Helm (version 3.x)
 - Helm diff plugin (optional if running `helmfile apply`): [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
 
-## Usage
+## Installation
 
 1. **Install Helmfile**
    Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation) or if using linux:
@@ -30,7 +30,13 @@ Before you begin, ensure you have the following installed:
    ```bash
    kubectl create namespace keda && \
       kubectl create namespace monitoring && \
-      kubectl create namespace argocd
+      kubectl create namespace argocd && \
+      kubectl create namespace model-orchestra-operator-system
+   ```
+
+3. **Install Operator Lifecycle Manager (OLM)**
+   ```bash
+   curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
    ```
 
 3. **Get Helmfile and Edit**
@@ -54,4 +60,5 @@ Before you begin, ensure you have the following installed:
    kubectl get all -n keda
    kubectl get all -n monitoring
    kubectl get all -n argocd
+   kubectl get all -n model-orchestra-operator-system
    ```

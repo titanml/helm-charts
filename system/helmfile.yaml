@@ -23,6 +23,11 @@ releases:
     # Edit this value to be a storage class that is available in your cluster
     value: microk8s-hostpath
 
+- name: catalog
+  chart: titanml/catalog
+  version: 0.1.0
+  namespace: model-orchestra-operator-system
+
 - name: argo-cd
   chart: argo-cd/argo-cd
   version: 7.0.0
