@@ -60,4 +60,8 @@ rules:
   resources:
   - "deployments"
 
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["servicemonitors"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
 # +kubebuilder:scaffold:rules

@@ -160,7 +160,7 @@ tests:
           path: spec.ports
           content:
             port: 80
-            targetPort: inference
+            targetPort: openai
             protocol: TCP
             name: http
       - contains:
@@ -172,9 +172,9 @@ tests:
       - contains:
           path: spec.ports
           content:
-            port: 3003
+            port: 3000
             protocol: TCP
-            name: openai
+            name: inference
       - contains:
           path: spec.ports
           content:
