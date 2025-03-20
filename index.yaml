@@ -617,6 +617,16 @@ entries:
     version: 0.1.0
   takeoff-console:
   - apiVersion: v2
+    appVersion: 0.2.0
+    created: "2025-03-20T16:56:34.547913868Z"
+    description: A Helm chart for Kubernetes
+    digest: 21c69535e9473b61a2f5deb7df70c726c67306b9f78434380f8d7781aef93838
+    name: takeoff-console
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/takeoff-console-0.2.8/takeoff-console-0.2.8.tgz
+    version: 0.2.8
+  - apiVersion: v2
     appVersion: 0.1.8
     created: "2025-03-16T20:37:36.436080032Z"
     description: A Helm chart for Kubernetes
@@ -868,4 +878,4 @@ entries:
     urls:
     - https://github.com/titanml/helm-charts/releases/download/takeoff-system-0.1.0/takeoff-system-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-20T16:50:57.568274853Z"
+generated: "2025-03-20T16:56:34.548048669Z"
