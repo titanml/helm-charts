@@ -4,7 +4,7 @@
   kind: ModelOrchestra
   chart: helm-charts/model-orchestra
   selector:
-    annotations:
-      operatorVersion: 0.2.4
+    matchLabels:
+      operatorVersion: 0.2.13
 
 # +kubebuilder:scaffold:watch

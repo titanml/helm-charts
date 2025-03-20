@@ -3,7 +3,7 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.2.4
+VERSION ?= 0.2.13
 K8S_SAFE_VERSION := $(shell echo $(VERSION) | tr . -)
 CRD_VERSION ?= v1alpha1
 
@@ -192,16 +192,13 @@ sync-charts: verify-chart ## Sync charts from parent directory
 
 ##@ Deployment
 
-.PHONY: operator-build-push
-operator-build-push: sync-charts ## Build and push docker image with the manager
-	depot build -t ${IMG} . --push
-
 .PHONY: bundle
 bundle: sed yq kustomize operator-sdk sync-charts ## Generate bundle manifests and metadata, then validate generated files.
 	rm -rf bundle
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	$(SED) -i 's/version:.*/version: $(CRD_VERSION)/g' watches.yaml
 	$(SED) -i 's/operatorVersion:.*/operatorVersion: $(VERSION)/g' watches.yaml
+	$(YQ) -n '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--leader-election-id=model-orchestra-operator-$(K8S_SAFE_VERSION)"}]' > config/manager/deploymentPatch.yaml
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(YQ) -n '[{"op": "replace", "path": "/spec/customresourcedefinitions/owned/0/version", "value": "$(CRD_VERSION)"}]' > config/manifests/clusterServiceVersionPatch.yaml
 	cd config/manifests && $(KUSTOMIZE) edit set namesuffix -- -$(K8S_SAFE_VERSION)
@@ -209,7 +206,8 @@ bundle: sed yq kustomize operator-sdk sync-charts ## Generate bundle manifests a
 	$(OPERATOR_SDK) bundle validate ./bundle
 
 .PHONY: bundle-build-push
-bundle-build-push: operator-build-push bundle ## Build the bundle image.
+bundle-build-push: bundle ## Build then pushes the bundle and operator images.
+	depot build -t ${IMG} . --push
 	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
 
 ifeq ($(DEV), 1)

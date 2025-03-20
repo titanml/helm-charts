@@ -5,4 +5,9 @@ kind: Kustomization
 images:
 - name: controller
   newName: tytn/operator
-  newTag: 0.2.4
+  newTag: 0.2.13
+
+patches:
+- path: deploymentPatch.yaml
+  target:
+    kind: Deployment

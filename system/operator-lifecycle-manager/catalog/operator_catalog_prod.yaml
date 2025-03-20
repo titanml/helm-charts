@@ -8,9 +8,10 @@ GenerateMinorChannels: false
 # users migrate to the new version.
 Stable:
   Bundles:
-  - Image: docker.io/tytn/operator-bundle:0.2.4
+  - Image: docker.io/tytn/operator-bundle:0.2.12
 # This is the channel that developers will subscribe to. This channel will have the latest bundles that are not production ready.
 # This channel will be updated frequently and may contain breaking changes.
 Fast:
   Bundles:
-  - Image: docker.io/tytn/operator-bundle:0.2.4
+  - Image: docker.io/tytn/operator-bundle:0.2.12
+  - Image: docker.io/tytn/operator-bundle:0.2.13

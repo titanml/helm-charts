@@ -60,7 +60,6 @@ spec:
       containers:
       - args:
           - --leader-elect
-          - --leader-election-id=model-orchestra-operator
           - --health-probe-bind-address=:8081
         image: controller:latest
         name: manager

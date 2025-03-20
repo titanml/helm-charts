@@ -3,7 +3,7 @@ kind: ModelOrchestra
 metadata:
   name: {{ include "console.fullname" $ }}
   labels:
-    app.kubernetes.io/controller-version: {{ .Values.modelOrchestra.operatorVersion }}
+    operatorVersion: {{ .Values.modelOrchestra.operatorVersion }}
     {{- include "console.labels" . | nindent 4 }}
 spec:
   fullnameOverride: {{ include "console.fullname" $ }}

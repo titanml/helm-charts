@@ -8,4 +8,5 @@ GenerateMinorChannels: false
 # the fast channel and then once confident in its performance to the stable channel. 
 Stable:
   Bundles:
-  - Image: docker.io/tytn/operator-bundle:0.2.4
+  - Image: docker.io/tytn/operator-bundle:0.2.12
+  - Image: docker.io/tytn/operator-bundle:0.2.13

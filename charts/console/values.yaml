@@ -47,7 +47,7 @@ ingress:
 # used to manage the Custom Resource. See the ../../CHANGELOG.md for more information on the versions.
 modelOrchestra:
   crdVersion: v1alpha1
-  operatorVersion: 0.2.0
+  operatorVersion: 0.2.13
 
 backend:
   # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
