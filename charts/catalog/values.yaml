@@ -30,7 +30,7 @@ clusterCatalog:
     source:
       type: Image
       image:
-        ref: docker.io/tytn/operator-catalog:0.2.13-prod
+        ref: docker.io/tytn/operator-catalog:0.2.13
         pollIntervalMinutes: 10
 
 # This section is for the cluster extensions that describe how to deploy the operator. More information can be found here: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#clusterextension
@@ -48,16 +48,16 @@ clusterExtension:
           packageName: model-orchestra-operator # name of the operator
           channels: [ "stable-v0" ] # channels to subscribe to
           # version: "v0.2.10" # specific version of the operator to install
-  # - name: model-orchestra-operator-fast-v0
-  #   annotations: {}
-  #   spec:
-  #     namespace: model-orchestra-operator-system # namespace to deploy the operator into
-  #     source:
-  #       sourceType: Catalog # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
-  #       catalog:
-  #         # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
-  #         packageName: model-orchestra-operator # name of the operator
-  #         channels: [ "fast-v0" ] # channels to subscribe to
+          # - name: model-orchestra-operator-fast-v0
+          #   annotations: {}
+          #   spec:
+          #     namespace: model-orchestra-operator-system # namespace to deploy the operator into
+          #     source:
+          #       sourceType: Catalog # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
+          #       catalog:
+          #         # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
+          #         packageName: model-orchestra-operator # name of the operator
+          #         channels: [ "fast-v0" ] # channels to subscribe to
           # version: "v0.2.11" # specific version of the operator to install
 
 customResourceDefinition:

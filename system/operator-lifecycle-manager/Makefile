@@ -210,21 +210,11 @@ bundle-build-push: bundle ## Build then pushes the bundle and operator images.
 	depot build -t ${IMG} . --push
 	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
 
-ifeq ($(DEV), 1)
-CATALOG_DIR:=catalog/dev_configs
-CATALOG_TEMPLATE:=catalog/operator_catalog_dev.yaml
-CATALOG_VERSION:=$(VERSION)-dev
-else
-CATALOG_DIR:=catalog/prod_configs
-CATALOG_TEMPLATE:=catalog/operator_catalog_prod.yaml
-CATALOG_VERSION:=$(VERSION)-prod
-endif
-
 # Build and push the catalog image, you need to have updated the catalog/operator_catalog.yaml file with the new version to add it 
 # to the catalog. The catalog image is used to deploy the catalog to the cluster.
 .PHONY: catalog-build-push
 catalog-build-push: opm ## Build and push the catalog image.
-	mkdir -p $(CATALOG_DIR)
-	$(OPM) alpha render-template semver -o yaml < $(CATALOG_TEMPLATE) > $(CATALOG_DIR)/catalog.yaml
-	$(OPM) validate $(CATALOG_DIR)
-	depot build -f catalog.Dockerfile --build-arg "CATALOG_DIR=$(CATALOG_DIR)" -t $(IMAGE_TAG_BASE)-catalog:$(CATALOG_VERSION) . --push
+	mkdir -p catalog/configs
+	$(OPM) alpha render-template semver -o yaml < catalog/operator_catalog.yaml > catalog/configs/catalog.yaml
+	$(OPM) validate catalog/configs
+	depot build -f catalog.Dockerfile --build-arg "CATALOG_DIR=catalog/configs" -t $(IMAGE_TAG_BASE)-catalog:$(VERSION) . --push

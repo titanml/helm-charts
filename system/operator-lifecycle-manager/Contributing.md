@@ -24,7 +24,7 @@ make bundle-build-push
 
 ### Create and publish a new catalog
 
-The cluster catalog contains all the available versions of our model orchestra operator. To add your new version to the catalog you will need to edit the either/both `./catalog/operator_catalog_dev.yaml` or/and `./catalog/operator_catalog_prod.yaml` files and add a new entry for your version.
+The cluster catalog contains all the available versions of our model orchestra operator. To add your new version to the catalog you will need to edit the `./catalog/operator_catalog.yaml` file and add a new entry for your version.
 
 **MAKE SURE NOT TO REMOVE OR CHANGE PREVIOUS VERSIONS AS CLIENTS MAY BE RELYING ON THEM**
 
@@ -33,7 +33,14 @@ The cluster catalog contains all the available versions of our model orchestra o
 Schema: olm.semver
 GenerateMajorChannels: true
 GenerateMinorChannels: false
+# All new versions that we are confident in can be added to the fast channel, only mature releases should be added to the stable channel.
 Stable:
+  Bundles:
+  - Image: docker.io/tytn/operator-bundle:0.1.0
+  # Add your new version here like:
+  # - Image: docker.io/tytn/operator-bundle:0.2.0
+  # Note here we need the canonical image name.
+Fast:
   Bundles:
   - Image: docker.io/tytn/operator-bundle:0.1.0
   # Add your new version here like:
