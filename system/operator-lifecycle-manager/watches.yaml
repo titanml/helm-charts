@@ -1,0 +1,10 @@
+# Use the 'create api' subcommand to add watches to this file.
+- group: models.titanml.co
+  version: v1alpha1
+  kind: ModelOrchestra
+  chart: helm-charts/model-orchestra
+  selector:
+    matchLabels:
+      operatorVersion: 0.2.13
+
+# +kubebuilder:scaffold:watch

@@ -1,0 +1,14 @@
+{{- if and .Values.roleBinding.enabled .Values.role.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "console.fullname" . }}-role-binding
+subjects:
+- kind: ServiceAccount
+  name: {{ include "console.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "console.fullname" . }}-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
