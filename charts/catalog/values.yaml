@@ -35,9 +35,9 @@ clusterCatalog:
 
 # This section is for the cluster extensions that describe how to deploy the operator. More information can be found here: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#clusterextension
 clusterExtension:
-  enabled: false
+  enabled: true
   versions:
-  - name: model-orchestra-operator-stable-v0
+  - name: model-orchestra-operator-fast-v0
     annotations: {}
     spec:
       namespace: model-orchestra-operator-system # namespace to deploy the operator into
@@ -46,7 +46,7 @@ clusterExtension:
         catalog:
           # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
           packageName: model-orchestra-operator # name of the operator
-          channels: [ "stable-v0" ] # channels to subscribe to
+          channels: [ "fast-v0" ] # channels to subscribe to
           # version: "v0.2.10" # specific version of the operator to install
           # - name: model-orchestra-operator-fast-v0
           #   annotations: {}

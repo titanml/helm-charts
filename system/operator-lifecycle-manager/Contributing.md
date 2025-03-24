@@ -1,4 +1,6 @@
-# Installation
+# Contributing Guide
+
+## Installation
 
 ### Operator Lifecycle Manager (OLM)
 
@@ -26,7 +28,7 @@ make bundle-build-push
 
 The cluster catalog contains all the available versions of our model orchestra operator. To add your new version to the catalog you will need to edit the `./catalog/operator_catalog.yaml` file and add a new entry for your version.
 
-**MAKE SURE NOT TO REMOVE OR CHANGE PREVIOUS VERSIONS AS CLIENTS MAY BE RELYING ON THEM**
+* **NOTE: MAKE SURE NOT TO REMOVE OR CHANGE PREVIOUS VERSIONS AS CLIENTS MAY BE RELYING ON THEM**
 
 ```yaml
 # This is the set of operator bundles that we support in our catalog. To add another version of the operator, add another bundle to the list.
@@ -87,9 +89,29 @@ spec:
     - name: regcred
 ```
 
-## Notes
+### Notes
 
-Some fields can't be reconciled yet. Specifically: anything in the
-`readerConfig` and the gateway config will change the config in the
-corresponding pods, but the pods are not configured to reboot on change.
-This will change in an ensuing version.
+Some fields can't be reconciled yet. Specifically: anything in the `readerConfig` and the gateway config will change the config in the corresponding pods, but the pods are not configured to reboot on change. This will change in an ensuing version.
+
+## Managing Operator
+
+Once the cluster catalog is correctly installed, you can install operators using the `clusterExtension` object provided by OLM.
+
+```yaml
+apiVersion: olm.operatorframework.io/v1
+kind: ClusterExtension
+metadata:
+  name: model-orchestra-operator-v0-stable
+spec:
+  namespace: model-orchestra-operator-system # namespace to deploy the operator into
+  source:
+    sourceType: Catalog # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
+    catalog:
+      # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
+      packageName: model-orchestra-operator # name of the operator
+      channels: [ "stable-v0" ] # channels to subscribe to
+```
+
+TThe OLM will then attempt to install all the non-skipped versions of the operator in the stable channel we have provided in the Cluster Catalog. We can also add the `/spec/source/catalog/version` field to fix the installation to a specific version. If not provided, the OLM will install the latest version in the channel.
+
+Once we have a Cluster Extension specified we can dynamically release new versions of the operator to clients adding them to their Cluster Catalogs. The clients decide their install strategy and we provide all the versions via the `stable` and `fast` channels.
