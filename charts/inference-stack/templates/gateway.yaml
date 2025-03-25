@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "model-orchestra.fullname" $ }}-gateway
+  name: {{ include "inference-stack.fullname" $ }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "model-orchestra.labels" $ | nindent 4 }}
+    {{- include "inference-stack.labels" $ | nindent 4 }}
 data:
   config.yaml: |
     takeoff:
@@ -21,16 +21,16 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "model-orchestra.fullname" . }}-gateway
+  name: {{ include "inference-stack.fullname" . }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "model-orchestra.labels" . | nindent 4 }}
+    {{- include "inference-stack.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.gateway.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/component: gateway
-      {{- include "model-orchestra.selectorLabels" . | nindent 6 }}
+      {{- include "inference-stack.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.gateway.podAnnotations }}
@@ -39,7 +39,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: gateway
-        {{- include "model-orchestra.labels" . | nindent 8 }}
+        {{- include "inference-stack.labels" . | nindent 8 }}
         {{- with .Values.gateway.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -48,13 +48,13 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "model-orchestra.serviceAccountName" . }}
+      serviceAccountName: {{ include "inference-stack.serviceAccountName" . }}
       {{- with .Values.gateway.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ include "model-orchestra.fullname" . }}-gateway
+        - name: {{ include "inference-stack.fullname" . }}-gateway
           {{- with .Values.gateway.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -62,7 +62,7 @@ spec:
           image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag | default (print $.Chart.AppVersion "-cpu") }}"
           imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
           env:
-            {{- include "model-orchestra.gatewayEnv" . | nindent 12 }}
+            {{- include "inference-stack.gatewayEnv" . | nindent 12 }}
           {{- with .Values.gateway.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
@@ -89,7 +89,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "model-orchestra.fullname" $ }}-gateway
+            name: {{ include "inference-stack.fullname" $ }}-gateway
       {{- with .Values.gateway.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -109,10 +109,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "model-orchestra.fullname" . }}-gateway
+  name: {{ include "inference-stack.fullname" . }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "model-orchestra.labels" . | nindent 4 }}
+    {{- include "inference-stack.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.gateway.service.type }}
   {{- with .Values.gateway.service.ports }}
@@ -121,16 +121,16 @@ spec:
   {{- end }}
   selector:
     app.kubernetes.io/component: gateway
-    {{- include "model-orchestra.selectorLabels" . | nindent 4 }}
+    {{- include "inference-stack.selectorLabels" . | nindent 4 }}
 ---
 {{- if .Values.gateway.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "model-orchestra.fullname" . }}-gateway
+  name: {{ include "inference-stack.fullname" . }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "model-orchestra.labels" . | nindent 4 }}
+    {{- include "inference-stack.labels" . | nindent 4 }}
   {{- with .Values.gateway.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -161,7 +161,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "model-orchestra.fullname" $ }}-gateway
+                name: {{ include "inference-stack.fullname" $ }}-gateway
                 port:
                   number: http
           {{- end }}
@@ -172,10 +172,10 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "model-orchestra.fullname" $ }}-gateway
+  name: {{ include "inference-stack.fullname" $ }}-gateway
   labels:
     app.kubernetes.io/component: gateway
-    {{- include "model-orchestra.labels" $ | nindent 4 }}
+    {{- include "inference-stack.labels" $ | nindent 4 }}
 spec:
   endpoints:
   - interval: 15s

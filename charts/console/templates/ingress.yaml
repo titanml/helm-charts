@@ -46,7 +46,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.modelOrchestra.name | default (include "console.fullname" $) }}-gateway
+                name: {{ .Values.inferenceStack.name | default (include "console.fullname" $) }}-gateway
                 port:
                   number: 80
       {{- with .Values.ingress.host }}

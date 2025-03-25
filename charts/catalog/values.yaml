@@ -37,26 +37,26 @@ clusterCatalog:
 clusterExtension:
   enabled: true
   versions:
-  - name: model-orchestra-operator-fast-v0
+  - name: inference-stack-operator-fast-v0
     annotations: {}
     spec:
-      namespace: model-orchestra-operator-system # namespace to deploy the operator into
+      namespace: inference-stack-operator-system # namespace to deploy the operator into
       source:
         sourceType: Catalog # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
         catalog:
           # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
-          packageName: model-orchestra-operator # name of the operator
+          packageName: inference-stack-operator # name of the operator
           channels: [ "fast-v0" ] # channels to subscribe to
           # version: "v0.2.10" # specific version of the operator to install
-          # - name: model-orchestra-operator-fast-v0
+          # - name: inference-stack-operator-fast-v0
           #   annotations: {}
           #   spec:
-          #     namespace: model-orchestra-operator-system # namespace to deploy the operator into
+          #     namespace: inference-stack-operator-system # namespace to deploy the operator into
           #     source:
           #       sourceType: Catalog # source type to use: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#sourceconfig
           #       catalog:
           #         # catalog filter: https://operator-framework.github.io/operator-controller/api-reference/operator-controller-api-reference/#catalogfilter
-          #         packageName: model-orchestra-operator # name of the operator
+          #         packageName: inference-stack-operator # name of the operator
           #         channels: [ "fast-v0" ] # channels to subscribe to
           # version: "v0.2.11" # specific version of the operator to install
 
@@ -66,7 +66,7 @@ customResourceDefinition:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Schema for the Model Orchestras API
+        description: Schema for the Inference Stacks API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
@@ -77,11 +77,11 @@ customResourceDefinition:
           metadata:
             type: object
           spec:
-            description: Spec defines the desired state of Model Orchestra
+            description: Spec defines the desired state of Inference
             type: object
             x-kubernetes-preserve-unknown-fields: true
           status:
-            description: Status defines the observed state of Model Orchestra
+            description: Status defines the observed state of Inference Stack
             type: object
             x-kubernetes-preserve-unknown-fields: true
         type: object

@@ -1,36 +1,40 @@
-# Model Orchestra
+# Inference Stack
 
-The Model Orchestra is an inference stack for deploying LLMs and other deep learning models.
+The Inference Stack is an inference stack for deploying LLMs and other deep learning models.
 
 ## TL;DR
+
 ```bash
-helm repo add titanml titanml.github.io/helm-charts
-helm install model-orchestra titanml/model-orchestra
+helm repo add takeoff titanml.github.io/helm-charts
+helm install inference-stack takeoff/inference-stack
 ```
 
-### Pulling Model Orchestra images
+### Pulling Inference Stack images
 
-The Model Orchestra image for the gateway and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting gateway/application.image.tag in your values override.
+The Inference Stack image for the gateway and applications will be derived from the `appVersion` plus a '-cpu' and '-gpu' suffix respectively. You can override either of the tags by setting gateway/application.image.tag in your values override.
 
 Make sure you are authenticated to pull from the TitanML dockerhub, and have encoded this in a k8s Secret. You can then make this accessible to k8s in your values.yaml file, so it can pull the container images:
 
-```
+```yaml
 imagePullSecrets:
   - name: <SECRET_NAME>
 ```
 
 Alternatively you can achieve it like so:
 
-```
-helm install model-orchestra titanml/model-orchestra --set imagePullSecrets[0].name=<SECRET_NAME>
+```bash
+helm install inference-stack takeoff/inference-stack --set imagePullSecrets[0].name=<SECRET_NAME>
 ```
 
 ## Configuration & installation details
+
 ### Architecture overview
-The Model Orchestra stack has two components: a "gateway" - that provides an integrated openAI-compatible gateway & integrated monitoring system - and several "applications" that receive and respond to requests from the gateway. 
+
+The Inference Stack stack has two components: a "gateway" - that provides an integrated openAI-compatible gateway & integrated monitoring system - and several "applications" that receive and respond to requests from the gateway.
 Each application is a single, replicated model service.
 
-#### gateway
+#### Gateway
+
 To configure the gateway service, provide:
 
 ```yaml
@@ -46,6 +50,7 @@ gateway:
 ```
 
 See the `server_config` section of the config file [here](https://docs.titanml.co/apis/launch_parameters) for available parameters (note the snake_case settings for the container itself, vs. camelCase here)
+
 #### Applications
 
 In order to make models available through the gateway gateway, add a stanza to the `application` settings, under an application name. For example:
@@ -69,7 +74,7 @@ applications:
 ```
 
 The `consumerGroup` setting is the `model` [key](https://platform.openai.com/docs/guides/text-generation) which you should provide to the gateway's openAI compatible API service.
-To create a service backed by several different applications, set the same `consumerGroup` on each of them. 
+To create a service backed by several different applications, set the same `consumerGroup` on each of them.
 
 See the `reader_config` section of the config file [here](https://docs.titanml.co/apis/launch_parameters) for available parameters for the `readerConfig` (note the snake_case settings for the container itself, vs. camelCase here)
 
@@ -85,36 +90,39 @@ applicationTemplate:
 ```
 
 ### Prometheus metrics
-This chart can be integrated with Prometheus. 
+
+This chart can be integrated with Prometheus.
 To enable, add `--set gateway.exportPrometheusMetrics=true --set applicationTemplate.exportPrometheusMetrics=true`.
 
 #### Integration with Prometheus Operator
-It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Model Orchestra to run at full functionality.
 
-The chart will try to deploy ServiceMonitor objects for integration with Prometheus Operator installations. 
+It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Inference Stack to run at full functionality.
+
+The chart will try to deploy ServiceMonitor objects for integration with Prometheus Operator installations.
 Ensure that the Prometheus Operator CustomResourceDefinitions are installed in the cluster or it will fail with the following error:
 
-```
+```bash
 no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"
 ```
 
 ### Autoscaling
 
-Autoscaling for all applications can be enabled by adding 
+Autoscaling for all applications can be enabled by adding:
 
-```
+```bash
 --set applicationTemplate.scaling.enabled=true
 ```
 
-For an individual application, 
+For an individual application,
 
-```
+```bash
 --set <APPLICATION_NAME>.scaling.enabled=true
 ```
 
 Where `<APPLICATION_NAME>` should be replaced with the application name defined in the top level `applications` key.
 
 ### Integration with Keda Operator
-It is necessary to have a working installation of the [Keda](https://keda.sh/docs/2.16/concepts/) chart for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Model Orchestra to run at full functionality.
 
-The chart will try to deploy `ScaledObject` objects for integration with Keda installations. 
+It is necessary to have a working installation of the [Keda](https://keda.sh/docs/2.16/concepts/) chart for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Inference Stack to run at full functionality.
+
+The chart will try to deploy `ScaledObject` objects for integration with Keda installations.

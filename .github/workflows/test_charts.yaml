@@ -1,17 +1,17 @@
-name: Model Orchestra Helm Chart Tests
+name: Inference Stack Helm Chart Tests
 
 on:
   push:
     branches: [main]
     paths:
-      - "charts/model-orchestra/**"
+      - "charts/inference-stack/**"
   pull_request:
     branches: [main]
     paths:
-      - "charts/model-orchestra/**"
+      - "charts/inference-stack/**"
 
 jobs:
-  helm-unittest-model-orchestra:
+  helm-unittest-inference-stack:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -26,8 +26,8 @@ jobs:
         run: |
           helm plugin install https://github.com/helm-unittest/helm-unittest
 
-      - name: Run Helm lint for model-orchestra
-        working-directory: ./charts/model-orchestra
+      - name: Run Helm lint for inference-stack
+        working-directory: ./charts/inference-stack
         run: |
           helm lint .
       
@@ -46,7 +46,7 @@ jobs:
         run: |
           helm lint .
 
-      - name: Run Helm unittest for model-orchestra
-        working-directory: ./charts/model-orchestra
+      - name: Run Helm unittest for inference-stack
+        working-directory: ./charts/inference-stack
         run: |
           helm unittest .

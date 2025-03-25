@@ -1,30 +1,30 @@
 ---
 defaultChannel: stable-v0
-name: model-orchestra-operator
+name: inference-stack-operator
 schema: olm.package
 ---
 entries:
-- name: model-orchestra-operator.v0.2.12
-- name: model-orchestra-operator.v0.2.13
+- name: inference-stack-operator.v0.2.12
+- name: inference-stack-operator.v0.2.13
   skips:
-  - model-orchestra-operator.v0.2.12
+  - inference-stack-operator.v0.2.12
 name: fast-v0
-package: model-orchestra-operator
+package: inference-stack-operator
 schema: olm.channel
 ---
 entries:
-- name: model-orchestra-operator.v0.2.12
+- name: inference-stack-operator.v0.2.12
 name: stable-v0
-package: model-orchestra-operator
+package: inference-stack-operator
 schema: olm.channel
 ---
 image: docker.io/tytn/operator-bundle:0.2.12
-name: model-orchestra-operator.v0.2.12
-package: model-orchestra-operator
+name: inference-stack-operator.v0.2.12
+package: inference-stack-operator
 properties:
 - type: olm.package
   value:
-    packageName: model-orchestra-operator
+    packageName: inference-stack-operator
     version: 0.2.12
 - type: olm.bundle.object
   value:
@@ -49,12 +49,12 @@ relatedImages:
 schema: olm.bundle
 ---
 image: docker.io/tytn/operator-bundle:0.2.13
-name: model-orchestra-operator.v0.2.13
-package: model-orchestra-operator
+name: inference-stack-operator.v0.2.13
+package: inference-stack-operator
 properties:
 - type: olm.package
   value:
-    packageName: model-orchestra-operator
+    packageName: inference-stack-operator
     version: 0.2.13
 - type: olm.bundle.object
   value:

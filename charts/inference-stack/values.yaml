@@ -1,4 +1,4 @@
-# Default values for model orchestra.
+# Default values for inference stack.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -166,7 +166,7 @@ gateway:
 
   exportPrometheusMetrics: false
 
-# The application template sets the base values for all the deployed model orchestra applications.
+# The application template sets the base values for all the deployed applications.
 # An application is one or more replicas of a given model.
 applicationTemplate:
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/

@@ -1,7 +1,7 @@
 repositories:
 - name: keda
   url: "https://kedacore.github.io/charts"
-- name: titanml
+- name: takeoff
   url: "https://titanml.github.io/helm-charts"
 - name: argo-cd
   url: "https://argoproj.github.io/argo-helm"
@@ -13,7 +13,7 @@ releases:
   namespace: keda
 
 - name: monitoring
-  chart: titanml/monitoring
+  chart: takeoff/monitoring
   version: 0.1.0
   namespace: monitoring
   set:
@@ -24,9 +24,9 @@ releases:
     value: microk8s-hostpath
 
 - name: catalog
-  chart: titanml/catalog
+  chart: takeoff/catalog
   version: 0.1.0
-  namespace: model-orchestra-operator-system
+  namespace: inference-stack-operator-system
 
 - name: argo-cd
   chart: argo-cd/argo-cd

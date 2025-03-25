@@ -29,14 +29,14 @@ rules:
   - create
 
 ##
-## Rules for models.titanml.co/<version>, Kind: ModelOrchestra
+## Rules for models.takeoff.co/<version>, Kind: InferenceStack
 ##
 - apiGroups:
-  - models.titanml.co
+  - models.takeoff.co
   resources:
-  - modelorchestras
-  - modelorchestras/status
-  - modelorchestras/finalizers
+  - inferencestacks
+  - inferencestacks/status
+  - inferencestacks/finalizers
   verbs:
   - create
   - delete

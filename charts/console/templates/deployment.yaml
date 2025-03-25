@@ -228,7 +228,7 @@ spec:
             - name: BACKEND_PORT
               value: "{{ .Values.backend.service.port }}"
             - name: CONTROLLER_SERVICE
-              value: {{ .Values.modelOrchestra.name | default (include "console.fullname" $) }}-gateway
+              value: {{ .Values.inferenceStack.name | default (include "console.fullname" $) }}-gateway
             - name: CONTROLLER_PORT
               value: "80"
           {{- with .Values.rproxy.resources }}

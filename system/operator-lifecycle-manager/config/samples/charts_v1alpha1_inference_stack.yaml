@@ -1,9 +1,9 @@
-apiVersion: models.titanml.co/v1alpha1
-kind: ModelOrchestra
+apiVersion: models.takeoff.co/v1alpha1
+kind: InferenceStack
 metadata:
-  name: model-orchestra-sample
+  name: inference-stack-sample
 spec:
-  # Default values copied from <project_dir>/helm-charts/model-orchestra/values.yaml
+  # Default values copied from <project_dir>/helm-charts/inference-stack/values.yaml
   applicationTemplate:
     affinity: {}
     env: null

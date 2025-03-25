@@ -4,7 +4,7 @@ kind: Role
 metadata:
   name: {{ include "console.fullname" . }}-role
 rules:
-- apiGroups: ["charts.titanml.co"]
-  resources: ["modelorchestras"]
+- apiGroups: ["charts.takeoff.co"]
+  resources: ["inferencestacks"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 {{- end }}

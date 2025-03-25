@@ -1,6 +1,6 @@
 # System Dependencies
 
-This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all the cluster wide dependencies needed run the [model-orchestra](../charts/model-orchestra/) or [console](../charts/console/) charts.
+This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all the cluster wide dependencies needed run the [inference-stack](../charts/inference-stack/) or [console](../charts/console/) charts.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ Before you begin, ensure you have the following installed:
    kubectl create namespace keda && \
       kubectl create namespace monitoring && \
       kubectl create namespace argocd && \
-      kubectl create namespace model-orchestra-operator-system
+      kubectl create namespace inference-stack-operator-system
    ```
 
 3. **Install Operator Lifecycle Manager (OLM)**
@@ -70,5 +70,19 @@ Before you begin, ensure you have the following installed:
    kubectl get all -n keda
    kubectl get all -n monitoring
    kubectl get all -n argocd
-   kubectl get all -n model-orchestra-operator-system
+   kubectl get all -n inference-stack-operator-system
    ```
+
+## Lifecycle Management
+
+### Updating Dependencies
+
+When developing the required versions of the helm charts referenced in the `helmfile` may change if you wish to upgrade the Inference Stack deployed in your cluster. To update the dependencies, run the following command:
+
+```bash
+# Get the latest helmfile.yaml
+wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/system/helmfile.yaml
+# Sync to your cluster
+helmfile repos && helmfile sync
+# Or can run `helmfile apply` which will fetch from the repos, produce a diff and then sync.
+```

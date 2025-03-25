@@ -1,16 +1,16 @@
-# permissions for end users to edit modelorchestras.
+# permissions for end users to edit inferencestacks.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: model-orchestra-operator
+    app.kubernetes.io/name: inference-stack-operator
     app.kubernetes.io/managed-by: kustomize
-  name: model-orchestra-editor-role
+  name: inference-stack-editor-role
 rules:
 - apiGroups:
-  - models.titanml.co
+  - models.takeoff.co
   resources:
-  - modelorchestras
+  - inferencestacks
   verbs:
   - create
   - delete
@@ -20,8 +20,8 @@ rules:
   - update
   - watch
 - apiGroups:
-  - models.titanml.co
+  - models.takeoff.co
   resources:
-  - modelorchestras/status
+  - inferencestacks/status
   verbs:
   - get

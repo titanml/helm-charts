@@ -1,8 +1,8 @@
 # Use the 'create api' subcommand to add watches to this file.
-- group: models.titanml.co
+- group: models.takeoff.co
   version: v1alpha1
-  kind: ModelOrchestra
-  chart: helm-charts/model-orchestra
+  kind: InferenceStack
+  chart: helm-charts/inference-stack
   selector:
     matchLabels:
       operatorVersion: 0.2.13

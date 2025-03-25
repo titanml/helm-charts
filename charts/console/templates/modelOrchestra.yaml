@@ -1,9 +1,9 @@
-apiVersion: models.titanml.co/{{ .Values.modelOrchestra.crdVersion }}
-kind: ModelOrchestra
+apiVersion: models.takeoff.co/{{ .Values.inferenceStack.crdVersion }}
+kind: InferenceStack
 metadata:
   name: {{ include "console.fullname" $ }}
   labels:
-    operatorVersion: {{ .Values.modelOrchestra.operatorVersion }}
+    operatorVersion: {{ .Values.inferenceStack.operatorVersion }}
     {{- include "console.labels" . | nindent 4 }}
 spec:
   fullnameOverride: {{ include "console.fullname" $ }}

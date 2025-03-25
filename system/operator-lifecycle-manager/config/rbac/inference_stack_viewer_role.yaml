@@ -1,23 +1,23 @@
-# permissions for end users to view modelorchestras.
+# permissions for end users to view inferencestacks.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: model-orchestra-operator
+    app.kubernetes.io/name: inference-stack-operator
     app.kubernetes.io/managed-by: kustomize
-  name: model-orchestra-viewer-role
+  name: inference-stack-viewer-role
 rules:
 - apiGroups:
-  - models.titanml.co
+  - models.takeoff.co
   resources:
-  - modelorchestras
+  - inferencestacks
   verbs:
   - get
   - list
   - watch
 - apiGroups:
-  - models.titanml.co
+  - models.takeoff.co
   resources:
-  - modelorchestras/status
+  - inferencestacks/status
   verbs:
   - get

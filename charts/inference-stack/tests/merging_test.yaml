@@ -32,7 +32,7 @@ tests:
           value: 600
       - equal:
           path: spec.triggers[0].metadata.scalerAddress
-          value: test-release-model-orchestra-gateway.test-namespace.svc.cluster.local:3005
+          value: test-release-inference-stack-gateway.test-namespace.svc.cluster.local:3005
       - equal:
           path: spec.triggers[0].metadata.target_primary
           value: "25"

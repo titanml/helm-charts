@@ -42,10 +42,10 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# This section is for setting up the Model Orchestra Custom Resource that is deployed and managed by the console. The crdVersion is
+# This section is for setting up the Inference Stack Custom Resource that is deployed and managed by the console. The crdVersion is
 # the version of the Custom Resource Definition that is being used. The operatorVersion is the version of the operator that is being
 # used to manage the Custom Resource. See the ../../CHANGELOG.md for more information on the versions.
-modelOrchestra:
+inferenceStack:
   crdVersion: v1alpha1
   operatorVersion: 0.2.13
 

@@ -7,9 +7,6 @@ VERSION ?= 0.2.13
 K8S_SAFE_VERSION := $(shell echo $(VERSION) | tr . -)
 CRD_VERSION ?= v1alpha1
 
-# DEV defines if the bundle is built for development purposes and is intended to be deployed internally.
-DEV ?= 0
-
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
 # To re-generate a bundle for other specific channels without changing the standard setup, you can:
@@ -58,8 +55,8 @@ endif
 OPERATOR_SDK_VERSION ?= v1.39.1
 
 # Source and destination paths for chart syncing
-SOURCE_CHART_PATH := ../../charts/model-orchestra
-DEST_CHART_PATH := helm-charts/model-orchestra
+SOURCE_CHART_PATH := ../../charts/inference-stack
+DEST_CHART_PATH := helm-charts/inference-stack
 
 ##@ General
 
@@ -198,7 +195,7 @@ bundle: sed yq kustomize operator-sdk sync-charts ## Generate bundle manifests a
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	$(SED) -i 's/version:.*/version: $(CRD_VERSION)/g' watches.yaml
 	$(SED) -i 's/operatorVersion:.*/operatorVersion: $(VERSION)/g' watches.yaml
-	$(YQ) -n '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--leader-election-id=model-orchestra-operator-$(K8S_SAFE_VERSION)"}]' > config/manager/deploymentPatch.yaml
+	$(YQ) -n '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--leader-election-id=inference-stack-operator-$(K8S_SAFE_VERSION)"}]' > config/manager/deploymentPatch.yaml
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(YQ) -n '[{"op": "replace", "path": "/spec/customresourcedefinitions/owned/0/version", "value": "$(CRD_VERSION)"}]' > config/manifests/clusterServiceVersionPatch.yaml
 	cd config/manifests && $(KUSTOMIZE) edit set namesuffix -- -$(K8S_SAFE_VERSION)

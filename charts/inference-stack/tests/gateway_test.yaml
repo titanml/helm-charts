@@ -17,7 +17,7 @@ tests:
   asserts:
   - equal:
       path: metadata.name
-      value: "test-release-model-orchestra-gateway"
+      value: "test-release-inference-stack-gateway"
 
 - it: should allow config overrides
   set:

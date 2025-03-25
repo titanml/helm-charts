@@ -1,13 +1,15 @@
-# Model Orchestra Operator Lifecycle Manager
+# Inference Stack Operator Lifecycle Manager
 
-The Model Orchestra Operator Lifecycle Manager (OLM) oversees Kubernetes operators, and specifically we use it to control the lifecycle of the Model Orchestra.
+The Inference Stack Operator Lifecycle Manager (OLM) oversees Kubernetes operators, and specifically we use it to control the lifecycle of the Inference Stack.
+
+The operator we use is the [Helm Operator](https://github.com/operator-framework/helm-operator-plugins) from the [Operator Framework](https://operatorframework.io/). This operator holds a version of the watched (inference-stack) helm chart in it's running image and templates the resources needed using a values file compiled from the spec of the `InferenceStack` Custom Resource. We bundle versioned operators and store each bundle in a catalog with channels. Subscriptions can be configured to install a specific operator or supported channel from the catalog.
 
 ## Project Structure
 
 ```plaintext
 operator-lifecycle-manager/
 ├── helm-charts/          # Operator's Helm charts
-│   └── model-orchestra/  # Managed application chart
+│   └── inference-stack/  # Managed application chart
 ├── bundle/               # OLM bundle files
 ├── config/               # Operator configuration, contains all the resources that make up a single operator excluding the CRD.
 ├── catalog/              # Operator catalog, houses the operator catalogs and their constructed manifests which are mounted in the catalog image.
@@ -20,22 +22,32 @@ operator-lifecycle-manager/
 
 ## Architecture
 
-![OLM Architecture](./architecture.png)
-
-From [OLM v1 docs](https://operator-framework.github.io/operator-controller/project/olmv1_architecture/), see there for further detail.
-
 ### Overview
 
-Model Orchestra are versioned helm charts. The operator that we use to reconcile this chart is the Helm Operator from the Operator Framework. This holds a version of the watched helm chart in it's running image and templates the resources needed using a values file compiled from the spec of the Model Orchestra Custom Resource. The Controller inside the Helm Operator holds a versioned snapshot of the helm chart files it is watching and so need to be managed carefully. We bundle versioned operators and store each bundle in a catalog with channels. A client in the cluster can then subscribe to a channel and install a specific operator or supported channel from the catalog.
+This is an overview of the Inference Stack Operator Lifecycle Manager:
 
-A full breakdown of what the Operator Lifecycle Manager does can be found in their [docs](https://operator-framework.github.io/operator-controller/).
+![overview](olm.png)
 
-## The Cluster Catalog
+### OLM v1 Components
 
-This is an object in Kubernetes that stores channels of Operator bundles. It doesn't have the bundle code itself by has a list of canonical images that can be installed. The catalog exposes a http query that can be used to get the list of available operators and their versions. More detail is found in [these docs](https://operator-framework.github.io/operator-controller/tutorials/explore-available-content/) on how to explore the catalog.
+From running the OLM [install script](../README.md#installation), a Catalogd and an Operator Controller are created in the `olmv1-system` namespace. These watch two CRDs, `ClusterCatalog` and `ClusterExtension`, respectively.
 
-### Operator Bundles
+#### Catalogd
 
-An Operator bundle is simply a collection of kubernetes resources that are packaged into a single image which one installed can reconcile a custom resource. The bundle is versioned and can be installed by a client in the cluster. Often the definition of the custom resource is also included in the bundle, but not in our case currently.
+The Catalogd is responsible for unpacking file-based catalog images on a repository and storing them in it's cache so they can be queried via the HTTP API. It knows which catalogs to fetch and unpack by watching the `ClusterCatalog` CRD.
 
-We create the OLM looks at a
+#### Operator Controller
+
+The Operator Controller queries the Catalogd cache via the HTTP API and stores the catalog and the unpacked bundles in two separate caches.
+
+### Author
+
+An author is responsible for publishing both bundle and catalog images to a repository so they can be used in the cluster by the OLM. For a detailed guide on how to create and publish new operator bundles and catalogs see [Contributing.md](./Contributing.md).
+
+### Bundle Resources
+
+### Inference Stack Custom Resource Definition
+
+### Cluster Catalog
+
+### Cluster Extension

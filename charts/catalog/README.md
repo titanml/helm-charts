@@ -4,11 +4,11 @@ This is a Cluster Catalog from the [Operator Lifecycle Manager](https://operator
 
 ## TL;DR
 
-```
-helm repo add titanml titanml.github.io/helm-charts
-helm install catalog titanml/catalog
+```bash
+helm repo add takeoff titanml.github.io/helm-charts
+helm install catalog takeoff/catalog
 ```
 
 ## Resources
 
-This chart primarily deploys the Model Orchestra CRD, a Cluster Catalog, and Cluster Extensions. To see how to add new operators and create new catalog images see [here](../../system/operator-lifecycle-manager/README.md). By default, this chart will install a cluster catalog and a single cluster extension that subscribes to the `stable` channel.
+This chart primarily deploys the `InferenceStack` CRD, a Cluster Catalog, and Cluster Extensions. To see how to add new operators and create new catalog images see [here](../../system/operator-lifecycle-manager/README.md). By default, this chart will install a cluster catalog and a single cluster extension that subscribes to the `stable` channel.

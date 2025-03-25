@@ -4,17 +4,17 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-  name: model-orchestra-operator.v0.0.0
+  name: inference-stack-operator.v0.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - kind: ModelOrchestra
-      name: modelorchestras.titanml.com
+    - kind: InferenceStack
+      name: inferencestacks.takeoff.com
       version: v1alpha1
   description: Operator for controlling model orchestra objects.
-  displayName: model-orchestra-operator
+  displayName: inference-stack-operator
   icon:
   - base64data: ""
     mediatype: ""
@@ -36,8 +36,8 @@ spec:
   - modelorchestra
   links:
   - name: Model Orchestra Operator
-    url: https://model-orchestra-operator.domain
+    url: https://inference-stack-operator.domain
   maturity: alpha
   provider:
-    name: titanml
+    name: DoubleWord
   version: 0.0.0

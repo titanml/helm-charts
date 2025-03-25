@@ -68,10 +68,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
+  name: {{ include "inference-stack.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "model-orchestra.labels" $ | nindent 4 }}
+    {{- include "inference-stack.labels" $ | nindent 4 }}
 data:
   config.yaml: |
     takeoff:
@@ -81,7 +81,7 @@ data:
         {{ $appName }}:
           {{- $readerConfigTemplate := printf `
           internalGatewayIp: %s-gateway
-          ` (include "model-orchestra.fullname" $) }}
+          ` (include "inference-stack.fullname" $) }}
           {{- $templateReaderConfig := fromYaml $readerConfigTemplate }}
           {{- $finalReadersConfig := merge $mergedValues.readerConfig $templateReaderConfig }}
           {{- range $key, $value := $finalReadersConfig }}
@@ -91,10 +91,10 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
+  name: {{ include "inference-stack.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "model-orchestra.labels" $ | nindent 4 }}
+    {{- include "inference-stack.labels" $ | nindent 4 }}
 spec:
   {{- if not $mergedValues.scaling.enabled }}
   replicas: {{ $mergedValues.replicaCount }}
@@ -102,7 +102,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: application-{{ $appName }}
-      {{- include "model-orchestra.selectorLabels" $ | nindent 6 }}
+      {{- include "inference-stack.selectorLabels" $ | nindent 6 }}
   template:
     metadata:
       {{- with $mergedValues.podAnnotations }}
@@ -111,7 +111,7 @@ spec:
       {{- end }}
       labels:
         app.kubernetes.io/component: application-{{ $appName }}
-        {{- include "model-orchestra.labels" $ | nindent 8 }}
+        {{- include "inference-stack.labels" $ | nindent 8 }}
         {{- with $mergedValues.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -120,7 +120,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "model-orchestra.serviceAccountName" $ }}
+      serviceAccountName: {{ include "inference-stack.serviceAccountName" $ }}
       {{- with $mergedValues.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -133,7 +133,7 @@ spec:
           - mountPath: /models
             name: {{ $mergedValues.modelsVolume.name }}
       containers:
-        - name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
+        - name: {{ include "inference-stack.fullname" $ }}-{{ $appName }}
           {{- with $mergedValues.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -172,7 +172,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
+            name: {{ include "inference-stack.fullname" $ }}-{{ $appName }}
         - name: dshm
           emptyDir:
             medium: Memory
@@ -197,10 +197,10 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "model-orchestra.fullname" $ }}-{{ $appName }}
+  name: {{ include "inference-stack.fullname" $ }}-{{ $appName }}
   labels:
     app.kubernetes.io/component: application-{{ $appName }}
-    {{- include "model-orchestra.labels" $ | nindent 4 }}
+    {{- include "inference-stack.labels" $ | nindent 4 }}
   {{- with $mergedValues.scaling.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -210,12 +210,12 @@ scaleTargetRef:
   apiVersion: apps/v1
   kind: Deployment
   name: %s-%s
-` (include "model-orchestra.fullname" $) $appName }}
+` (include "inference-stack.fullname" $) $appName }}
 {{- $templateScalingSpec := fromYaml $scaledObjectTemplate }}
 
 {{- $consumerGroupKey := printf "target_%s" $mergedValues.readerConfig.consumerGroup }}
-{{- $serviceName := printf "%s-%s" (include "model-orchestra.fullname" $) $appName }}
-{{- $scalerAddress := printf "%s-gateway.%s.svc.cluster.local:3005" (include "model-orchestra.fullname" $) $.Release.Namespace}}
+{{- $serviceName := printf "%s-%s" (include "inference-stack.fullname" $) $appName }}
+{{- $scalerAddress := printf "%s-gateway.%s.svc.cluster.local:3005" (include "inference-stack.fullname" $) $.Release.Namespace}}
 {{- $target := (toString $mergedValues.scaling.metricTarget.value)}}
 
 {{- $triggers := list }}
