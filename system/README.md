@@ -16,6 +16,7 @@ Before you begin, ensure you have the following installed:
 
    ```bash
    curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
+   ```
 
 2. **Install Helmfile**
 
@@ -25,8 +26,8 @@ Before you begin, ensure you have the following installed:
 
    ```bash
    mkdir -p /tmp/helmfile/ && \
-      sudo wget -P /tmp/helmfile/ https://github.com/helmfile/helmfile/releases/download/v1.0.0-rc.11/helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \ 
-      sudo tar -xxf /tmp/helmfile/helmfile_1.0.0-rc.11_linux_amd64.tar.gz -C /tmp/helmfile/ && \
+      sudo wget -P /tmp/helmfile/ https://github.com/helmfile/helmfile/releases/download/v0.171.0/helmfile_0.171.0_linux_amd64.tar.gz && \ 
+      sudo tar -xxf /tmp/helmfile/helmfile_0.171.0_linux_amd64.tar.gz -C /tmp/helmfile/ && \
       sudo mv /tmp/helmfile/helmfile /usr/local/bin && \
       sudo chmod +x /usr/local/bin/helmfile && \
       rm -rf /tmp/helmfile/
@@ -36,6 +37,7 @@ Before you begin, ensure you have the following installed:
 
    ```bash
    brew install helmfile
+   ```
 
 3. **Deploy with Helmfile**
 
