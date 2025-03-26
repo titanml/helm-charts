@@ -2,6 +2,18 @@
 
 The Takeoff Stack provides helm charts allow you to deploy open source AI on Kubernetes at any scale.
 
+## Project Structure
+
+```bash
+charts/
+├── catalog/                    # Cluster Catalog, `InferenceStack` Custom Resource Definition (CRD) and Cluster Extensions.
+├── console/                    # Console UI, an empty `InferenceStack` Custom Resource which the UI can manipulate.
+├── inference-stack/            # Gateway, and numerous Readers.
+└── monitoring/                 # Custom configuration of the kube-prometheus-stack helm chart provided by the Prometheus Community.
+system/                         # Step-by-step guide to install all the cluster wide dependencies needed to run the inference-stack or console charts.
+operator-lifecycle-manager/     # Resources to build Inference Stack Operator Lifecycle Manager.
+```
+
 ## Architecture
 
 ### Overview
@@ -11,18 +23,6 @@ The Takeoff stack revolves around a Custom Resource Definition (CRD) called the 
 ![overview](overview.png)
 
 The Controller in this context is a sub-component of the Operator that watches the Custom Resource `InferenceStack`. We create this Controller/Operator with the [system installation](./system/README.md#installation) which is a one off cluster wide step-up. If you are looking for more information about the Inference Stack Operator Lifecycle, see the [conceptual](./operator-lifecycle-manager/README.md) and [contributing guides](./operator-lifecycle-manager/CONTRIBUTING.md).
-
-### Project Structure
-
-```plaintext
-charts/
-├── catalog/                    # Cluster Catalog, `InferenceStack` Custom Resource Definition (CRD) and Cluster Extensions, installed in the system helmfile.
-├── console/                    # Console UI, an empty `InferenceStack` Custom Resource which the UI can manipulate.
-├── inference-stack/            # Gateway, and numerous Readers.
-└── monitoring/                 # Custom configuration of the kube-prometheus-stack helm chart provided by the Prometheus Community, installed in the system helmfile.
-system/                         # Step-by-step guide to install all the cluster wide dependencies needed to run the inference-stack or console charts.
-operator-lifecycle-manager/     # Resources to build Inference Stack Operator Lifecycle Manager.
-```
 
 ## Getting Started
 

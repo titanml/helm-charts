@@ -26,6 +26,8 @@ As you can see from the [architecture overview](./README.md#overview) we need to
 
 For clarity we use the same semantic version for each of these images. We use a [Makefile](./Makefile) to build and push these images to the container registry. Run `make help` to see a list of available commands.
 
+**Important**: Once you have created a new version you need to add it to the [changelog](../CHANGELOG.md#operator) noting it's supported CRD versions and some description of the changes.
+
 ### Operator Bundle
 
 To create a new bundle you need to first build and push a new Operator image (the Controller).
@@ -146,7 +148,7 @@ You can choose to omit the version field and let the OLM manage installing the l
 
 ### Using a Specific Operator Version
 
-When you install the `InferenceStack` CR you need to specify the version of the Operator you want to reconcile the CR. This is done by setting the `operatorVersion` label on the CR.
+When you install the `InferenceStack` CR you need to specify the major version of the Operator you want to reconcile the CR. This is done by setting the `operatorVersion` label on the CR.
 
 ```yaml
 apiVersion: models.takeoff.co/v1alpha1
