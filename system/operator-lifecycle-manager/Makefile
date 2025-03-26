@@ -3,9 +3,13 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.2.13
+
+# IMPORTANT: Respect the semantic versioning rules (https://semver.org) when updating the VERSION. We use major channel subscriptions so any minor or patch updates will be automatically
+# upgraded by the OLM. Only major version updates will require manual intervention to upgrade.
+VERSION ?= 1.0.0
 K8S_SAFE_VERSION := $(shell echo $(VERSION) | tr . -)
 CRD_VERSION ?= v1alpha1
+MAJOR_OPERATOR_VERSION ?= v$(shell echo $(VERSION) | cut -d. -f1)
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -32,12 +36,9 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 # For example, running 'make bundle-build-push catalog-build-push' will build and push both
 # docker.io/tytn/operator-bundle:$VERSION and docker.io/tytn/operator-bundle-catalog:$VERSION.
 IMAGE_TAG_BASE ?= tytn/operator
-
-# BUNDLE_IMG defines the image:tag used for the bundle.
-# You can use it as an arg. (E.g make bundle-build-push BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
-BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:$(VERSION)
-# Image URL to use all building/pushing image targets
-IMG ?= $(IMAGE_TAG_BASE):${VERSION}
+CONTROLLER_IMAGE ?= $(IMAGE_TAG_BASE):$(VERSION)
+BUNDLE_IMAGE ?= $(IMAGE_TAG_BASE)-bundle:$(VERSION)
+CATALOG_IMAGE ?= $(IMAGE_TAG_BASE)-catalog:$(VERSION)
 
 # BUNDLE_GEN_FLAGS are the flags passed to the operator-sdk generate bundle command
 BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
@@ -194,9 +195,9 @@ bundle: sed yq kustomize operator-sdk sync-charts ## Generate bundle manifests a
 	rm -rf bundle
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	$(SED) -i 's/version:.*/version: $(CRD_VERSION)/g' watches.yaml
-	$(SED) -i 's/operatorVersion:.*/operatorVersion: $(VERSION)/g' watches.yaml
+	$(SED) -i 's/operatorVersion:.*/operatorVersion: $(MAJOR_OPERATOR_VERSION)/g' watches.yaml
 	$(YQ) -n '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--leader-election-id=inference-stack-operator-$(K8S_SAFE_VERSION)"}]' > config/manager/deploymentPatch.yaml
-	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
+	cd config/manager && $(KUSTOMIZE) edit set image controller=$(CONTROLLER_IMAGE)
 	$(YQ) -n '[{"op": "replace", "path": "/spec/customresourcedefinitions/owned/0/version", "value": "$(CRD_VERSION)"}]' > config/manifests/clusterServiceVersionPatch.yaml
 	cd config/manifests && $(KUSTOMIZE) edit set namesuffix -- -$(K8S_SAFE_VERSION)
 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
@@ -204,8 +205,8 @@ bundle: sed yq kustomize operator-sdk sync-charts ## Generate bundle manifests a
 
 .PHONY: bundle-build-push
 bundle-build-push: bundle ## Build then pushes the bundle and operator images.
-	depot build -t ${IMG} . --push
-	depot build -f bundle.Dockerfile -t $(BUNDLE_IMG) . --push
+	depot build -t ${CONTROLLER_IMAGE} . --push
+	depot build -f bundle.Dockerfile -t $(BUNDLE_IMAGE) . --push
 
 # Build and push the catalog image, you need to have updated the catalog/operator_catalog.yaml file with the new version to add it 
 # to the catalog. The catalog image is used to deploy the catalog to the cluster.
@@ -214,4 +215,4 @@ catalog-build-push: opm ## Build and push the catalog image.
 	mkdir -p catalog/configs
 	$(OPM) alpha render-template semver -o yaml < catalog/operator_catalog.yaml > catalog/configs/catalog.yaml
 	$(OPM) validate catalog/configs
-	depot build -f catalog.Dockerfile --build-arg "CATALOG_DIR=catalog/configs" -t $(IMAGE_TAG_BASE)-catalog:$(VERSION) . --push
+	depot build -f catalog.Dockerfile --build-arg "CATALOG_DIR=catalog/configs" -t $(CATALOG_IMAGE) . --push

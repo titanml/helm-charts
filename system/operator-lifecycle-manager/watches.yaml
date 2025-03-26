@@ -5,6 +5,6 @@
   chart: helm-charts/inference-stack
   selector:
     matchLabels:
-      operatorVersion: 0.2.13
+      operatorVersion: v1
 
 # +kubebuilder:scaffold:watch

@@ -73,9 +73,7 @@ Before you begin, ensure you have the following installed:
    kubectl get all -n inference-stack-operator-system
    ```
 
-## Lifecycle Management
-
-### Updating Dependencies
+## Updating Dependencies
 
 When developing the required versions of the helm charts referenced in the `helmfile` may change if you wish to upgrade the Inference Stack deployed in your cluster. To update the dependencies, run the following command:
 
