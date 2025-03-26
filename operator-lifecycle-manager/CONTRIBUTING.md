@@ -98,7 +98,7 @@ Note that the image reference should be the canonical image name.
 
 ### Installing a New Operator Bundle
 
-Once the cluster catalog is correctly installed, you can install operators using the `clusterExtension` Custom Resource provided by OLM.
+Once the cluster catalog is correctly installed, you can install operators using the `ClusterExtension` Custom Resource provided by OLM.
 
 ```yaml
 apiVersion: olm.operatorframework.io/v1
@@ -115,9 +115,9 @@ spec:
       channels: [ "stable-v0" ] # channels to subscribe to
 ```
 
-The OLM will then attempt to install all the non-skipped versions of the Operator in the stable channel we have provided in the `clusterCatalog`. We can also add the `/spec/source/catalog/version` field to fix the installation to a specific version. If not provided, the OLM will install the latest version in the channel.
+The OLM will then attempt to install all the non-skipped versions of the Operator in the stable channel we have provided in the `ClusterCatalog`. We can also add the `/spec/source/catalog/version` field to fix the installation to a specific version. If not provided, the OLM will install the latest version in the channel.
 
-If a `clusterExtension` exists and is set to install from a major versioned channel (eg. `stable-v0`), when a newer bundle is added to the `clusterCatalog` the OLM will automatically update the Operator to the latest version in the channel.
+If a `ClusterExtension` exists and is set to install from a major versioned channel (eg. `stable-v0`), when a newer bundle is added to the `ClusterCatalog` the OLM will automatically update the Operator to the latest version in the channel.
 
 This can also be done by upgrading the `catalog` helm chart with the cluster extensions set in the `values.yaml` file.
 
@@ -173,7 +173,7 @@ If you do not specify the `operatorVersion` label the OLM then none of the opera
 
 ### Uninstalling an Operator
 
-To uninstall an Operator you can delete the `clusterExtension` Custom Resource, this will remove the Operator from the Cluster:
+To uninstall an Operator you can delete the `ClusterExtension` Custom Resource, this will remove the Operator from the Cluster:
 
 ```bash
 kubectl delete clusterextension inference-stack-operator-v0-stable
