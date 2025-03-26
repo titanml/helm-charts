@@ -77,10 +77,10 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
+            name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
 
   - it: should apply custom resource limits when specified
     documentSelector:
