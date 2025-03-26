@@ -76,7 +76,11 @@ tests:
           content: { name: "TAKEOFF_ADD_READER_ID_SUFFIX", value: "true"}
       - contains:
           path: spec.template.spec.containers[0].env
-          content: { name: "POD_NAME" }
+          content:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
 
   - it: should apply custom resource limits when specified
     documentSelector:
