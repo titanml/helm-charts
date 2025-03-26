@@ -56,7 +56,7 @@ endif
 OPERATOR_SDK_VERSION ?= v1.39.1
 
 # Source and destination paths for chart syncing
-SOURCE_CHART_PATH := ../../charts/inference-stack
+SOURCE_CHART_PATH := ../charts/inference-stack
 DEST_CHART_PATH := helm-charts/inference-stack
 
 ##@ General

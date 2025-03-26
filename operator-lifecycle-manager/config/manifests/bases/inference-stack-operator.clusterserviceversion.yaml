@@ -13,7 +13,7 @@ spec:
     - kind: InferenceStack
       name: inferencestacks.takeoff.com
       version: v1alpha1
-  description: Operator for controlling model orchestra objects.
+  description: Operator for controlling inference stack objects.
   displayName: inference-stack-operator
   icon:
   - base64data: ""
@@ -33,9 +33,11 @@ spec:
     type: AllNamespaces
   keywords:
   - app
-  - modelorchestra
+  - inference
+  - inferencestack
+  - inferencestacks
   links:
-  - name: Model Orchestra Operator
+  - name: Inference Stack Operator
     url: https://inference-stack-operator.domain
   maturity: alpha
   provider:
