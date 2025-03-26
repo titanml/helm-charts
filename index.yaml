@@ -1,5 +1,56 @@
 apiVersion: v1
 entries:
+  catalog:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-03-26T16:52:37.326740573Z"
+    description: A Helm chart for a Cluster Catalog and Cluster Extensions.
+    digest: 4a3ac0eeeab16c6e2b96c0f635b08d7d24b79e7bd8065f2193b21a4dd8497d9b
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: catalog
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/catalog-0.1.0/catalog-0.1.0.tgz
+    version: 0.1.0
+  console:
+  - apiVersion: v2
+    appVersion: 0.2.2
+    created: "2025-03-26T16:52:37.56171805Z"
+    description: A Helm chart to deploy the console which controls a Inference Stack.
+    digest: 73a9e3a4e322cb5b0ffe2b2a743753c25882ca1240b707b5d0fb62feba6b39c9
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: console
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/console-0.3.0/console-0.3.0.tgz
+    version: 0.3.0
+  inference-stack:
+  - apiVersion: v2
+    appVersion: 0.22.0-rc19
+    created: "2025-03-26T16:52:37.748720623Z"
+    description: A Helm chart for deploying a inference stack in kubernetes
+    digest: 87c6bf16e38bb99e36a0cdf072858d398089184880e6eebaf64585c38f8f9def
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: inference-stack
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/inference-stack-0.3.0/inference-stack-0.3.0.tgz
+    version: 0.3.0
+  monitoring:
+  - apiVersion: v2
+    created: "2025-03-26T16:52:37.976195356Z"
+    dependencies:
+    - name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 62.6.0
+    description: A system level chart for deploying monitoring.
+    digest: b94463c28b174122a734965e34bb3a7cacea6f2b5639adbcdb7f1b2e5974fa47
+    icon: https://raw.githubusercontent.com/titanml/titanml-public-assets/refs/heads/master/TitanML-Icon-1000x1001.png
+    name: monitoring
+    type: application
+    urls:
+    - https://github.com/titanml/helm-charts/releases/download/monitoring-0.1.0/monitoring-0.1.0.tgz
+    version: 0.1.0
   takeoff:
   - apiVersion: v2
     appVersion: 0.22.0-rc19
@@ -909,4 +960,4 @@ entries:
     urls:
     - https://github.com/titanml/helm-charts/releases/download/takeoff-system-0.1.0/takeoff-system-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-26T11:02:46.91358793Z"
+generated: "2025-03-26T16:52:37.976342561Z"
