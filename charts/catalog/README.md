@@ -1,6 +1,6 @@
 # Catalog
 
-This is all the resource need to deploy and use a Cluster Catalog from the [Operator Lifecycle Manager](https://operator-framework.github.io/operator-controller/) project. We have a [high level overview](../../system/operator-lifecycle-manager/README.md#overview) of the OLM architecture, in which this deploys a `clusterCatalog` CR, an `InferenceStack` CRD, and the Role Based Access Control (RBAC) resources needed. It also optionally creates a `ClusterExtension` CR which subscribes and installs a specific version of the Operator available in the catalog from a specific channel.
+This is all the resource need to deploy and use a Cluster Catalog from the [Operator Lifecycle Manager](https://operator-framework.github.io/operator-controller/) project. We have a [high level overview](../../operator-lifecycle-manager/README.md#overview) of the OLM architecture, in which this deploys a `clusterCatalog` CR, an `InferenceStack` CRD, and the Role Based Access Control (RBAC) resources needed. It also optionally creates a `ClusterExtension` CR which subscribes and installs a specific version of the Operator available in the catalog from a specific channel.
 
 ## TL;DR
 
@@ -11,7 +11,7 @@ helm install catalog takeoff/catalog
 
 This will install the catalog, the `InferenceStack` CRD, and the RBAC resources needed to run the Inference Stack Operator without any extensions.
 
-To see how to add new operators and create new catalog images see [here](../../system/operator-lifecycle-manager/README.md).
+To see how to add new operators and create new catalog images see [here](../../operator-lifecycle-manager/README.md).
 
 ## Installing Extensions
 

@@ -28,7 +28,7 @@ helm install console takeoff/console --set imagePullSecrets[0].name=<SECRET_NAME
 
 ## Architecture overview
 
-This chart deploys the management console as two Kubernetes [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) (one for the frontend, one for the backend), a [postgres](https://www.postgresql.org/) database, and a [`InferenceStack` custom resource](https://github.com/titanml/helm-charts/charts/inference-stack) which is managed by the [Inference Stack Operator](./../../system/operator-lifecycle-manager/README.md).
+This chart deploys the management console as two Kubernetes [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) (one for the frontend, one for the backend), a [postgres](https://www.postgresql.org/) database, and a [`InferenceStack` custom resource](https://github.com/titanml/helm-charts/charts/inference-stack) which is managed by the [Inference Stack Operator](./../../operator-lifecycle-manager/README.md).
 Authentication for the database-backend connection defaults to the values in templates/secret.yaml.
 
 To provide a custom secret (with `dbUser` and `dbPassword` keys), provide `--set secret.generate=false --set secret.name="my-secret"`.
