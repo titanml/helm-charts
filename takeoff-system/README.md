@@ -1,17 +1,19 @@
 # Takeoff System Dependencies
 
-This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all the cluster wide dependencies needed run the [takeoff](../charts/takeoff/) or [takeoff-console](../charts/takeoff-console/) charts.
+This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all cluster wide dependencies needed run the [takeoff](../charts/takeoff/) or [takeoff-console](../charts/takeoff-console/) charts.
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
 - kubectl (version 1.18 or later)
 - Helm (version 3.x)
-- Helm diff plugin (optional if running `helmfile apply`): [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
+- Helm diff plugin (optional, only required if running `helmfile apply`): [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
 
 ## Usage
 
 1. **Install Helmfile**
-   Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation) or if using linux:
+   Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation).
+
+   If using linux:
    ```bash
    mkdir -p /tmp/helmfile/ && \
       sudo wget -P /tmp/helmfile/ https://github.com/helmfile/helmfile/releases/download/v1.0.0-rc.11/helmfile_1.0.0-rc.11_linux_amd64.tar.gz && \ 
@@ -23,32 +25,18 @@ Before you begin, ensure you have the following installed:
    or if using macOS:
    ```bash
    brew install helmfile
+
+2. **Deploy with Helmfile**
+   From this directory, run the following command to deploy all dependencies:
+   ```
+   PROMETHEUS_STORAGE_CLASS="<storage-class>" helmfile sync
+   # `helmfile apply` can be used on a live cluster instead of `sync`: and will only apply changes.
+   # The PROMETHEUS_STORAGE_CLASS environment variable must be supplied.
    ```
 
-2. **Create Required Namespaces**
-   Create the necessary namespaces for each dependency:
-   ```bash
-   kubectl create namespace keda && \
-      kubectl create namespace monitoring && \
-      kubectl create namespace argocd
-   ```
+   See `values.yaml` for configuration.
 
-3. **Get Helmfile and Edit**
-   a. Download the Helmfile configuration file:
-   ```bash
-   wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/takeoff-system/helmfile.yaml
-   ```
-   b. **Important:** Edit the `helmfile.yaml` file to customize the prometheus storage class to one available in your cluster:
-
-
-4. **Deploy with Helmfile**
-   Run the following command to deploy all dependencies:
-   ```
-   helmfile repos && helmfile sync
-   # Or can run `helmfile apply` which will fetch from the repos, produce a diff and then sync.
-   ```
-
-5. **Verify Deployments**
+4. **Verify Deployments**
    After deployment, verify that all components are running:
    ```bash
    kubectl get all -n keda

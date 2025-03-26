@@ -1,3 +1,8 @@
+environments: 
+  default: 
+    values: 
+      - values.yaml
+---
 repositories:
 - name: keda
   url: "https://kedacore.github.io/charts"
@@ -5,6 +10,8 @@ repositories:
   url: "https://titanml.github.io/helm-charts"
 - name: argo-cd
   url: "https://argoproj.github.io/argo-helm"
+- name: nvidia
+  url: "https://helm.ngc.nvidia.com/nvidia"
 
 releases:
 - name: keda
@@ -20,13 +27,29 @@ releases:
   - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.metadata.namespace
     value: monitoring
   - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName
+
     # Edit this value to be a storage class that is available in your cluster
-    value: microk8s-hostpath
+    value: {{ requiredEnv "PROMETHEUS_STORAGE_CLASS" }}
 
 - name: argo-cd
   chart: argo-cd/argo-cd
   version: 7.0.0
+  installed: {{ .Values.argocd.enabled }}
   namespace: argocd
   set:
   - name: namespaceOverride
     value: argocd
+
+# https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/google-gke.html#using-nvidia-driver-manager
+- name: gpu-operator-dependencies
+  chart: ./charts/gpu-operator-dependencies/
+  installed: {{ .Values.gpuOperator.enabled }}
+  namespace: gpu-operator
+
+- name: gpu-operator
+  needs: 
+    - gpu-operator-dependencies
+  chart: nvidia/gpu-operator
+  installed: {{ .Values.gpuOperator.enabled }}
+  namespace: gpu-operator
+  version: "v24.9.2"
