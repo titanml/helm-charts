@@ -1,6 +1,6 @@
 # System Dependencies
 
-This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all the cluster wide dependencies needed run the [inference-stack](../charts/inference-stack/) or [console](../charts/console/) charts.
+This directory contains a [Helmfile](https://helmfile.readthedocs.io/en/latest/) containing all cluster wide dependencies needed run the [inference-stack](../charts/inference-stack/) or [console](../charts/console/) charts.
 
 ## Prerequisites
 
@@ -8,12 +8,20 @@ Before you begin, ensure you have the following installed:
 
 - kubectl (version 1.18 or later)
 - Helm (version 3.x)
-- Helm diff plugin (optional if running `helmfile apply`): [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
+- Helm diff plugin (optional, only required if running `helmfile apply`): [install guide](https://github.com/databus23/helm-diff?tab=readme-ov-file#install)
 
 ## Installation
 
-1. **Install Helmfile**
-   Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation) or if using linux:
+1. **Install Operator Lifecycle Manager (OLM)**
+
+   ```bash
+   curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
+
+2. **Install Helmfile**
+
+   Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation).
+
+   If using linux:
 
    ```bash
    mkdir -p /tmp/helmfile/ && \
@@ -28,42 +36,21 @@ Before you begin, ensure you have the following installed:
 
    ```bash
    brew install helmfile
-   ```
 
-2. **Create Required Namespaces**
-   Create the necessary namespaces for each dependency:
+3. **Deploy with Helmfile**
 
-   ```bash
-   kubectl create namespace keda && \
-      kubectl create namespace monitoring && \
-      kubectl create namespace argocd && \
-      kubectl create namespace inference-stack-operator-system
-   ```
-
-3. **Install Operator Lifecycle Manager (OLM)**
+   From this directory, run the following command to deploy all dependencies:
 
    ```bash
-   curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
+   PROMETHEUS_STORAGE_CLASS="<storage-class>" helmfile sync
+   # `helmfile apply` can be used on a live cluster instead of `sync`: and will only apply changes.
+   # The PROMETHEUS_STORAGE_CLASS environment variable must be supplied.
    ```
 
-4. **Get Helmfile and Edit**
-   a. Download the Helmfile configuration file:
+   See `values.yaml` for configuration.
 
-   ```bash
-   wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/system/helmfile.yaml
-   ```
+4. **Verify Deployments**
 
-   b. **Important:** Edit the `helmfile.yaml` file to customize the prometheus storage class to one available in your cluster:
-
-5. **Deploy with Helmfile**
-   Run the following command to deploy all dependencies:
-
-   ```bash
-   helmfile repos && helmfile sync
-   # Or can run `helmfile apply` which will fetch from the repos, produce a diff and then sync.
-   ```
-
-6. **Verify Deployments**
    After deployment, verify that all components are running:
 
    ```bash

@@ -1,0 +1,5 @@
+gpuOperator:
+  enabled: true
+
+argocd:
+  enabled: true

@@ -28,6 +28,7 @@
   {{- $requiredEnv := list }}
   {{- $requiredEnv = append $requiredEnv (dict "name" "TAKEOFF_ADD_READER_ID_SUFFIX" "value" "true") }}
   {{- $requiredEnv = append $requiredEnv (dict "name" "TAKEOFF_HEADLESS" "value" "true") }}
+  {{- $requiredEnv = append $requiredEnv (dict "name" "POD_NAME" "valueFrom" (dict "fieldRef" (dict "fieldPath" "metadata.name"))) }}
 
   {{/* Process template env */}}
   {{- $templateEnv := list }}
