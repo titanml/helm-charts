@@ -12,8 +12,8 @@ Before you begin, ensure you have the following installed:
 
 ## Installation
 
-1. **Install Operator Lifecycle Manager (OLM)**
-
+1. **Install Operator Lifecycle Manager (OLM) into your cluster**
+   Note: this script will installs your active cluster.
    ```bash
    curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
    ```
