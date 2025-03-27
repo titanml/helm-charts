@@ -13,12 +13,13 @@ Before you begin, ensure you have the following installed:
 ## Installation
 
 1. **Install Operator Lifecycle Manager (OLM) into your cluster**
-   Note: this script will installs your active cluster.
+
+   Note: running this command will install resources into your active cluster. 
    ```bash
    curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
    ```
 
-2. **Install Helmfile**
+3. **Install Helmfile**
 
    Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation).
 
@@ -39,7 +40,7 @@ Before you begin, ensure you have the following installed:
    brew install helmfile
    ```
 
-3. **Deploy with Helmfile**
+4. **Deploy with Helmfile**
 
    From this directory, run the following command to deploy all dependencies:
 
@@ -51,7 +52,7 @@ Before you begin, ensure you have the following installed:
 
    See `values.yaml` for configuration.
 
-4. **Verify Deployments**
+5. **Verify Deployments**
 
    After deployment, verify that all components are running:
 
