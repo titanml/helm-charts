@@ -5,7 +5,7 @@ The Inference Stack is an inference stack for deploying LLMs and other deep lear
 ## TL;DR
 
 ```bash
-helm repo add takeoff titanml.github.io/helm-charts
+helm repo add takeoff https://titanml.github.io/helm-charts
 helm install inference-stack takeoff/inference-stack
 ```
 

@@ -82,7 +82,7 @@ make catalog-build-push
 
 ```bash
 kubectl create namespace inference-stack-operator-system
-helm repo add takeoff titanml.github.io/helm-charts
+helm repo add takeoff https://titanml.github.io/helm-charts
 helm install catalog takeoff/catalog -n inference-stack-operator-system
 ```
 

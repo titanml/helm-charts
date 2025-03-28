@@ -5,7 +5,7 @@ This is all the resource needed to create a Catalog containing the `InferenceSta
 ## TL;DR
 
 ```bash
-helm repo add takeoff titanml.github.io/helm-charts
+helm repo add takeoff https://titanml.github.io/helm-charts
 helm install catalog takeoff/catalog
 ```
 
