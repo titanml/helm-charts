@@ -5,7 +5,7 @@ The management console is a simple & intuitive interface for creating, managing,
 ## TL;DR
 
 ```bash
-helm repo add takeoff titanml.github.io/helm-charts
+helm repo add takeoff https://titanml.github.io/helm-charts
 helm install console takeoff/console
 ```
 
