@@ -14,9 +14,10 @@ Before you begin, ensure you have the following installed:
 
 1. **Install Operator Lifecycle Manager (OLM) into your cluster**
 
-   Note: running this command will install resources into your active cluster. 
+   Note: running this command will install resources into your active cluster.
+
    ```bash
-   curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
+   curl -L -s https://github.com/operator-framework/operator-controller/releases/v1.2.0/download/install.sh | bash -s
    ```
 
 3. **Install Helmfile**
@@ -46,11 +47,31 @@ Before you begin, ensure you have the following installed:
 
    ```bash
    PROMETHEUS_STORAGE_CLASS="<storage-class>" helmfile sync
-   # `helmfile apply` can be used on a live cluster instead of `sync`: and will only apply changes.
+   # `helmfile apply` can be used on a live cluster instead of `sync` 
+   # and will only apply changes.
    # The PROMETHEUS_STORAGE_CLASS environment variable must be supplied.
    ```
 
    See `values.yaml` for configuration.
+
+   For specific environments, we have some pre-configured values files that can
+   be used:
+
+   ```bash
+   helmfile sync --environment microk8s # automatically configures the 
+                                        # prometheus storage class, 
+                                        # and some details of the GPU operator. 
+                                        # Defaults to not installing the 
+                                        # gpu-operator - the presumption is 
+                                        # that the user will have
+                                        # run `microk8s enable nvidia`.
+
+   helmfile sync --environment gke # automatically configures the 
+                                   # prometheus storage class, and 
+                                   # defaults to installing the GPU operator. 
+                                   # If you're using GKE managed drivers, you might
+                                   # want to set this value to false.
+   ```
 
 5. **Verify Deployments**
 

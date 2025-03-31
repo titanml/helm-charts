@@ -1,0 +1,20 @@
+gpuOperator:
+  enabled: false
+  values:
+    # if the operator is enabled, these values should be set on microk8s
+    - toolkit:
+        env:
+          - name: CONTAINERD_CONFIG
+            value: /var/snap/microk8s/current/args/containerd-template.toml
+          - name: CONTAINERD_SOCKET
+            value: /var/snap/microk8s/common/run/containerd.sock
+          - name: CONTAINERD_RUNTIME_CLASS
+            value: nvidia
+          - name: CONTAINERD_SET_AS_DEFAULT
+            value: "true"
+
+argocd:
+  enabled: true
+
+monitoring:
+  prometheusStorageClassName: microk8s-hostpath

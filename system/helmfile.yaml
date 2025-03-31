@@ -1,7 +1,14 @@
 environments: 
   default: 
     values: 
-      - values.yaml
+      - values.yaml.gotmpl
+  microk8s:
+    values: 
+      - values.microk8s.yaml
+  gke:
+    values: 
+      - values.gke.yaml
+      
 ---
 repositories:
 - name: keda
@@ -14,11 +21,16 @@ repositories:
   url: "https://helm.ngc.nvidia.com/nvidia"
 
 releases:
+# # KEDA is a Kubernetes-based Event Driven Autoscaler. With KEDA, you can drive
+# # the scaling of any container in Kubernetes based on the number of events
+# # needing to be processed. KEDA is used to drive autoscaling of the inference
+# # stack.
 - name: keda
   chart: keda/keda
   version: 2.15.1
   namespace: keda
 
+# The takeoff monitoring stack. Installs prometheus + grafana, and dashboards
 - name: monitoring
   chart: takeoff/monitoring
   version: 0.1.0
@@ -27,13 +39,9 @@ releases:
   - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.metadata.namespace
     value: monitoring
   - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName
-    value: {{ requiredEnv "PROMETHEUS_STORAGE_CLASS" }}
+    value: {{ .Values.monitoring.prometheusStorageClassName }}
 
-- name: catalog
-  chart: takeoff/catalog
-  version: 0.1.0
-  namespace: inference-stack-operator-system
-
+# Install argocd: a GitOps continuous delivery tool for Kubernetes
 - name: argo-cd
   chart: argo-cd/argo-cd
   version: 7.0.0
@@ -55,4 +63,9 @@ releases:
   chart: nvidia/gpu-operator
   installed: {{ .Values.gpuOperator.enabled }}
   namespace: gpu-operator
-  version: "v24.9.2"
+  version: "v25.3.0"
+  labels: 
+    name: gpu-operator
+  values: 
+    {{- .Values.gpuOperator.values | toYaml | nindent 4 }}
+
