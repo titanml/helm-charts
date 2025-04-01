@@ -120,7 +120,7 @@ Create Frontend Environment Variables for Zeus
 {{- $templateEnv := dict }}
 {{- $backendPort := int (.Values.backend.service.port | default 80) }}
 {{- $_ := set $templateEnv "BACKEND_API_DESTINATION" (dict "value" (printf "http://%s-backend:%d" (include "console.fullname" .) $backendPort)) }}
-{{- $_ := set $templateEnv "BACKEND_GATEWAY_DESTINATION" (dict "value" (printf "http://%s-gateway:%d" ( .Values.inferenceStack.name | default (include "console.fullname" $) ) 80)) }}
+{{- $_ := set $templateEnv "BACKEND_GATEWAY_DESTINATION" (dict "value" (printf "http://%s-gateway:%d" ( .Values.inferenceStack.name | default (printf "%s-stack" (include "console.fullname" $)) ) 80)) }}
 
 {{/* 
 Convert env vars into dict 
