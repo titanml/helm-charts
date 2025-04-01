@@ -1,12 +1,12 @@
 apiVersion: models.takeoff.co/{{ .Values.inferenceStack.crdVersion }}
 kind: InferenceStack
 metadata:
-  name: {{ include "console.fullname" $ }}
+  name: {{ include "console.fullname" $ }}-stack
   labels:
     operatorVersion: {{ .Values.inferenceStack.operatorVersion }}
     {{- include "console.labels" . | nindent 4 }}
 spec:
-  fullnameOverride: {{ include "console.fullname" $ }}
+  fullnameOverride: {{ include "console.fullname" $ }}-stack
   nameOverride: ""
   # Empty applications object which is populated later
   applications: {}
