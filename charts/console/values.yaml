@@ -18,12 +18,9 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
-# The following sections create the role and roleBinding for the service account to edit the custom resources. If you enable 
-# roleBinding you must enable role or it will not deploy.
-role:
-  enabled: false
-roleBinding:
-  enabled: false
+# If rbac is enabled on the cluster, create role & clusterrole for managing inference stacks & getting node info.
+rbac:
+  enabled: true
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 # This makes use of path rewriting rules available in nginx - to use another
