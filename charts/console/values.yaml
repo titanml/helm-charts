@@ -239,7 +239,7 @@ rproxy:
   replicaCount: 1
   image:
     repository: tytn/zeus-proxy
-    tag: v0.1.2
+    tag: 0.2.0
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
