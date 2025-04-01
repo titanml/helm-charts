@@ -57,6 +57,13 @@ Create the name of the service account to use
 {{- end }}
 
 {{/* 
+Define the name of the InferenceStack CR created with this chart to be referred to in many places
+*/}}
+{{- define "console.inferenceStackCRName" -}}
+{{- printf "%s-stack" (include "console.fullname" $) | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/* 
 Create Backend Environment Variables for Zeus 
 */}}
 {{- define "console.zeusBackendEnv" -}}
@@ -76,7 +83,7 @@ Create a template for necessary environment variables for Zeus backend
     {{- $_ := set $templateEnv "ZEUS_DB_USER" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbUser))) }}
     {{- $_ := set $templateEnv "ZEUS_DB_PASSWORD" (dict "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secret.name "key" .Values.secret.keys.dbPassword))) }}
 {{- end }}
-{{- $_ := set $templateEnv "ZEUS_INFERENCE_STACK_CR_NAME" (dict "value" ( .Values.inferenceStack.name | default (printf "%s-stack" (include "console.fullname" $)) )) }}
+{{- $_ := set $templateEnv "ZEUS_INFERENCE_STACK_CR_NAME" (dict "value" ( include "console.inferenceStackCRName" $ )) }}
 {{- $_ := set $templateEnv "ZEUS_CLUSTER_NAMESPACE" (dict "value" .Release.Namespace) }}
 
 {{/* 
@@ -120,7 +127,7 @@ Create Frontend Environment Variables for Zeus
 {{- $templateEnv := dict }}
 {{- $backendPort := int (.Values.backend.service.port | default 80) }}
 {{- $_ := set $templateEnv "BACKEND_API_DESTINATION" (dict "value" (printf "http://%s-backend:%d" (include "console.fullname" .) $backendPort)) }}
-{{- $_ := set $templateEnv "BACKEND_GATEWAY_DESTINATION" (dict "value" (printf "http://%s-gateway:%d" ( .Values.inferenceStack.name | default (printf "%s-stack" (include "console.fullname" $)) ) 80)) }}
+{{- $_ := set $templateEnv "BACKEND_GATEWAY_DESTINATION" (dict "value" (printf "http://%s-gateway:%d" (include "console.inferenceStackCRName" $) 80)) }}
 
 {{/* 
 Convert env vars into dict 

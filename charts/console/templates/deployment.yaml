@@ -228,7 +228,7 @@ spec:
             - name: BACKEND_PORT
               value: "{{ .Values.backend.service.port }}"
             - name: GATEWAY_SERVICE
-              value: {{ .Values.inferenceStack.name | default (include "console.fullname" $) }}-gateway
+              value: {{ include "console.inferenceStackCRName" $ }}-gateway
             - name: GATEWAY_PORT
               value: "80"
           {{- with .Values.rproxy.resources }}

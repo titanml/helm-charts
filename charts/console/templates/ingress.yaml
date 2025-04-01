@@ -46,7 +46,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.inferenceStack.name | default (include "console.fullname" $) }}-gateway
+                name: {{ include "console.inferenceStackCRName" $ }}-gateway
                 port:
                   number: 80
       {{- with .Values.ingress.host }}
