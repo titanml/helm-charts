@@ -1,0 +1,10 @@
+gpuOperator:
+  enabled: true
+  values:
+    - {}
+
+argocd:
+  enabled: true
+
+monitoring:
+  prometheusStorageClassName: standard-rwo
