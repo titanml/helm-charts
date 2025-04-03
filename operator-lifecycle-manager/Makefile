@@ -6,7 +6,7 @@
 
 # IMPORTANT: Respect the semantic versioning rules (https://semver.org) when updating the VERSION. We use major channel subscriptions so any minor or patch updates will be automatically
 # upgraded by the OLM. Only major version updates will require manual intervention to upgrade.
-VERSION ?= 1.0.0
+VERSION ?= 2.0.0
 K8S_SAFE_VERSION := $(shell echo $(VERSION) | tr . -)
 CRD_VERSION ?= v1alpha1
 MAJOR_OPERATOR_VERSION ?= v$(shell echo $(VERSION) | cut -d. -f1)
@@ -39,6 +39,7 @@ IMAGE_TAG_BASE ?= tytn/operator
 CONTROLLER_IMAGE ?= $(IMAGE_TAG_BASE):$(VERSION)
 BUNDLE_IMAGE ?= $(IMAGE_TAG_BASE)-bundle:$(VERSION)
 CATALOG_IMAGE ?= $(IMAGE_TAG_BASE)-catalog:$(VERSION)
+IMAGE_PLATFORMS ?= linux/amd64
 
 # BUNDLE_GEN_FLAGS are the flags passed to the operator-sdk generate bundle command
 BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
@@ -205,8 +206,8 @@ bundle: sed yq kustomize operator-sdk sync-charts ## Generate bundle manifests a
 
 .PHONY: bundle-build-push
 bundle-build-push: bundle ## Build then pushes the bundle and operator images.
-	depot build -t ${CONTROLLER_IMAGE} . --push
-	depot build -f bundle.Dockerfile -t $(BUNDLE_IMAGE) . --push
+	depot build -t ${CONTROLLER_IMAGE} . --push --platform $(IMAGE_PLATFORMS)
+	depot build -f bundle.Dockerfile -t $(BUNDLE_IMAGE) . --push --platform $(IMAGE_PLATFORMS)
 
 # Build and push the catalog image, you need to have updated the catalog/operator_catalog.yaml file with the new version to add it 
 # to the catalog. The catalog image is used to deploy the catalog to the cluster.
@@ -215,4 +216,4 @@ catalog-build-push: opm ## Build and push the catalog image.
 	mkdir -p catalog/configs
 	$(OPM) alpha render-template semver -o yaml < catalog/operator_catalog.yaml > catalog/configs/catalog.yaml
 	$(OPM) validate catalog/configs
-	depot build -f catalog.Dockerfile --build-arg "CATALOG_DIR=catalog/configs" -t $(CATALOG_IMAGE) . --push
+	depot build -f catalog.Dockerfile --build-arg "CATALOG_DIR=catalog/configs" -t $(CATALOG_IMAGE) . --push --platform $(IMAGE_PLATFORMS)
