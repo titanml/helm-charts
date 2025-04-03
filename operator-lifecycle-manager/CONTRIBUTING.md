@@ -156,7 +156,7 @@ kind: InferenceStack
 metadata:
   name: my-inference-stack
   labels:
-    operatorVersion: v1 # This is the major version of the Operator you want to reconcile this CR
+    operatorVersion: v2 # This is the major version of the Operator you want to reconcile this CR
 spec:
   applications:
     hello-world:
