@@ -4,7 +4,7 @@ kind: Role
 metadata:
   name: {{ include "console.fullname" . }}-role
 rules:
-- apiGroups: ["models.takeoff.co"]
+- apiGroups: ["doublewordai.co"]
   resources: ["inferencestacks"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---

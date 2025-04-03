@@ -5,8 +5,8 @@ This is all the resource needed to create a Catalog containing the `InferenceSta
 ## TL;DR
 
 ```bash
-helm repo add takeoff https://titanml.github.io/helm-charts
-helm install catalog takeoff/catalog
+helm repo add doublewordai https://doublewordai.github.io/helm-charts
+helm install catalog doublewordai/catalog
 ```
 
 To see how to create new Operators and Catalog images see [here](../../operator-lifecycle-manager/CONTRIBUTING.md#publishing).

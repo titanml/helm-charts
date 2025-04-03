@@ -6,8 +6,8 @@ environments:
 repositories:
 - name: keda
   url: "https://kedacore.github.io/charts"
-- name: takeoff
-  url: "https://titanml.github.io/helm-charts"
+- name: doublewordai
+  url: "https://doublewordai.github.io/helm-charts"
 - name: argo-cd
   url: "https://argoproj.github.io/argo-helm"
 - name: nvidia
@@ -20,8 +20,8 @@ releases:
   namespace: keda
 
 - name: monitoring
-  chart: takeoff/monitoring
-  version: 0.1.0
+  chart: doublewordai/monitoring
+  version: 1.0.0
   namespace: monitoring
   set:
   - name: kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.metadata.namespace
@@ -30,8 +30,8 @@ releases:
     value: {{ requiredEnv "PROMETHEUS_STORAGE_CLASS" }}
 
 - name: catalog
-  chart: takeoff/catalog
-  version: 0.1.0
+  chart: doublewordai/catalog
+  version: 1.0.0
   namespace: inference-stack-operator-system
 
 - name: argo-cd

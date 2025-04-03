@@ -8,7 +8,7 @@ metadata:
   name: inference-stack-viewer-role
 rules:
 - apiGroups:
-  - models.takeoff.co
+  - doublewordai.co
   resources:
   - inferencestacks
   verbs:
@@ -16,7 +16,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - models.takeoff.co
+  - doublewordai.co
   resources:
   - inferencestacks/status
   verbs:

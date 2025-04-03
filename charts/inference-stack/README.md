@@ -5,8 +5,8 @@ The Inference Stack is an inference stack for deploying LLMs and other deep lear
 ## TL;DR
 
 ```bash
-helm repo add takeoff https://titanml.github.io/helm-charts
-helm install inference-stack takeoff/inference-stack
+helm repo add doublewordai https://doublewordai.github.io/helm-charts
+helm install inference-stack doublewordai/inference-stack
 ```
 
 ### Pulling Inference Stack images
@@ -23,7 +23,7 @@ imagePullSecrets:
 Alternatively you can achieve it like so:
 
 ```bash
-helm install inference-stack takeoff/inference-stack --set imagePullSecrets[0].name=<SECRET_NAME>
+helm install inference-stack doublewordai/inference-stack --set imagePullSecrets[0].name=<SECRET_NAME>
 ```
 
 ## Configuration & installation details
@@ -96,7 +96,7 @@ To enable, add `--set gateway.exportPrometheusMetrics=true --set applicationTemp
 
 #### Integration with Prometheus Operator
 
-It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Inference Stack to run at full functionality.
+It is necessary to have a working installation of the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) for the integration to work. See the [system](https://github.com/doublewordai/helm-charts/tree/main/system) for installation of the dependencies for the Inference Stack to run at full functionality.
 
 The chart will try to deploy ServiceMonitor objects for integration with Prometheus Operator installations.
 Ensure that the Prometheus Operator CustomResourceDefinitions are installed in the cluster or it will fail with the following error:
@@ -123,6 +123,6 @@ Where `<APPLICATION_NAME>` should be replaced with the application name defined 
 
 ### Integration with Keda Operator
 
-It is necessary to have a working installation of the [Keda](https://keda.sh/docs/2.16/concepts/) chart for the integration to work. See the [system](https://github.com/titanml/helm-charts/tree/main/system) for installation of the dependencies for the Inference Stack to run at full functionality.
+It is necessary to have a working installation of the [Keda](https://keda.sh/docs/2.16/concepts/) chart for the integration to work. See the [system](https://github.com/doublewordai/helm-charts/tree/main/system) for installation of the dependencies for the Inference Stack to run at full functionality.
 
 The chart will try to deploy `ScaledObject` objects for integration with Keda installations.
