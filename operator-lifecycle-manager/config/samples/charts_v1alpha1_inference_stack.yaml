@@ -1,4 +1,4 @@
-apiVersion: models.takeoff.co/v1alpha1
+apiVersion: doublewordai.co/v1alpha1
 kind: InferenceStack
 metadata:
   name: inference-stack-sample

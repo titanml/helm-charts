@@ -1,4 +1,4 @@
-apiVersion: models.takeoff.co/{{ .Values.inferenceStack.crdVersion }}
+apiVersion: doublewordai.co/{{ .Values.inferenceStack.crdVersion }}
 kind: InferenceStack
 metadata:
   name: {{ include "console.inferenceStackCRName" $ }}

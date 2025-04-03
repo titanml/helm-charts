@@ -82,8 +82,8 @@ make catalog-build-push
 
 ```bash
 kubectl create namespace inference-stack-operator-system
-helm repo add takeoff https://titanml.github.io/helm-charts
-helm install catalog takeoff/catalog -n inference-stack-operator-system
+helm repo add doublewordai https://doublewordai.github.io/helm-charts
+helm install catalog doublewordai/catalog -n inference-stack-operator-system
 ```
 
 ### Upgrading a Catalog
@@ -91,7 +91,7 @@ helm install catalog takeoff/catalog -n inference-stack-operator-system
 Once a Catalog is running we can upgrade the version of the image the [Catalogd](README.md#catalogd) unpacks and caches by running:
 
 ```bash
-helm upgrade catalog takeoff/catalog -n inference-stack-operator-system --set "clusterCatalog.spec.source.image.ref=docker.io/tytn/operator-catalog:<desired-version>"
+helm upgrade catalog doublewordai/catalog -n inference-stack-operator-system --set "clusterCatalog.spec.source.image.ref=docker.io/tytn/operator-catalog:<desired-version>"
 ```
 
 Note that the image reference should be the canonical image name.
@@ -122,7 +122,7 @@ If a `ClusterExtension` exists and is set to install from a major versioned chan
 This can also be done by upgrading the `catalog` helm chart with the cluster extensions set in the `values.yaml` file.
 
 ```bash
-helm upgrade catalog takeoff/catalog -n inference-stack-operator-system --set "clusterExtensions[0].spec.source.catalog.version=<desired-version>" --values values.yaml
+helm upgrade catalog doublewordai/catalog -n inference-stack-operator-system --set "clusterExtensions[0].spec.source.catalog.version=<desired-version>" --values values.yaml
 ```
 
 where values.yaml should look like:
@@ -151,7 +151,7 @@ You can choose to omit the version field and let the OLM manage installing the l
 When you install the `InferenceStack` CR you need to specify the major version of the Operator you want to reconcile the CR. This is done by setting the `operatorVersion` label on the CR.
 
 ```yaml
-apiVersion: models.takeoff.co/v1alpha1
+apiVersion: doublewordai.co/v1alpha1
 kind: InferenceStack
 metadata:
   name: my-inference-stack

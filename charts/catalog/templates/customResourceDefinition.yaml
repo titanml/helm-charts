@@ -2,9 +2,9 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: inferencestacks.models.takeoff.co
+  name: inferencestacks.doublewordai.co
 spec:
-  group: models.takeoff.co
+  group: doublewordai.co
   names:
     kind: InferenceStack
     listKind: InferenceStackList

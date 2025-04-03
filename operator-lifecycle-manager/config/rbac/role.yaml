@@ -29,10 +29,10 @@ rules:
   - create
 
 ##
-## Rules for models.takeoff.co/<version>, Kind: InferenceStack
+## Rules for doublewordai.co/<version>, Kind: InferenceStack
 ##
 - apiGroups:
-  - models.takeoff.co
+  - doublewordai.co
   resources:
   - inferencestacks
   - inferencestacks/status

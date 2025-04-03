@@ -14,12 +14,13 @@ Before you begin, ensure you have the following installed:
 
 1. **Install Operator Lifecycle Manager (OLM) into your cluster**
 
-   Note: running this command will install resources into your active cluster. 
+   Note: running this command will install resources into your active cluster.
+
    ```bash
    curl -L -s https://github.com/operator-framework/operator-controller/releases/latest/download/install.sh | bash -s
    ```
 
-3. **Install Helmfile**
+2. **Install Helmfile**
 
    Install Helmfile by following the instructions in the [official documentation](https://helmfile.readthedocs.io/en/latest/#installation).
 
@@ -40,7 +41,7 @@ Before you begin, ensure you have the following installed:
    brew install helmfile
    ```
 
-4. **Deploy with Helmfile**
+3. **Deploy with Helmfile**
 
    From this directory, run the following command to deploy all dependencies:
 
@@ -52,7 +53,7 @@ Before you begin, ensure you have the following installed:
 
    See `values.yaml` for configuration.
 
-5. **Verify Deployments**
+4. **Verify Deployments**
 
    After deployment, verify that all components are running:
 
@@ -69,7 +70,7 @@ When developing the required versions of the helm charts referenced in the `helm
 
 ```bash
 # Get the latest helmfile.yaml
-wget https://raw.githubusercontent.com/titanml/helm-charts/refs/heads/main/system/helmfile.yaml
+wget https://raw.githubusercontent.com/doublewordai/helm-charts/refs/heads/main/system/helmfile.yaml
 # Sync to your cluster
 helmfile repos && helmfile sync
 # Or can run `helmfile apply` which will fetch from the repos, produce a diff and then sync.

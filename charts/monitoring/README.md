@@ -12,12 +12,12 @@ This chart is used to deploy dependencies that are needed to run other charts in
 ### Installing the Chart
 
 ```bash
-helm repo add takeoff https://titanml.github.io/helm-charts
+helm repo add doublewordai https://doublewordai.github.io/helm-charts
 helm repo update
 
 kubectl create namespace monitoring
 
-helm install system takeoff/system -n monitoring --set "kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName=<name-of-storage-class-in-your-cluster>"
+helm install system doublewordai/system -n monitoring --set "kube-prometheus-stack.prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName=<name-of-storage-class-in-your-cluster>"
 ```
 
 ## Using the chart
