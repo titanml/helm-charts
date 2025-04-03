@@ -1,6 +1,6 @@
-# Takeoff Helm Charts
+# DoubleWordAI Inference Stack Helm Charts
 
-The Takeoff Stack provides helm charts allow you to deploy open source AI on Kubernetes at any scale.
+The DoubleWordAI Inference Stack provides helm charts allow you to deploy open source AI on Kubernetes at any scale.
 
 ## Project Structure
 
@@ -18,7 +18,7 @@ operator-lifecycle-manager/     # Resources to build Inference Stack Operator Li
 
 ### Overview
 
-The Takeoff stack revolves around a Custom Resource Definition (CRD) called the `InferenceStack`. We create object representation for our desired state and have an Operator that reconcile. Below is a high level overview of the architecture:
+The DoubleWordAI Inference Stack revolves around a Custom Resource Definition (CRD) called the `InferenceStack`. We create object representation for our desired state and have an Operator that reconcile. Below is a high level overview of the architecture:
 
 ![overview](overview.png)
 
@@ -26,7 +26,7 @@ The Controller in this context is a sub-component of the Operator that watches t
 
 ## Getting Started
 
-1. *If installing Takeoff Stack for the first time* - follow the steps in the [system docs](./system/README.md#installation) to install the system dependencies.
+1. *If installing DoubleWordAI Inference Stack for the first time* - follow the steps in the [system docs](./system/README.md#installation) to install the system dependencies.
 2. Install the [console](./charts/console/README.md) helm chart, access the console UI to edit and view your stack.
 
 ## Glossary
