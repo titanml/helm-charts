@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "rag.fullname" $ }}-postgres
+  labels:
+    app.kubernetes.io/component: postgres
+    {{- include "rag.labels" $ | nindent 4 }}
+spec:
+  serviceName: {{ include "rag.fullname" $ }}-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "rag.fullname" $ }}-postgres
+  template:
+    metadata:
+      labels:
+        app: {{ include "rag.fullname" $ }}-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: pgvector/pgvector:pg16
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          value: {{ include "rag.internalDbName" $ }}
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: INTERNAL_DATABASE_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: INTERNAL_DATABASE_PASSWORD
+        - name: PGDATA
+          value: /data/pgdata
+        volumeMounts:
+        - name: {{ include "rag.fullname" $ }}-postgres
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ include "rag.fullname" $ }}-postgres
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

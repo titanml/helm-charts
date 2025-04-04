@@ -2,3 +2,4 @@
 Chart.lock
 .DS_Store
 .values.yaml
+.secrets_values.yaml
